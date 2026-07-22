@@ -1,0 +1,4 @@
+interface:
+  display_name: "MAIW"
+  short_description: "Portable low-token app continuity workflow"
+  default_prompt: "Use $maiw to resume this app from shared memory."

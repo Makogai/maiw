@@ -1,0 +1,10 @@
+---
+description: Low-token shared project continuity and resumable memory
+alwaysApply: true
+---
+
+Shared memory is at `{{MEMORY_DIR}}`. Read `{{CORE_DIR}}/OPERATING.md`, then NOW.md and INDEX.md.
+Load only task-relevant indexed notes; verify important facts in code. Support the workflows
+"learn project", "resume from handoff", "create handoff", and "sync memory". Validate memory with
+`node {{WRAPPER_DIR}}/bin/memory.js validate {{APP}}`.
+

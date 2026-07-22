@@ -1,0 +1,13 @@
+{
+  "name": "makogai-ai-wrapper",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "register": "node bin/register.js",
+    "maiw": "node bin/maiw.js",
+    "status": "node bin/memory.js status",
+    "validate": "node bin/memory.js validate",
+    "check": "node --check bin/register.js && node --check bin/memory.js && node --check bin/maiw.js && node --check bin/validate-adapters.js && node bin/validate-adapters.js && node bin/memory.js validate"
+  },
+  "engines": { "node": ">=18" }
+}

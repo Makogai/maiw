@@ -1,0 +1,306 @@
+# drivebay — API layer & database schema (deep reference)
+
+This supplements `apps/drivebay/CLAUDE.md` ("API"/"Database" sections),
+`apps/drivebay/docs/api/` (INDEX.md, conventions.md, v1/openapi.json, modules/*.md) and
+`apps/drivebay/docs/database/database_schema.dbml` — it does not repeat them. All paths
+below are relative to `apps/drivebay/`. Verified 2026-07-15 by reading every file in
+`routes/api/v1/*.php`, `routes/api.php`, `routes/storefront.php`, spot-checking
+`app/Http/Controllers/Api/V1/*`, `app/Http/Requests/**`, `docs/api/v1/openapi.json`,
+`docs/api/modules/*.md`, `docs/database/database_schema.dbml`, `docs/database/migration_plan.md`,
+and ~15 migrations across phases.
+
+## API
+
+### Versioning
+
+- Single version today: `routes/api.php:5` wraps everything in `Route::prefix('v1')`,
+  requiring 9 files under `routes/api/v1/` (`routes/api.php:6-15`; `analytics.php` is a
+  10th, required at `routes/api.php:8` but not named in the original module list).
+  No `v2` exists anywhere (no `routes/api/v2/`, no version negotiation middleware). A
+  new version would presumably be added as a sibling `Route::prefix('v2')` block plus a
+  new `routes/api/v2/` dir and `App\Http\Controllers\Api\V2\*` — inferred from the v1
+  pattern, not documented anywhere.
+- Health check `GET /v1/health` (`catalog.php:19`) returns `{"version": "v1"}` inline,
+  not from config.
+
+### Route modules
+
+Envelope is `{data, meta}` per `docs/api/conventions.md` — confirmed matching in every
+controller spot-checked; no deviations found beyond the two documented exceptions
+(action-only `{message}`, promotion checkout `{redirect_url, payment_id}`).
+
+**auth.php** (`routes/api/v1/auth.php`) — `AuthApiController`, `AccountApiController`:
+
+| Method | Path | Controller@action | Auth/Middleware |
+|---|---|---|---|
+| POST | `/auth/register` | Auth@register | `throttle:api-auth` |
+| POST | `/auth/login` | Auth@login | `throttle:api-auth` |
+| POST | `/auth/verify-email` | Auth@verifyEmail | `throttle:api-auth` |
+| POST | `/auth/verification/resend` | Auth@resendVerification | `throttle:api-auth` |
+| GET/PUT | `/account/locale` | Account@show\|updateLocale | `auth:sanctum` only (no `verified`) |
+| GET | `/auth/me` | Auth@me | `auth:sanctum, verified` |
+| POST | `/auth/logout` | Auth@logout | `auth:sanctum, verified` |
+| POST/DELETE | `/auth/device-tokens` | Auth@storeDeviceToken\|destroyDeviceToken | `auth:sanctum, verified` |
+| GET | `/account` | Account@show | `auth:sanctum, verified` |
+| PATCH | `/account/profile` | Account@updateProfile | `auth:sanctum, verified`; `UpdateAccountProfileRequest` (**Web** namespace, reused — see finding below) |
+| POST | `/account/warnings/{warning}/acknowledge` | Account@acknowledgeWarning | `auth:sanctum, verified` |
+
+Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest}`,
+`Requests/Api/V1/Account/UpdateAccountLocaleRequest`.
+
+**catalog.php** (`routes/api/v1/catalog.php`, 23 endpoints, mostly public GET) —
+`TaxonomyApiController`, `GeographyApiController`, `ListingApiController`,
+`SearchApiController`, `SearchFiltersApiController`, `RecommendationApiController`,
+`CompareApiController`, `PublicDealerApiController`, `PublicSellerApiController`,
+`ExperimentApiController`, `VehicleApiController`, `ListingReportApiController`,
+`RecentlyViewedApiController`, `ListingFormOptionsApiController`. Public/no-auth: health,
+experiments, countries/regions/cities/city-districts, vehicle-types/makes/models/model-groups,
+listings/featured-listings, dealers/{dealer:slug}, sellers/{seller}, search/filters,
+compare, listing-form-options. `sanctum.optional` on `/experiments` and
+`GET /listings/{publicId}`. `throttle:api-search` on `GET /search`. `auth:sanctum, verified`
+group: `/recent-listings`, `POST /vehicles/decode-vin`, `POST /listings/{publicId}/report`
+(`ListingReportApiController` reuses **Web** `StoreListingReportRequest`).
+
+**analytics.php** (4 endpoints, `ListingAnalyticsApiController`) — all under
+`sanctum.optional` + `throttle:api-analytics`: `POST /analytics/listing-impressions`,
+`POST /listings/{publicId}/analytics/{view,engagement,click}`. Dedicated Form Requests
+under `Requests/Api/V1/Analytics/*`.
+
+**campaigns.php** (3 endpoints) — `GET /config/app` (no auth, `PlatformConfigApiController`
+invoked directly as single-action controller); `sanctum.optional` group: `GET
+/engagement-campaigns/active`, `POST /engagement-campaigns/{campaign}/interactions`
+(`EngagementCampaignApiController`, `EngagementCampaignInteractRequest`).
+
+**engagement.php** (23 endpoints despite the filename — favorites, saved searches,
+notifications, messaging, promotion checkout, payments) —
+`FavoriteApiController`, `SavedSearchApiController`, `NotificationApiController`,
+`MessageApiController`, `PromotionApiController`, `PaymentApiController`. Public:
+`GET /promotion-types`, `GET /billing/config`. Everything else `auth:sanctum, verified`:
+favorites CRUD, saved-searches CRUD (`Requests/Api/V1/Search/{Store,Update}SavedSearchApiRequest`),
+notifications (index/unread-count/latest-unread/read/read-all), messaging (threads
+index/show, `POST /listings/{publicId}/contact`, reply, mute [`PUT`+`POST` both routed to
+same action — `Route::match`], typing, report — `ReplyMessageRequest`,
+`UpdateMessageThreadMuteRequest`; report reuses **Web** `StoreListingReportRequest`),
+`POST /listings/{publicId}/promote` (checkout, no envelope), `payments/{payment}/checkout`+`confirm`.
+
+**seller.php** (16 endpoints) — `AutodilerImportApiController`, `SellerAnalyticsApiController`,
+`SellerListingApiController`, `SellerMediaApiController`, all `auth:sanctum, verified`.
+Import status uses `throttle:api-import-status` (180/min); everything else in this file
+`throttle:api-write` (30/min). `can.create.listings` middleware
+(`EnsureCanCreateListings`) additionally gates: autodiler preview/store, `POST
+/seller/listings`. Listing CRUD reuses **Web** Form Requests: `StoreListingRequest`,
+`UpdateListingRequest`, `UpdateListingPriceRequest` (`app/Http/Controllers/Api/V1/SellerListingApiController.php:11-13`)
+— same finding as auth/messaging above. `publish`/`markSold`/`requestPhotoReview` take
+plain `Request`, no dedicated Form Request.
+
+**dealer.php** (3 endpoints, `DealerApiController`, `auth:sanctum, verified`, prefix
+`/dealer`): `storefront`, `domain`, `domain/verify`. Matches `docs/api/modules/dealer.md`
+"Routes only" phase-5 status — thin, likely minimal validation.
+
+**viewing.php** (8 endpoints) — `ListingViewingApiController`, `BuyerViewingApiController`,
+`SellerViewingApiController`. Public: `dates`, `slots` per listing. `auth:sanctum,
+verified, throttle:api-write`: book appointment (`CancelListingViewingRequest` is **Web**
+namespace, used for `cancel`), buyer's `/viewings` list, seller's `/seller/viewing`
+show/update (`UpdateSellerViewingSettingsRequest`, **Web** namespace) + `/seller/viewings`.
+
+**fuel-prices.php** (4 endpoints, `FuelPriceApiController`, `FuelPriceAlertApiController`)
+— public `fuel-prices`, `fuel-prices/latest`; `auth:sanctum, verified` for
+`fuel-prices/alerts` get/put.
+
+**tools.php** (5 endpoints, prefix `/tools`, no auth) —
+`Tools\{RegistrationCalculatorApiController,FuelConsumptionCalculatorApiController}`.
+`aiEstimate` action gated by `config('fuel_consumption_calculator.enabled')`, uses **Web**
+namespace `FuelConsumptionAiEstimateRequest` alongside its own
+`Requests/Api/V1/Tools/CalculateFuelConsumptionRequest`. Separate `RateLimiter::for('fuel-consumption-ai', ...)`
+defined at `app/Providers/AppServiceProvider.php:93` (not yet cross-checked against route
+middleware — route file itself has no explicit throttle on `ai-estimate`; worth
+confirming if this route is expected to be throttled).
+
+**storefront.php** (dealer custom-domain web pages, not `/api/v1`) — `storefront.host`
+middleware (`EnsureStorefrontHost`); `StorefrontPageController@{about,contact}`,
+`StorefrontListingController@show`. Web/Inertia contract space, not part of the JSON API.
+
+### Middleware aliases (`bootstrap/app.php:93-99`)
+
+`staff`→`EnsureStaff`, `verified`→`EnsureEmailIsVerified` (custom, not Laravel's default
+`EnsureEmailIsVerified`), `can.create.listings`→`EnsureCanCreateListings`,
+`storefront.host`→`EnsureStorefrontHost`, `marketplace.host`→`EnsureMarketplaceHost`,
+`sanctum.optional`→`OptionalSanctumAuth`. Rate limiters defined in
+`app/Providers/AppServiceProvider.php:87-93+`: `api-auth` (10/min/IP), `api-search`
+(60/min/user-or-IP), `api-analytics` (120/min/user-or-visitor-or-IP), `api-write`
+(30/min/user-or-IP), `api-import-status` (180/min/user-or-IP), `fuel-consumption-ai`
+(custom limiter, not yet inspected in depth).
+
+### Finding: Web Form Requests reused directly in API controllers
+
+`apps/drivebay/CLAUDE.md` states "Web and API are separate contract spaces" and to never
+treat `app/Http/Requests/Web/*` as API contracts. In practice, **8 API controllers import
+and type-hint `App\Http\Requests\Web\*` classes directly** as their validation layer,
+rather than having dedicated `Api/V1` request classes:
+
+- `AutodilerImportApiController` → `Web\Seller\{PreviewAutodilerImportRequest,StoreAutodilerImportRequest}`
+- `BuyerViewingApiController::cancel` → `Web\CancelListingViewingRequest`
+- `AccountApiController::updateProfile` → `Web\UpdateAccountProfileRequest`
+- `ListingReportApiController::store` and `MessageApiController::report` → `Web\StoreListingReportRequest`
+- `SellerViewingApiController::update` → `Web\Seller\UpdateSellerViewingSettingsRequest`
+- `SellerListingApiController::{store,update,updatePrice}` → `Web\Seller\{StoreListingRequest,UpdateListingRequest,UpdateListingPriceRequest}`
+- `Tools\FuelConsumptionCalculatorApiController::aiEstimate` → `Web\FuelConsumptionAiEstimateRequest`
+
+`docs/api/modules/seller-listings.md:5` even states this explicitly ("Uses
+`StoreListingRequest`/`UpdateListingRequest` validation (shared rules with web seller
+forms)") — so it's a known, intentional pattern for validation-rule reuse, not an
+oversight, but it does mean the "separate contract spaces" rule in CLAUDE.md is aspirational
+for authorization boundaries, not literally true for validation rule classes. Worth
+knowing before assuming any `Api/V1` controller has a matching `Requests/Api/V1` sibling.
+
+### Finding: `docs/api/v1/openapi.json` is stale relative to routes and hand-written module docs (**Jira: KAN-13**)
+
+Diffed all 105 route-file (method, normalized-path) pairs against the 89 operations
+actually present in `docs/api/v1/openapi.json` (methods keyed per path). **16 real
+endpoints are missing from the generated spec**, and it has **one stale/phantom path**:
+
+Missing from openapi.json (present in code, and in most cases in `docs/api/modules/*.md`):
+`GET/PUT /account/locale`, `GET /billing/config` (documented in `modules/billing.md:9`),
+`GET /experiments` (undocumented anywhere except code — no module doc at all),
+`GET /featured-listings` (undocumented anywhere), `GET/PUT /fuel-prices/alerts`
+(documented in `modules/fuel-prices.md:87-88`), `GET /notifications/unread-count`,
+`GET /notifications/latest-unread` (both undocumented anywhere),
+`GET/POST /payments/{payment}/checkout,confirm` (documented in `modules/billing.md:12-13`),
+`GET /seller/listings/{publicId}` (show; undocumented in `modules/seller-listings.md` too),
+`POST /seller/listings/{publicId}/request-photo-review` (undocumented in module doc too),
+`PUT/POST /messages/threads/{thread}/mute` (documented in `modules/messaging.md:13`),
+`POST /messages/threads/{thread}/typing`, `POST /messages/threads/{thread}/report` (both
+undocumented anywhere).
+
+Phantom in openapi.json but not in code: `PUT /v1/seller/listings/{publicId}/viewing` —
+no such route exists; the real path is `PUT /seller/viewing` (`routes/api/v1/viewing.php:19`,
+inside `Route::prefix('seller')`). Looks like a stale artifact from before that route was
+under a different prefix.
+
+Practical implication: **trust `routes/api/v1/*.php` + `docs/api/modules/*.md` over
+`docs/api/v1/openapi.json` for anything touching these specific endpoints** until
+`composer run api:docs` (defined `composer.json:93`) is re-run. `GET /experiments`,
+`GET /featured-listings`, notification unread-count/latest-unread, and messaging
+typing/report are undocumented in *any* doc (module docs or openapi) — only discoverable
+by reading the controllers.
+
+## Database
+
+Canonical schema: `docs/database/database_schema.dbml` (2813 lines); migration order:
+`docs/database/migration_plan.md` (17 phases, table below). 136 migration files in
+`database/migrations/`. Spot-checked ~15 across phases plus the 5 named tables
+(`listings`, `listing_search_documents`, `dealer_storefront_domains`,
+`recommendation_candidates`, `user_listing_interactions`) — **dbml matches migrations
+exactly** for every table checked; no drift found (see "relational_phase" note below for
+why this is non-trivial — the schema went through a large JSON-to-relational rewrite and
+the dbml was kept in sync with it).
+
+### Migration phases (from `migration_plan.md`, all dated 2026-03-10 except where noted)
+
+| Phase | Tables (representative) |
+|---|---|
+| 1 Geography | countries, regions, cities, city_districts, languages, currencies, exchange_rates |
+| 2 Users | users, user_profiles, user_devices, auth_sessions, password_resets (+ Spatie Permission) |
+| 3 Dealer orgs | dealer_accounts, dealer_members, dealer_branches, dealer_storefront_domains |
+| 4 Vehicle taxonomy | vehicle_types/makes/models/generations/trims/engines, body_styles, fuel_types, transmissions, drivetrains, vehicle_features |
+| 5 Vehicles | vehicles, vehicle_feature_vehicle |
+| 6 Listings | listings, listing_versions, listing_status_history, listing_prices, listing_features, listing_attributes, listing_search_documents |
+| 7 Media | media_assets, listing_media |
+| 8/8b Messaging + Viewing | message_threads, messages, leads; user/listing viewing settings + appointments |
+| 9 Search/discovery | saved_searches, search_logs, favorites, comparison_lists(+items) |
+| 10 Notifications | notification_templates, notifications, email_campaigns(+recipients) |
+| 11 Billing | payment_providers/methods, invoices(+items), payments, refunds, subscription_plans, subscriptions |
+| 12 Promotions | promotion_types, listing_promotions |
+| 13 Moderation | seller_reviews, reports, user_warnings, user_selling_restrictions, fraud_signals, moderation_cases, admin_actions, audit_logs |
+| 14 Analytics | listing_impressions/views/click_events, page_events, user_listing_interactions, listing_similarity, recommendation_profiles/candidates, {listing,seller}_performance_daily |
+| 15 Integrations | api_clients, import_jobs, platform_social_accounts, listing_social_posts |
+| 16 Platform/engagement | platform_settings, engagement_campaigns(+events), experiments(+variants,assignments) |
+| 17 Fuel pricing | montenegro_fuel_price_snapshots, fuel_price_alert_preferences |
+
+Phases 1-15's *initial create* migrations all share the `2026_03_10_*` date (build-out
+day); everything from `2026_06_04` onward is evolution on top of that baseline —
+`platform_settings`, `advertisements`, `dealer_storefront_domains`, taxonomy mobile.de
+fields, engagement tables, viewing tables, experiments, fuel pricing, and all the patch
+migrations below post-date the original 15-phase build by ~3 months.
+
+### Schema evolution: the "relational_phase" JSON-elimination rewrite
+
+The single biggest schema-evolution event: **7 migrations landed on one day
+(2026-06-10)**, all named `relational_phaseN_eliminate_*_json.php`
+(`database/migrations/2026_06_10_20{0,1,2,3,4,5,6}000_*`, 200-500 lines each), that
+systematically replaced `json`/`*_json` columns with proper relational tables + pivot
+tables, each with inline backfill logic (`DB::table(...)->each(...)` + `json_decode`) run
+before the old column is dropped, and a full `down()` that recreates the JSON column and
+re-populates it:
+
+1. `phase1_eliminate_listing_json` — listings/vehicles/media_assets/listing_attributes;
+   adds `listing_exchange_preferences`, `listing_search_document_features` tables; drops
+   `exchange_preferred_make_ids`/`exchange_preferred_vehicles` JSON columns from `listings`.
+2. `phase2_eliminate_dealer_storefront_json` — adds `dealer_storefront_{themes,content,
+   highlights,social_links,domain_settings,pages}` tables, replacing `dealer_accounts.storefront_settings` JSON.
+3. `phase3_eliminate_search_reco_json` — adds `filter_*` columns directly to
+   `saved_searches`/`search_logs` (replacing `filters_json`) and 8 new
+   `recommendation_profile_*` pivot/child tables (replacing 8 `preferred_*_json`/
+   `affinity_*_json` columns on `recommendation_profiles`).
+4. `phase4_eliminate_billing_notify_json` — billing/notification JSON columns.
+5. `phase5_eliminate_audit_json` — audit-log JSON columns.
+6. `phase6_eliminate_remaining_json` — largest file (505 lines), catch-all for whatever
+   JSON columns remained.
+7. `phase7_eliminate_analytics_interaction_json` — adds `session_id`/`position` columns
+   to `user_listing_interactions` (replacing `metadata_json`), `filter_*` columns to
+   `listing_impressions`, and `{listing_click_event,page_event}_context` tables.
+
+Net effect: almost no `json` columns remain in the schema outside a handful of genuinely
+free-form fields (e.g. `dealer_accounts` still has narrowly-scoped JSON in places — not
+exhaustively re-audited here). If you need to know "is X still JSON or was it
+relationalized," check whether a `relational_phaseN` migration touched that table before
+trusting an older migration's column list — the dbml is the fast path (confirmed
+accurate against these migrations for the 5 tables this task targeted).
+
+### Other patch-migration patterns worth knowing
+
+- `add_X_to_Y_table` migrations are common and mostly additive (nullable columns,
+  `after(...)` placement) — e.g. `add_map_location_enabled_to_listings_table`,
+  `add_exchange_fields_to_listings_table` (+ a same-day follow-up
+  `add_exchange_preferred_vehicles_to_listings_table` that also backfills data from the
+  sibling `exchange_preferred_make_ids` JSON column — both later dropped by
+  `relational_phase1`), `add_sort_boost_score_to_listing_search_documents_table`,
+  `add_storefront_fields_to_dealer_accounts_table`,
+  `add_page_background_media_id_to_dealer_accounts_table`.
+- `create_dealer_storefront_domains_table` (2026-06-05) postdates the original phase-3
+  dealer-org build by 3 months — storefront/subdomain support was a later addition, not
+  part of the initial dealer design (consistent with
+  `docs/architecture/dealer-storefront-domains.md` being a newer subsystem).
+- Taxonomy churn: `add_taxonomy_display_fields_to_vehicle_taxonomy_tables`,
+  `add_mobile_de_fields_to_vehicle_taxonomy_tables`,
+  `scope_mobile_de_make_uniqueness_by_vehicle_type`,
+  `add_logo_path_to_vehicle_makes_table`, `add_is_featured_to_vehicle_makes_table` — the
+  mobile.de import model was refined incrementally after the initial taxonomy tables landed.
+- `backfill_message_thread_unread_counts` (2026-06-04) is a data-only migration (no
+  schema change), confirming unread counts are a denormalized/cached column somewhere on
+  `message_threads`, not computed live.
+
+### Seeders and factories
+
+- `database/seeders/DatabaseSeeder.php` runs 12 seeders in order: RolesAndPermissions →
+  AdminUser → Geography → VehicleTypes → **MobileDeTaxonomy** → VehicleCatalog →
+  VehicleMakeLogo → DemoMarketplace → ListingDemoImages → PromotionTypes →
+  EngagementCampaign → HomepageExperiment.
+- Confirmed: `MobileDeTaxonomySeeder` reads from the committed
+  `database/data/mobile-de/taxonomy-snapshot.json` (920KB) and instructs re-running
+  `php artisan vehicles:export-mobile-de-taxonomy` to regenerate it
+  (`database/seeders/MobileDeTaxonomySeeder.php:22`) — matches the CLAUDE.md/architecture
+  note exactly. Sibling scrape artifacts also present but not in the default seeder path:
+  `bmw.json`, `skoda.json`, `makes.html`, `html/`, and `snapshots/` (11 per-vehicle-type
+  JSON files: car, motorcycle, van_up_to_7500, truck_over_7500, bus, trailer,
+  semi_trailer(_truck), construction_machine, agricultural_vehicle, forklift_truck) — not
+  yet traced to a specific console command; likely inputs/outputs of the taxonomy import
+  tooling in `app/Domains/Vehicle/Console/`.
+- Extra seeders not in `DatabaseSeeder`'s default chain (presumably manual/other-seeder
+  callers): `AutodilerCapturSeeder`, `BalkanGeographySeeder`, `CountriesSeeder`,
+  `MontenegroGeographySeeder`, `TestVehicleTaxonomySeeder`, `TouaregMarketSeeder`,
+  `VehicleTaxonomySeeder` (superseded by `MobileDeTaxonomySeeder`?).
+- Only **3 factories** exist (`ListingFactory`, `UserFactory`, `VehicleFactory`) despite
+  21 domains/~136 migrations — demo data mostly comes from `DemoMarketplaceSeeder`
+  instead. A task needing factory-backed test data outside Listing/User/Vehicle will
+  need to write one first.

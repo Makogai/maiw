@@ -1,0 +1,8 @@
+---
+description: MAIW portable command dispatcher and low-token continuity workflow
+alwaysApply: true
+---
+
+When the user writes `/maiw ...` or `maiw ...`, follow @core/MAIW.md. Use `node bin/maiw.js` for
+deterministic operations and shared memory for agent operations. Preserve existing memory.
+

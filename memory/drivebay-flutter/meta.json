@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "app": "drivebay-flutter",
+  "appPath": "apps/drivebay-flutter",
+  "remote": "git@github.com:Makogai/drivebay-flutter.git",
+  "sourceCommit": "eb6132ba307c54d94c761284a47afd3fb3ff7e0f",
+  "status": "current",
+  "registeredAt": "2026-07-15T12:13:09.063Z",
+  "lastSynchronizedAt": "2026-07-15T15:10:00.000Z"
+}

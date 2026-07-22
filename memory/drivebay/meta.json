@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "app": "drivebay",
+  "appPath": "apps/drivebay",
+  "remote": "git@github.com:Makogai/drivebay.git",
+  "sourceCommit": "8f7840f062522f8f09c5ac92539b47d9e015acf8",
+  "status": "current",
+  "registeredAt": "2026-07-15T11:44:59.370Z",
+  "lastSynchronizedAt": "2026-07-15T14:30:00.000Z"
+}

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node bin/maiw.js help)",
+      "Bash(node bin/maiw.js clone git@github.com:Makogai/drivebay.git drivebay)",
+      "Bash(node bin/maiw.js status drivebay)"
+    ]
+  }
+}
