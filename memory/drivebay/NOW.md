@@ -2,49 +2,56 @@
 
 ## Goal
 
-- KAN-29 recommendations end-to-end. Phase 1 (**KAN-30**) data plane done.
-  Phase 2 For you (**KAN-31**) done. Phase 3 search sort (**KAN-32**) done in code.
+- KAN-29 recommendations end-to-end. Phases 1–3 done in code (KAN-30/31/32).
+  Phase 4 email digests (**KAN-33**) done in code this session.
 
 ## Current state
 
-- **KAN-32 done in code** (pending commit/push):
-  - `SearchFilterQueryRules` allows `sort=recommendation`.
-  - `SearchService::resolveSortStack()` already maps to `sort_recommendation_score`
-    (KAN-30 writer) — no new scoring.
-  - Pest: `ApiSearchTest` accepts `sort=recommendation` (200) and rejects unknown sort (422).
-  - Docs: `docs/api/modules/search.md`, `recommendations.md`, `openapi.json` sort enums.
-  - Web: Search `<select>` + en/sr `sort_recommended` (trivial).
-  - Confluence DM/3440642 updated for KAN-32 / KAN-25 closed gap.
-- Flutter sibling: Recommended sort chip + l10n (see `memory/drivebay-flutter/NOW.md`).
-- Epic **KAN-29** In Progress; next child likely **KAN-33** (email digests) unless
-  product picks another slice.
+- **KAN-33 done in code** (pending commit/push by parent/human):
+  - Models fleshed: `EmailCampaign`, `EmailCampaignRecipient`, `NotificationTemplate`.
+  - `RecommendationDigestService` + `RecommendationDigestMail` + markdown view.
+  - Job `SendRecommendationDigestsJob`, Artisan `recommendations:send-digests`,
+    weekly schedule (Mon 09:00 default) gated by `recommendations.digest.enabled`
+    (default **false** — set `RECOMMENDATIONS_DIGEST_ENABLED=true` to send).
+  - Opt-in gate: `users.marketing_email_opt_in`; verified email; non-expired candidates;
+    same-day idempotency via digest campaign recipients / `segment_json.digest_day`.
+  - Pest: `tests/Feature/Recommendation/RecommendationDigestTest.php` (4 passed).
+  - Docs: `docs/recommendations/recommendation_architecture.md` digest section.
+- Subsumes **KAN-17** for email campaign/template/recipient digest path only;
+  Analytics `ListingPerformanceDaily` / `SellerPerformanceDaily` stubs still open.
+- Prior: KAN-31 For you + KAN-32 search sort still pending commit/push if not already.
 
 ## Exact next action
 
-1. Commit + push drivebay and drivebay-flutter KAN-31+KAN-32 changes (human; attribution off).
-2. Transition **KAN-32** (and close/link **KAN-25**) via main session Jira tools.
-3. Optional: on-device verify Flutter Recommended sort; confirm Meilisearch has scores.
+1. Human: commit + push drivebay KAN-33 (and any pending KAN-31/32) with Attribution OFF.
+2. Main session: Jira comment/transition **KAN-33**; note partial **KAN-17** (Analytics stubs remain).
+3. Enable digests in target env via `RECOMMENDATIONS_DIGEST_ENABLED=true` when ready.
 
 ## Decisions made this session
 
-- Web sort option included because it was one `<option>` + lang keys (trivial).
-- No new scorer / no schema change — reuse KAN-30 `sort_recommendation_score`.
+- Digest default **disabled** (`RECOMMENDATIONS_DIGEST_ENABLED` default false) so schedule
+  is inert until ops opts in.
+- Code-first `NotificationTemplate` upsert by `code=recommendation_digest` (no seed migration).
+- No Filament UI, no Flutter, no new migrations.
 
 ## Changed files
 
-- `SearchFilterQueryRules.php`, `ApiSearchTest.php`
-- `docs/api/modules/{search,recommendations}.md`, `docs/api/v1/openapi.json`
-- `resources/js/Pages/Search/Index.vue`, `lang/{en,sr}/marketplace.php`
-- Flutter: `search_sort_control.dart`, l10n arb + generated
-- `memory/drivebay/*`, `memory/drivebay-flutter/*`
+- Models: `EmailCampaign`, `EmailCampaignRecipient`, `NotificationTemplate`; `User::recommendationCandidates()`
+- `config/recommendations.php` digest section
+- `RecommendationDigestService`, `SendRecommendationDigestsJob`, `SendRecommendationDigestsCommand`
+- `RecommendationDigestMail`, `resources/views/mail/recommendation-digest.blade.php`
+- `routes/console.php`, `bootstrap/app.php`
+- `lang/{en,sr}/marketplace.php` digest strings
+- `tests/Feature/Recommendation/RecommendationDigestTest.php`
+- `docs/recommendations/recommendation_architecture.md`
+- Memory: `NOW.md`, `topics/domains-growth.md`
 
 ## Verification
 
-- `php artisan test --compact tests/Feature/Api/V1/ApiSearchTest.php` → 9 passed
+- `php artisan test --compact tests/Feature/Recommendation/RecommendationDigestTest.php` → 4 passed
 - `vendor/bin/pint --dirty` → pass
-- Flutter: static only (`dart` not on PATH)
 
 ## Blockers and unknowns
 
-- None for KAN-32 code. Ranking quality depends on nightly/rebuild scores being present
-  in Meilisearch (KAN-30 data plane).
+- Digests stay off until env flag enabled.
+- Ranking quality for digest content still depends on candidates being rebuilt (KAN-30 schedule).

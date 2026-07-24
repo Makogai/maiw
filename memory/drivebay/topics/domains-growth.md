@@ -39,11 +39,20 @@ Key classes:
 - `AdminPushTestService` — thin wrapper for the Filament `PushNotificationTester` admin page — `app/Domains/Notification/Services/AdminPushTestService.php`.
 - `SendPushNotificationJob` — queued job, resolves `User` then calls `PushNotificationService::sendToUser()` — `app/Domains/Notification/Jobs/SendPushNotificationJob.php`.
 
-Models: `Notification` (table `notifications`) — the domain model, `belongsTo(User, Listing, SavedSearch)`, `payload()` flattens `provider_response_json` into a normalized key set consumed by the frontend/mobile client — `app/Models/Domains/Notification/Models/Notification.php:41-84`.
+Models: `Notification` (table `notifications`) — the domain model, `belongsTo(User, Listing, SavedSearch)`, `payload()` flattens `provider_response_json` into a normalized key set consumed by the frontend/mobile client — `app/Models/Domains/Notification/Models/Notification.php:41-84`. Also: `EmailCampaign` / `EmailCampaignRecipient` / `NotificationTemplate` used by recommendation digests (KAN-33).
 
 **Gotcha — two unrelated "notification" systems.** `App\Models\Domains\Notification\Models\Notification` (table `notifications`) is the domain's own seller/buyer notification record. Separately, `App\Support\Notifications\EloquentDatabaseNotification` (table `database_notifications`, with a `DatabaseNotificationAction` relation for action buttons) is Laravel's built-in `DatabaseNotification` used for the **Filament admin** notification bell. They are not related and must not be conflated — `app/Models/Domains/Notification/Models/DatabaseNotificationAction.php:9`, `app/Support/Notifications/EloquentDatabaseNotification.php:9-13`.
 
-**Gotcha — dead/unwired models** (**Jira: KAN-17**, shared with the Analytics stub-table gotcha below). `EmailCampaign`, `EmailCampaignRecipient`, `NotificationTemplate` are empty stub models (no `$fillable`, no relations, no casts) with zero callers anywhere in `app/` — schema exists, feature does not — `app/Models/Domains/Notification/Models/EmailCampaign.php`, `EmailCampaignRecipient.php`, `NotificationTemplate.php`.
+**Gotcha — email campaign models were stubs; digest path now wired** (**Jira: KAN-33**,
+partially addresses **Jira: KAN-17**). `EmailCampaign`, `EmailCampaignRecipient`, and
+`NotificationTemplate` now have `$fillable`/casts/relations. Weekly recommendation digests
+use them via `RecommendationDigestService` (`campaign_type=digest`),
+`RecommendationDigestMail`, `SendRecommendationDigestsJob`, and
+`recommendations:send-digests` — gated by `config('recommendations.digest.enabled')` and
+`users.marketing_email_opt_in`. **Still open under KAN-17**: Analytics
+`ListingPerformanceDaily` / `SellerPerformanceDaily` remain empty stubs with no writers —
+`app/Models/Domains/Analytics/Models/ListingPerformanceDaily.php`,
+`SellerPerformanceDaily.php`.
 
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
