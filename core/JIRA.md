@@ -56,6 +56,11 @@ memory + code. When you add a new finding to memory, file its ticket and add the
 
 ## Workflow — the loop the user wants
 
+**Jira is the source of truth for tickets.** Before starting any feature/bug slice: search
+and read the relevant issue (and linked Confluence). While working: keep the ticket current.
+When finishing: comment, transition, and update linked Confluence if behavior/docs drifted.
+Cursor rule: `.cursor/rules/jira-confluence-source-of-truth.mdc`.
+
 1. **Find** (learning/review/normal work surfaces a bug): confirm it in current code
    (memory is navigation, not proof), then **check Jira first** so you don't duplicate —
    `searchJiraIssuesUsingJql` e.g.
@@ -66,8 +71,9 @@ memory + code. When you add a new finding to memory, file its ticket and add the
    In Progress (`getTransitionsForJiraIssue` to find the id, then `transitionJiraIssue`).
 4. **Update on fix**: when the change is verified, add a comment on the ticket
    (`addCommentToJiraIssue`) stating what changed (files + a one-line how-verified) and
-   transition it to Done. Update `memory/<app>/NOW.md` and, if the finding's memory note
-   is now resolved, either delete the stale gotcha or mark it fixed with the commit.
+   transition it to Done (or In Review). Update linked Confluence pages when the
+   documented behavior changed. Update `memory/<app>/NOW.md` and, if the finding's memory
+   note is now resolved, either delete the stale gotcha or mark it fixed with the commit.
 5. **Check**: to review status, `searchJiraIssuesUsingJql` (e.g. everything open in an
    epic: `parent = KAN-4 AND statusCategory != Done`). Report keys + summaries, don't
    re-explore code.

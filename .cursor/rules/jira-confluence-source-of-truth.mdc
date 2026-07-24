@@ -1,0 +1,41 @@
+---
+description: Jira is ticket source of truth; keep Confluence and tickets current
+alwaysApply: true
+---
+
+# Jira + Confluence workflow (source of truth)
+
+**Jira (`KAN` on `drivebayme.atlassian.net`) is the source of truth for work items.** Memory and chat are navigation — tickets track status, scope, and decisions. Full convention: @core/JIRA.md.
+
+## Before starting work
+
+1. **Search Jira first** — find the epic/story/bug (e.g. KAN-29) or confirm none exists. Do not invent parallel trackers in memory alone.
+2. **Read the ticket** (+ linked Confluence) before coding. Confirm Problem / Impact / Suggested fix still match code.
+3. **Transition to In Progress** when you begin (`getTransitionsForJiraIssue` → `transitionJiraIssue`).
+4. If Confluence is linked (or the topic has a page in Drivebay WEB / Drivebay Mobile), **read it** before changing that area.
+
+## While working
+
+- Keep the ticket updated: comments for meaningful progress, blockers, and decisions (with `path:line` evidence).
+- Do not silently expand scope — ask, or file a child Story under the epic.
+- Prefer child issues under the epic over stuffing everything into one ticket body.
+
+## When finishing a slice
+
+1. Comment what changed + how verified.
+2. Transition to **In Review** or **Done** as appropriate.
+3. Update linked **Confluence** pages when behavior/architecture/docs drift (prefer updating the existing page over duplicating into chat/memory).
+4. Sync MAIW memory only for durable gotchas (`NOW.md` + affected topics); tag `(**Jira: KAN-N**)`.
+
+## Confluence
+
+- **Drivebay WEB** (`DW`) — backend / API / web.
+- **Drivebay Mobile** (`DM`) — Flutter client.
+- Use Atlassian MCP (`search` / `getConfluencePage` / `createConfluencePage` / `updateConfluencePage`). Link pages from Jira comments.
+- Code-level truth still lives in-repo (`apps/*/docs/`); Confluence holds process, decisions, and cross-cutting maps that should not rot silently — update them when you change the system they describe.
+
+## Do not
+
+- Skip Jira because “we’ll remember in chat.”
+- Leave tickets In Progress forever after shipping.
+- Put secrets/customer data in tickets or Confluence (same as memory).

@@ -20,4 +20,8 @@
     `git log -1 --format=full` and ensure there is **no** AI `Co-authored-by` / `Made-with`
     trailer. Prefer that the user runs commit/push themselves. Only continue after they
     explicitly approve.
+11. **Jira is the source of truth for tickets** (`KAN`). Before starting work: search/read the
+    issue and linked Confluence. While working: keep the ticket current. On finish: comment,
+    transition, update Confluence when docs drift. See `JIRA.md` and
+    `.cursor/rules/jira-confluence-source-of-truth.mdc`.
 
