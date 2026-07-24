@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "name": "maiw (wrapper)",
+      "path": "."
+    },
+    {
+      "name": "drivebay",
+      "path": "apps/drivebay"
+    },
+    {
+      "name": "drivebay-flutter",
+      "path": "apps/drivebay-flutter"
+    }
+  ],
+  "settings": {
+    "git.autoRepositoryDetection": true,
+    "git.repositoryScanMaxDepth": 3
+  }
+}
