@@ -73,16 +73,13 @@ pages (`search_notifier.dart:88-91`); `hasMore` is derived client-side as
 `total` from the API would desync pagination — nothing guards against `total` decreasing between
 pages.
 
-**Sort options vs backend — confirmed mismatch** (**Jira: KAN-25**): the client only ever sends one of
-`freshness | popularity | price_asc | price_desc | year_desc | year_asc`
-(`search_sort_control.dart:7-14`; default `'freshness'`, `search_repository.dart:45`). The backend
-`SearchService::resolveSortStack()` additionally accepts `'recommendation'` (sorts by
-`sort_recommendation_score`, tied to `Listing.recommendation_score`,
-`apps/drivebay/app/Domains/Search/Services/SearchService.php:405-425`) — the mobile app never
-exposes this sort option to buyers, only web/API consumers that pass it directly could use it.
-Promoted listings (`sort_boost_score`) are always layered on top of whichever primary sort is
-chosen server-side regardless of client sort selection (`SearchService.php:401,423`) — the app has
-no UI acknowledging boosted/promoted ordering beyond the `PromotionBadges` widget on cards.
+**Sort options** (**Jira: KAN-32**, subsumes **KAN-25**): client sends one of
+`freshness | recommendation | popularity | price_asc | price_desc | year_desc | year_asc`
+(`search_sort_control.dart`; default `'freshness'`, `search_repository.dart`). Matches
+backend `SearchFilterQueryRules` + `SearchService::resolveSortStack()` (`recommendation` →
+`sort_recommendation_score`). Promoted listings (`sort_boost_score`) are always layered on
+top of browse-style sorts server-side (`SearchService.php`) — the app has no UI acknowledging
+boosted/promoted ordering beyond the `PromotionBadges` widget on cards.
 
 **No favorite affordance in search results** (**Jira: KAN-22**): neither `ListingCardTile` nor `ListingCardGridTile`
 receive `showFavoriteButton`/`isFavorited` when used from `search_screen.dart:296,307` (only

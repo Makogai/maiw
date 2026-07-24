@@ -3,47 +3,48 @@
 ## Goal
 
 - KAN-29 recommendations end-to-end. Phase 1 (**KAN-30**) data plane done.
-  Phase 2 For you (**KAN-31**) implemented in drivebay + drivebay-flutter.
+  Phase 2 For you (**KAN-31**) done. Phase 3 search sort (**KAN-32**) done in code.
 
 ## Current state
 
-- **KAN-31 done in code** (pending commit/push):
-  - API: `GET /recommendations` uses `sanctum.optional`; guests → trending;
-    authed → candidates ordered by rank, empty → legacy fallback (no 500).
-  - Pest: `tests/Feature/Recommendation/RecommendationApiTest.php` (3 cases).
-  - Docs: `docs/api/modules/recommendations.md` updated.
-  - Flutter: `getRecommendations`, `recommendationsProvider` (watches auth),
-    For you rail on `SearchScreen` via parameterized `FeaturedListingsCarousel`,
-    l10n en/sr, pull-to-refresh invalidate.
-- Epic **KAN-29** In Progress; next child **KAN-32** (`sort=recommendation`).
-- Investigation / score map:
-  https://drivebayme.atlassian.net/wiki/spaces/DM/pages/3440642/Search+sorting+ranking+scores
+- **KAN-32 done in code** (pending commit/push):
+  - `SearchFilterQueryRules` allows `sort=recommendation`.
+  - `SearchService::resolveSortStack()` already maps to `sort_recommendation_score`
+    (KAN-30 writer) — no new scoring.
+  - Pest: `ApiSearchTest` accepts `sort=recommendation` (200) and rejects unknown sort (422).
+  - Docs: `docs/api/modules/search.md`, `recommendations.md`, `openapi.json` sort enums.
+  - Web: Search `<select>` + en/sr `sort_recommended` (trivial).
+  - Confluence DM/3440642 updated for KAN-32 / KAN-25 closed gap.
+- Flutter sibling: Recommended sort chip + l10n (see `memory/drivebay-flutter/NOW.md`).
+- Epic **KAN-29** In Progress; next child likely **KAN-33** (email digests) unless
+  product picks another slice.
 
 ## Exact next action
 
-1. Commit + push drivebay and drivebay-flutter KAN-31 changes (human; attribution off).
-2. Start **KAN-32** (expose `sort=recommendation` on API + Flutter search sort) when ready.
-3. Optional: verify For you rail on device with rebuilt candidates.
+1. Commit + push drivebay and drivebay-flutter KAN-31+KAN-32 changes (human; attribution off).
+2. Transition **KAN-32** (and close/link **KAN-25**) via main session Jira tools.
+3. Optional: on-device verify Flutter Recommended sort; confirm Meilisearch has scores.
 
 ## Decisions made this session
 
-- No response `meta.mode` on recommendations — keep `{data}` envelope only.
-- Skipped optional web homepage rail (non-trivial / out of Phase 2 mobile focus).
-- Parameterized featured carousel with title/subtitle rather than duplicating card UI.
+- Web sort option included because it was one `<option>` + lang keys (trivial).
+- No new scorer / no schema change — reuse KAN-30 `sort_recommendation_score`.
 
 ## Changed files
 
-- `apps/drivebay`: route middleware, RecommendationApiTest, recommendations.md
-- `apps/drivebay-flutter`: listing_repository, providers, search_screen,
-  featured_listings_carousel, l10n arb + generated
+- `SearchFilterQueryRules.php`, `ApiSearchTest.php`
+- `docs/api/modules/{search,recommendations}.md`, `docs/api/v1/openapi.json`
+- `resources/js/Pages/Search/Index.vue`, `lang/{en,sr}/marketplace.php`
+- Flutter: `search_sort_control.dart`, l10n arb + generated
 - `memory/drivebay/*`, `memory/drivebay-flutter/*`
 
 ## Verification
 
-- `php artisan test --compact tests/Feature/Recommendation` → 9 passed
-- `vendor/bin/pint --dirty` on RecommendationApiTest
-- `dart analyze` not available on this PATH (skipped)
+- `php artisan test --compact tests/Feature/Api/V1/ApiSearchTest.php` → 9 passed
+- `vendor/bin/pint --dirty` → pass
+- Flutter: static only (`dart` not on PATH)
 
 ## Blockers and unknowns
 
-- None for KAN-31 code. Runtime device check of For you rail not done.
+- None for KAN-32 code. Ranking quality depends on nightly/rebuild scores being present
+  in Meilisearch (KAN-30 data plane).

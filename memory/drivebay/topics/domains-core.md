@@ -316,9 +316,9 @@ heuristic content-based/collaborative/trending scoring — no ML models (matches
   Web/API/Storefront all feed this domain's `UserListingInteraction` log.
 - Recommendation → Search: `ListingRecommendationScoreService` writes
   `listings.recommendation_score` (config weights in `config/recommendations.php`); search-doc sync
-  copies to `sort_recommendation_score`. `SearchService` accepts `sort=recommendation`, but API
-  validation still rejects it until **KAN-32**. Collaborative candidates fixed in **KAN-30**
-  (also-viewed of *other* listings). Profile builder uses `view`/`favorite`/`message`.
+  copies to `sort_recommendation_score`. `SearchService` + API `SearchFilterQueryRules` accept
+  `sort=recommendation` (**Jira: KAN-32**, closes **KAN-25**). Collaborative candidates fixed in
+  **KAN-30** (also-viewed of *other* listings). Profile builder uses `view`/`favorite`/`message`.
 
 **Non-obvious rules / gotchas**
 - (**Jira: KAN-6** closed invalid; **KAN-30** hardened) Nightly schedule in `routes/console.php`:
@@ -327,7 +327,10 @@ heuristic content-based/collaborative/trending scoring — no ML models (matches
   `recommendedForUser`/`similarListings` still fall back to heuristics if tables empty — now logged.
 - (**Jira: KAN-31**) `GET /api/v1/recommendations` uses `sanctum.optional` (`catalog.php`);
   feature tests in `tests/Feature/Recommendation/RecommendationApiTest.php`. Envelope remains
-  `{data}` only (no mode meta). Search `sort=recommendation` still deferred to **KAN-32**.
+  `{data}` only (no mode meta).
+- (**Jira: KAN-32**) `GET /api/v1/search?sort=recommendation` allowed; Flutter + web sort UIs
+  expose Recommended. Pest: `tests/Feature/Api/V1/ApiSearchTest.php`. Confluence:
+  DM/3440642.
 - `recommendedForUser()`/`similarListings()` both guard with `Schema::hasTable(...)` before querying
   — a defensive pattern suggesting these tables may not exist in all environments/migration states
   (`RecommendationService.php:37,61`).

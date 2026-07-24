@@ -155,7 +155,7 @@ web/dashboard-only):
 |---|---|---|---|
 | `GET /listings` | `ListingApiController::index` | `catalog.php:34` | Plain browse/index feed — mobile always uses `GET /search` instead, even with empty filters (`search_repository.dart:306`). Likely intentional, not a gap in practice. |
 | `GET /model-groups` | `TaxonomyApiController::modelGroups` | `catalog.php:32` | `taxonomy_repository.dart` never calls it; `VehicleModel.vehicleModelGroupId` (`lib/models/vehicle_model.dart:14`) is parsed but nothing fetches the group list itself. |
-| `GET /recommendations` | `RecommendationApiController::index` | `catalog.php:43` | Only the per-listing `similar` variant (`catalog.php:44`) is consumed (`listing_repository.dart:70`); no general recommendations feed in mobile. |
+| `GET /recommendations` | `RecommendationApiController::index` | `catalog.php:43` | Consumed (**Jira: KAN-31**) via `ListingRepository.getRecommendations` / For you rail. |
 | `GET /compare` | `CompareApiController::index` | `catalog.php:46` | No listing-comparison feature in mobile. |
 | `GET /recent-listings` | `RecentlyViewedApiController::index` | `catalog.php:51` | No "recently viewed" screen in mobile. |
 | `POST /vehicles/decode-vin` | `VehicleApiController::decodeVin` | `catalog.php:52` | No VIN-scan/decode entry point in the create-listing flow. |
