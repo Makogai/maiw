@@ -297,8 +297,9 @@ heuristic content-based/collaborative/trending scoring — no ML models (matches
 | `RecommendationProfileBuilder` | Rebuilds one user's `RecommendationProfile` (preferred price/year range, engagement/buyer-intent scores) from their last 90 days of `view`/`favorite`/`contact` interactions (`RecommendationProfileBuilder.php:13-49`) |
 | `ComputeListingSimilarityJob` | Content-based pairwise scoring (same make/model, year proximity, price ratio) → `ListingSimilarity` rows, min score 0.3 (`ComputeListingSimilarityJob.php:27-98`) |
 | `BuildRecommendationCandidatesJob` | Blends content-based (profile prefs) + collaborative (co-viewed by other users) + trending sources, dedupes by max score, keeps top 40 per user, `expires_at = +24h` (`BuildRecommendationCandidatesJob.php:31-77`) |
+| `ComputeListingRecommendationScoresJob` | Writes `listings.recommendation_score` via `ListingRecommendationScoreService`; syncs search docs (**Jira: KAN-30**) |
 | `RefreshRecommendationProfileJob` | Batch-rebuilds profiles for users with any interaction row |
-| `RebuildRecommendationsCommand` (`recommendations:rebuild {--user=}`) | Runs similarity → profile → candidates jobs **synchronously** in that order |
+| `RebuildRecommendationsCommand` (`recommendations:rebuild {--user=}`) | Runs similarity → scores → profiles → candidates **synchronously** |
 
 **Models** (`app/Models/Domains/Recommendation/Models/`)
 - `UserListingInteraction` — event log (`user_id` nullable for anonymous, `interaction_type`,
@@ -313,23 +314,17 @@ heuristic content-based/collaborative/trending scoring — no ML models (matches
   `ListingController`, `FavoriteController`/`FavoriteApiController`, `StorefrontListingController`,
   and `ListingAnalyticsApiController` — i.e. views, favorites, and analytics-tracked events across
   Web/API/Storefront all feed this domain's `UserListingInteraction` log.
-- Recommendation → Search: `Listing.recommendation_score`/`boost_score` feed
-  `ListingSearchDocument.sort_recommendation_score`/`sort_boost_score`, which `SearchService`'s
-  sort stack uses for the `recommendation`/default sort orders (`SearchService.php:405-425`) —
-  but note `RecommendationService`/jobs in this pass never write `Listing.recommendation_score`
-  themselves; that field's writer wasn't found under `Domains/Recommendation` (check Promotion/
-  Analytics domains or an admin/manual path before assuming it's automated).
+- Recommendation → Search: `ListingRecommendationScoreService` writes
+  `listings.recommendation_score` (config weights in `config/recommendations.php`); search-doc sync
+  copies to `sort_recommendation_score`. `SearchService` accepts `sort=recommendation`, but API
+  validation still rejects it until **KAN-32**. Collaborative candidates fixed in **KAN-30**
+  (also-viewed of *other* listings). Profile builder uses `view`/`favorite`/`message`.
 
 **Non-obvious rules / gotchas**
-- (**Jira: KAN-6**) **No scheduler entry** exists for `recommendations:rebuild`, `ComputeListingSimilarityJob`, or
-  `BuildRecommendationCandidatesJob`/`RefreshRecommendationProfileJob` (checked `routes/console.php`,
-  which only schedules `search:send-saved-search-alerts` hourly, `routes/console.php:18`). Unless an
-  external ops cron or another undiscovered call site runs `php artisan recommendations:rebuild`,
-  `ListingSimilarity`/`RecommendationCandidate`/`RecommendationProfile` rows are **only refreshed
-  when someone runs the command manually** — `RecommendationService::recommendedForUser`/
-  `similarListings` will silently fall back to `legacyRecommendedForUser`/`fallbackSimilar` (simple
-  make/model queries) if those tables are empty or stale, so functionality degrades gracefully but
-  quietly.
+- (**Jira: KAN-6** closed invalid; **KAN-30** hardened) Nightly schedule in `routes/console.php`:
+  similarity 03:00 → listing scores 03:15 → profiles 03:30 → candidates 04:00, all with
+  `withoutOverlapping()->onOneServer()`. Manual: `php artisan recommendations:rebuild`.
+  `recommendedForUser`/`similarListings` still fall back to heuristics if tables empty — now logged.
 - `recommendedForUser()`/`similarListings()` both guard with `Schema::hasTable(...)` before querying
   — a defensive pattern suggesting these tables may not exist in all environments/migration states
   (`RecommendationService.php:37,61`).
