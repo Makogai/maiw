@@ -93,8 +93,15 @@ result model) having no `isFavorited` field at all — only `ListingDetail` does
 
 **Featured carousel** (`featured_listings_carousel.dart`) is a *different* data source than search
 results: `featuredListingsProvider` → `PromotionRepository.getFeaturedListings()`
-(`lib/providers/providers.dart:222-225`), shown only when `showFeaturedCarouselProvider` is true,
-independent of the active search query/filters.
+(`lib/providers/providers.dart`), shown only when `showFeaturedCarouselProvider` is true,
+independent of the active search query/filters. Widget accepts optional `title`/`subtitle`/
+`mutedBackground` so the same rail UI is reused for **For you** (**Jira: KAN-31**).
+
+**For you rail** (**Jira: KAN-31**): `recommendationsProvider` →
+`ListingRepository.getRecommendations()` → `GET /recommendations` (auth-aware via
+`sanctum.optional` on backend). Watches `authNotifierProvider`; shown above featured when
+non-empty; hidden on empty/error; invalidated on pull-to-refresh. Not gated by the featured
+experiment flag.
 
 No TODO/FIXME comments found under `lib/features/search/`.
 

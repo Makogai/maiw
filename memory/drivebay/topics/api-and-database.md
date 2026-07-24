@@ -56,8 +56,10 @@ Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRe
 `RecentlyViewedApiController`, `ListingFormOptionsApiController`. Public/no-auth: health,
 experiments, countries/regions/cities/city-districts, vehicle-types/makes/models/model-groups,
 listings/featured-listings, dealers/{dealer:slug}, sellers/{seller}, search/filters,
-compare, listing-form-options. `sanctum.optional` on `/experiments` and
-`GET /listings/{publicId}`. `throttle:api-search` on `GET /search`. `auth:sanctum, verified`
+compare, listing-form-options, `/recommendations` (guest trending). `sanctum.optional` on
+`/experiments`, `GET /listings/{publicId}`, and `GET /recommendations` (**Jira: KAN-31** —
+Bearer token personalizes via `recommendation_candidates`; empty → legacy fallback).
+`throttle:api-search` on `GET /search`. `auth:sanctum, verified`
 group: `/recent-listings`, `POST /vehicles/decode-vin`, `POST /listings/{publicId}/report`
 (`ListingReportApiController` reuses **Web** `StoreListingReportRequest`).
 

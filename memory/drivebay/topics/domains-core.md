@@ -325,6 +325,9 @@ heuristic content-based/collaborative/trending scoring — no ML models (matches
   similarity 03:00 → listing scores 03:15 → profiles 03:30 → candidates 04:00, all with
   `withoutOverlapping()->onOneServer()`. Manual: `php artisan recommendations:rebuild`.
   `recommendedForUser`/`similarListings` still fall back to heuristics if tables empty — now logged.
+- (**Jira: KAN-31**) `GET /api/v1/recommendations` uses `sanctum.optional` (`catalog.php`);
+  feature tests in `tests/Feature/Recommendation/RecommendationApiTest.php`. Envelope remains
+  `{data}` only (no mode meta). Search `sort=recommendation` still deferred to **KAN-32**.
 - `recommendedForUser()`/`similarListings()` both guard with `Schema::hasTable(...)` before querying
   — a defensive pattern suggesting these tables may not exist in all environments/migration states
   (`RecommendationService.php:37,61`).
