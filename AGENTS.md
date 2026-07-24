@@ -6,3 +6,9 @@ description, including natural-language MAIW requests.
 Use `node bin/maiw.js` for deterministic clone/register/ensure/status/doctor behavior. For agent
 operations, follow `core/OPERATING.md` and `core/MEMORY_STANDARD.md`. Keep memory provider-neutral,
 compact, evidence-backed, and resumable. Never overwrite valid existing memory.
+
+**Never set yourself (Codex / any AI) as a contributor** — no git author/committer, no
+`Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
+identity. **Before any `git commit` or `git push`: stop**, tell the user to verify attribution is
+off and `git log -1 --format=full` is clean, and prefer they run git themselves. See
+`core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`.

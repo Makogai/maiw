@@ -20,4 +20,6 @@ and continue using [operations.md](references/operations.md).
 
 Always read `memory/<app>/NOW.md` then `INDEX.md`; load only relevant topics. Preserve valid memory,
 avoid broad relearning, cite code evidence, and never store secrets or personal/customer data.
+Never set the AI as a contributor (no git author/`Co-authored-by`/CONTRIBUTORS credit); see
+`core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`. Pause before commit/push; prefer the human.
 

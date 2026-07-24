@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/gate-git-attribution.js",
+        "matcher": "git",
+        "failClosed": true
+      }
+    ]
+  }
+}

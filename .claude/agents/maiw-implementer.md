@@ -45,7 +45,13 @@ cheaper too.
    interactively; you're a non-interactive subagent, so surfacing it in your report *is*
    how you ask.
 3. Never put secrets, credentials, personal data, or customer payloads in memory files.
-4. If you discover memory is wrong (a fact, a file path, a line number) fix it while
+4. Never set yourself (or any AI) as a contributor — no git author/committer, no
+   `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never
+   change `git config` identity (`core/OPERATING.md` §9, `core/ATTRIBUTION.md`).
+5. Do not run `git commit` or `git push` yourself. Stop and tell the orchestrator/user
+   to verify attribution is off and `git log -1 --format=full` is clean, then let the
+   human commit/push (`core/OPERATING.md` §10).
+6. If you discover memory is wrong (a fact, a file path, a line number) fix it while
    you're there rather than leaving it stale for the next session.
 
 ## Before finishing

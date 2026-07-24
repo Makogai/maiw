@@ -24,4 +24,6 @@ Locate the nearest ancestor containing `.ai-wrapper`; this is the wrapper. Produ
 5. Load `NOW.md` and `INDEX.md` first; load topic notes only when the operation needs them.
 
 Ask for approval before network cloning. Never store credentials, personal data, or customer data.
+Never set the AI as a contributor (no git author/`Co-authored-by`/CONTRIBUTORS credit); see
+`core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`. Pause before commit/push; prefer the human.
 

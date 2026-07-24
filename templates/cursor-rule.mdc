@@ -8,3 +8,9 @@ Load only task-relevant indexed notes; verify important facts in code. Support t
 "learn project", "resume from handoff", "create handoff", and "sync memory". Validate memory with
 `node {{WRAPPER_DIR}}/bin/memory.js validate {{APP}}`.
 
+**Never set yourself (Cursor / any AI) as a contributor** — no git author/committer, no
+`Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
+identity. **Before any `git commit` or `git push`: stop**, tell the user to verify Attribution is
+OFF and `git log -1 --format=full` is clean, and prefer they run git themselves. See
+`{{CORE_DIR}}/OPERATING.md` §9–10 and `{{CORE_DIR}}/ATTRIBUTION.md`.
+
