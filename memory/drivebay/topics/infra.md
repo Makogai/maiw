@@ -102,44 +102,26 @@ push to main — regular app deploys never rebuild/recompile PHP extensions.
 
 ## Horizon / Queues
 
-`config/horizon.php` — single supervisor, single queue, Redis-only:
+`config/horizon.php` — two supervisors, Redis-backed:
 
-- `defaults.supervisor-1`: `connection: redis`, `queue: ['default']`, `balance: auto`,
-  `autoScalingStrategy: time`, `maxProcesses: 1`, `memory: 128`, `tries: 1`,
-  `timeout: 60` (`config/horizon.php:199-213`).
-- Per-environment `maxProcesses` override — **confirms `CLAUDE.md`'s numbers exactly**:
-  production **10** (`balanceMaxShift: 1`, `balanceCooldown: 3`), dev **5** (same
-  balance settings), local **3** (no balance override, uses default `auto`)
-  (`config/horizon.php:216-236`).
-- `waits`: `redis:default` → 60s before `LongWaitDetected` fires (`config/horizon.php:99-101`).
-- `trim`: recent/pending/completed 60 min, recent_failed/failed/monitored 10080 min (7
-  days) — matches `CLAUDE.md`'s "failed jobs retained 7 days" (`config/horizon.php:114-121`).
-- `memory_limit` (Horizon master process) 64MB (`config/horizon.php:186`).
-- `watch` list includes `.env` — changing env vars restarts Horizon under `horizon:listen`
-  (`config/horizon.php:250-261`), not relevant to `php artisan horizon` itself in prod.
+- `defaults.supervisor-1`: `connection: redis`, `queue: ['default']`, `timeout: 60`
+  (`config/horizon.php` defaults).
+- `defaults.supervisor-imports` (**Jira: KAN-7**): `connection: redis-imports`,
+  `queue: ['autodiler-imports']`, `timeout: 960`, `maxProcesses: 2` — also listed under
+  each `environments.*` entry (Horizon only starts supervisors named in the active env).
+- Per-environment `maxProcesses` for `supervisor-1`: production **10**, dev **5**, local **3**.
+- `waits`: `redis:default` → 60s before `LongWaitDetected` fires.
+- `trim`: recent/pending/completed 60 min, recent_failed/failed/monitored 10080 min (7 days).
+- `memory_limit` (Horizon master process) 64MB.
 
 `config/queue.php` — `default` connection env-driven (`QUEUE_CONNECTION`, defaults to
-`database`, but prod/docker set `redis` — see `docker-compose.coolify.yml:36,74`).
-Redis connection: `retry_after` defaults to **90s** (`REDIS_QUEUE_RETRY_AFTER`,
-`config/queue.php:71`); `failed.driver` defaults to `database-uuids`
-(`config/queue.php:124`).
+`database`, but prod/docker set `redis`). Redis default connection: `retry_after` **90s**.
+Dedicated `redis-imports` connection: queue `autodiler-imports`, `retry_after` **1200s**
+(ordering with Autodiler job: 900 < 960 < 1200).
 
-**Gotcha found (not yet in `CLAUDE.md`)** (**Jira: KAN-7**): `app/Jobs/ImportAutodilerListingsJob.php:24`
-sets `public int $timeout = 900` (15 minutes) for the Autodiler scrape+import job. The
-single Horizon supervisor's default `timeout` is 60s (`config/horizon.php:210`, not
-overridden per-environment) and the redis queue's `retry_after` defaults to 90s
-(`config/queue.php:71`) with no override in any `.env*.example` file (checked
-`.env.example`, `.env.docker.example`, `.env.coolify.example` — none set
-`REDIS_QUEUE_RETRY_AFTER`). Laravel lets a job's own `$timeout` override the worker's
-`--timeout`, so the 60s supervisor timeout isn't the concern — but the job's 900s
-runtime **exceeds** the queue's 90s `retry_after` window. This inverts the ordering rule
-`CLAUDE.md`/`topics/architecture.md` calls out (job timeout < supervisor timeout <
-retry_after): here job timeout (900s) > retry_after (90s). If the import legitimately
-runs longer than 90s (likely, since it scrapes+imports many listings), Redis's
-reservation lock expires and a second worker can pick the same job up again, risking a
-duplicate concurrent import run. Not verified at runtime — inferred from config values
-only. Worth fixing (bump `REDIS_QUEUE_RETRY_AFTER` well above 900, or give this job its
-own supervisor/queue) before this job sees heavy production use.
+**KAN-7 fixed**: `ImportAutodilerListingsJob` (`$timeout = 900`) routes to `redis-imports` /
+`autodiler-imports` when `QUEUE_CONNECTION=redis`, so a long import cannot outlive its
+reservation and get re-picked by a second worker. Short jobs stay on the default queue.
 
 ## Console Commands
 

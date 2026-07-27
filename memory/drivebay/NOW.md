@@ -2,19 +2,25 @@
 
 ## Goal
 
-- Continue backend bug queue after account restore (**KAN-41** Done). Next: **KAN-7**.
+- Backend bug queue: **KAN-7** Horizon/Autodiler timeout ordering.
 
 ## Current state
 
-- **KAN-41 shipped** — `06750f9` (fsmol) + follow-up `937ee72` (tests, clearer copy, restore meta.message).
-- Phase 0: KAN-16/36/37/43 Done; KAN-40 still In Review until Coolify migrate + backfill.
+- **KAN-41 Done** — `937ee72`.
+- **KAN-7 implemented locally (uncommitted)**:
+  - Dedicated `redis-imports` connection (`retry_after` 1200s) + `supervisor-imports`
+    (timeout 960s), listed in all Horizon environments
+  - `ImportAutodilerListingsJob` routes there when `QUEUE_CONNECTION=redis`
+  - Ordering: job 900 < supervisor 960 < retry_after 1200
 
 ## Exact next action
 
-1. Start **KAN-7** (Horizon timeout vs Autodiler job).
-2. Then KAN-9 → KAN-8 → …
+1. Human: commit + push KAN-7 on `apps/drivebay`.
+2. After Coolify deploy: restart Horizon so `supervisor-imports` starts.
+3. Next ticket: **KAN-9** (`favorites_count`).
 
 ## Verification
 
-- `php artisan test --filter=ApiAccountDeletionRestoreTest` — 5 passed.
-- Pushed `937ee72` to `main`.
+- Config/diff review; Autodiler API tests green (per implementer).
+- Critical fix vs implementer draft: `supervisor-imports` must appear under
+  `environments.*` or Horizon never starts it.
