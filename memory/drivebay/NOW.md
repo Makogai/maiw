@@ -2,36 +2,36 @@
 
 ## Goal
 
-- Media cleanup + optimization shipped: remove Spatie (**KAN-16**) and custom WebP +
-  thumbnail variants (**KAN-40**).
+- Admin Artisan command runner so ops (migrate, media backfill) can run from Filament
+  instead of Coolify terminal (**KAN-43**).
 
 ## Current state
 
-- **KAN-16 + KAN-40 pushed** — `e3385fe` on `main`:
-  - removed `spatie/laravel-medialibrary` + `config/media-library.php`
-  - `media_assets.variants_json` migration + model helpers
-  - `ListingImageProcessor` emits original JPEG/WebP + thumb JPEG/WebP
-  - API presenter/resources expose optimized/variant URLs
-  - `media:backfill-listing-variants` command registered
-  - web `ListingGallery.vue` prefers optimized/thumb URLs
-- Docs/rules updated to describe fully custom media (no Spatie)
+- **KAN-16 + KAN-40 pushed** — `e3385fe` on `main` (custom WebP variants, Spatie removed).
+- **KAN-43 implemented locally (uncommitted)**:
+  - `/admin/artisan-commands` — allowlisted `Artisan::call` runner, `super_admin` only
+  - Linked from Developer tools
+  - Audit via `AdminAction` (`artisan_run`) + Log
+  - Tests: `AdminArtisanCommandRunnerTest` (4 passing)
 
 ## Exact next action
 
-1. In each environment: `php artisan migrate` then
-   `php artisan media:backfill-listing-variants`.
-2. Transition **KAN-16** / **KAN-40** to In Review or Done after env verify.
-3. Optional: Flutter consume variant URLs; measure payload savings / AVIF later.
+1. Human: commit + push `apps/drivebay` KAN-43 work.
+2. After deploy: use Artisan commands page for `migrate` + `media:backfill-listing-variants`
+   (or Coolify once more), then close **KAN-16** / **KAN-40** / **KAN-43** as appropriate.
 
 ## Decisions made this session
 
-- Stay fully custom for media; no Spatie migration.
+- Allowlist only — no freeform shell; no `queue:work` / `migrate:fresh`.
+- Gate page with `super_admin` (stricter than general admin panel access).
 
 ## Changed files
 
-- See commit `e3385fe` (processor, presenter, resources, migration, backfill command,
-  composer, gallery, docs).
+- `app/Filament/Admin/Pages/ArtisanCommands.php` + blade
+- `app/Support/Admin/ArtisanCommandAllowlist.php`, `ArtisanCommandRunner.php`
+- `DeveloperTools` link + blade danger color
+- `tests/Feature/AdminArtisanCommandRunnerTest.php`
 
 ## Verification
 
-- Local: migrate + repair listing media; gallery serves optimized URLs after UI preference.
+- `php artisan test --filter=AdminArtisanCommandRunnerTest` — 4 passed.

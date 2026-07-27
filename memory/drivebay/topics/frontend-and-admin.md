@@ -221,7 +221,9 @@ relation managers and pages from directory listing of
 widgets below), `ImportVehicleTaxonomy.php` + `ImportMobileDeTaxonomy.php` (taxonomy
 import triggers, feeding `TaxonomyImportRuns`), `SyncFuelPrices.php` (manual
 `FuelPricing` sync trigger), `WatermarkSettings.php`, `GeographySettings.php`,
-`PlatformSettings.php`, `DeveloperTools.php`, `PushNotificationTester.php`.
+`PlatformSettings.php`, `DeveloperTools.php`, `PushNotificationTester.php`,
+`ArtisanCommands.php` (**KAN-43** — allowlisted `Artisan::call` runner, `super_admin`
+only; catalog in `app/Support/Admin/ArtisanCommandAllowlist.php`).
 
 ### Widgets (dashboard)
 
