@@ -7,6 +7,10 @@ Use `node bin/maiw.js` for deterministic clone/register/ensure/status/doctor beh
 operations, follow `core/OPERATING.md` and `core/MEMORY_STANDARD.md`. Keep memory provider-neutral,
 compact, evidence-backed, and resumable. Never overwrite valid existing memory.
 
+**Mandatory after any `apps/<name>/` code change:** update `memory/<name>/` (NOW + stale topics +
+`meta.json`), validate with `node bin/memory.js validate <name>`, and commit/push the wrapper.
+Do not end a coding task with stale memory. See `core/OPERATING.md` §7.
+
 **Never set yourself (Codex / any AI) as a contributor** — no git author/committer, no
 `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
 identity. **Before any `git commit` or `git push`: stop**, tell the user to verify attribution is

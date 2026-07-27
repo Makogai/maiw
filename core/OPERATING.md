@@ -6,9 +6,14 @@
 4. Preserve unrelated work and match local patterns.
 5. Ask before dependencies, schema changes, public API breaks, or architectural changes.
 6. Never place secrets, credentials, personal data, or customer payloads in memory.
-7. After meaningful work, update NOW and only the topic notes made stale by the change.
+7. **After any meaningful app code change, memory update is mandatory** (not optional, not
+   `/maiw`-only). Update `memory/<app>/NOW.md` and only the topic notes made stale by the change;
+   set `meta.json.sourceCommit` to the synchronized app HEAD; run `node bin/memory.js validate
+   <app>`. Then commit/push the **wrapper** so memory is shared (see `.cursor/rules/maiw-memory-after-code.mdc`
+   and `maiw-push-memory`). Leaving `apps/<app>` ahead of `memory/<app>` is incomplete work.
 8. Before ending a session, leave a concrete handoff: state, decisions, files changed, verification,
-   blockers, and the exact next action.
+   blockers, and the exact next action. If a teammate committed only in an app repo, sync memory
+   (`/maiw sync <app>` or equivalent) before relying on NOW/topics.
 9. **Never set the AI agent as a contributor.** Claude, Cursor, Codex, and any other AI tool must
    not appear as git author/committer, in `Co-authored-by` / `Made-with` trailers, in CONTRIBUTORS
    files, package contributor metadata, PR co-author fields, or any other credit list. Commits and

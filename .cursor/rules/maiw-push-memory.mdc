@@ -5,9 +5,19 @@ alwaysApply: true
 
 # MAIW wrapper sync
 
-When you change files in the **MAIW wrapper repo** (`d:\code\maiw` root — e.g. `memory/`, `core/`, `.cursor/rules/`, adapters, Confluence/Jira convention docs), keep remote up to date:
+When you change files in the **MAIW wrapper repo** (`d:\code\maiw` root — e.g. `memory/`,
+`core/`, `.cursor/rules/`, adapters, Confluence/Jira convention docs), keep remote up to date.
 
-1. **Prefer** committing and pushing those wrapper changes in the same session (do not leave durable memory/docs only local).
-2. If commit/push is blocked (attribution gate, unclear scope, secrets, or mixed with unrelated dirty files), **ask the user** before proceeding.
-3. Still follow `core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`: never set the AI as author/`Co-authored-by`; pause so the user can confirm Attribution is OFF and `git log -1 --format=full` is clean before push when required.
-4. Do **not** auto-commit or auto-push the nested app repos under `apps/` unless the user explicitly asks — this rule is for the wrapper only.
+This **includes** memory updates required after `apps/<name>/` code changes (see
+`maiw-memory-after-code`). App commits in nested repos do **not** update wrapper memory —
+you must write `memory/` here and push the wrapper, or the next machine/agent is blind.
+
+1. **Prefer** committing and pushing those wrapper changes in the same session (do not leave
+   durable memory/docs only local).
+2. If commit/push is blocked (attribution gate, unclear scope, secrets, or mixed with
+   unrelated dirty files), **ask the user** before proceeding.
+3. Still follow `core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`: never set the AI as
+   author/`Co-authored-by`; pause so the user can confirm Attribution is OFF and
+   `git log -1 --format=full` is clean before push when required.
+4. Do **not** auto-commit or auto-push the nested app repos under `apps/` unless the user
+   explicitly asks — this rule is for the wrapper only.

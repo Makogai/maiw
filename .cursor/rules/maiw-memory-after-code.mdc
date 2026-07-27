@@ -1,0 +1,45 @@
+---
+description: After any apps/ code change, update MAIW memory and push the wrapper
+alwaysApply: true
+---
+
+# Memory after code (mandatory)
+
+This applies to **every** coding session in this workspace — Cursor, Claude, Codex, or
+subagents — not only when the user types `/maiw`.
+
+## When it applies
+
+Any of:
+
+- You edit, create, or delete files under `apps/<name>/`
+- You finish a feature/fix/refactor that changed app behavior
+- The user says someone else (e.g. a teammate) pushed app commits and memory may be behind
+
+Skip only for pure Q&A / read-only exploration with **no** durable code or docs change.
+
+## Required finish checklist (do not skip)
+
+Before you treat the task as done:
+
+1. Update `memory/<name>/NOW.md` — current state, what changed, verification, exact next action.
+2. Update **only** topic notes your change made stale (paths, behavior, tickets). Do not
+   rewrite unrelated topics. Never store secrets.
+3. Set `memory/<name>/meta.json` `sourceCommit` to the app HEAD you synchronized (short SHA)
+   and refresh `lastSynchronizedAt`.
+4. Run from wrapper root: `node bin/memory.js validate <name>` and fix failures.
+5. **Commit and push the MAIW wrapper** so memory is not local-only (see
+   `maiw-push-memory` rule). Prefer doing this in the same session.
+6. If Jira/Confluence are involved, follow `jira-confluence-source-of-truth` too.
+
+## Incomplete work
+
+Leaving app code updated while `memory/<name>/` is unchanged is a **bug in the session**.
+If you cannot update memory (blocked tools, unclear which app), say so explicitly and
+tell the user to run `/maiw sync <name>` or ask you to finish memory before closing.
+
+## Teammate / out-of-band commits
+
+If app `main` moved without a memory update (common when someone commits only in
+`apps/<name>`), next session must run memory sync for that app before relying on NOW/topics —
+prefer `/maiw sync <name>` or an implementer-style memory pass, then push the wrapper.

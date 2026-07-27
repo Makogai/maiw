@@ -16,6 +16,11 @@ Use `/maiw <operation> ...` as the unified wrapper workflow. Deterministic opera
 `node bin/maiw.js`; agent operations update compact canonical memory.
 Use the project skill in `.claude/skills/maiw/` for MAIW requests, including natural language.
 
+**Mandatory after any `apps/<name>/` code change:** update `memory/<name>/` (NOW + stale topics +
+`meta.json`), run `node bin/memory.js validate <name>`, and commit/push the wrapper so the next
+session (Cursor, Claude, or another machine) stays in sync. See `core/OPERATING.md` §7 and
+`.cursor/rules/maiw-memory-after-code.mdc`. App-only commits do not update memory.
+
 Issue tracking for the apps lives in Jira project `KAN` ("Drivebay LLC"). When you find a bug,
 file it (checking for duplicates first) and tag the finding in memory with its key; when you fix
 one, update the ticket. Full convention: `core/JIRA.md`.

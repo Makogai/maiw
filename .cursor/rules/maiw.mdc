@@ -6,6 +6,10 @@ alwaysApply: true
 When the user writes `/maiw ...` or `maiw ...`, follow @core/MAIW.md. Use `node bin/maiw.js` for
 deterministic operations and shared memory for agent operations. Preserve existing memory.
 
+**After any code change under `apps/`**, update that app's MAIW memory and push the wrapper —
+see `maiw-memory-after-code` and `maiw-push-memory`. Do not end a coding session with stale
+`memory/<app>/`.
+
 **Never set yourself (Cursor / any AI) as a contributor** — no git author/committer, no
 `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
 identity. **Before any `git commit` or `git push`: stop**, tell the user to verify Attribution is

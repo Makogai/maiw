@@ -8,4 +8,6 @@
 - Delete obsolete facts instead of accumulating history. Durable decisions stay in `decisions.md`.
 - `meta.json.sourceCommit` is the last comprehensively synchronized commit, not merely current HEAD.
 - Status is `unlearned`, `partial`, `current`, or `stale`.
+- After code lands in `apps/<app>/`, memory must be updated in the same session (or immediately via
+  `/maiw sync <app>`). App git history alone does not refresh MAIW memory.
 

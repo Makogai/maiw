@@ -54,17 +54,27 @@ cheaper too.
 6. If you discover memory is wrong (a fact, a file path, a line number) fix it while
    you're there rather than leaving it stale for the next session.
 
-## Before finishing
+## Before finishing (hard gate — incomplete without this)
+
+A code change under `apps/<app>/` is **not finished** until memory is updated and validated.
+Leaving the app ahead of `memory/<app>/` is a session failure mode (same class of bug as
+shipping without tests when tests were required).
 
 1. Update `memory/<app>/NOW.md` with: what changed, why, verification performed
    (tests run, commands executed, what you did *not* verify), and the exact next action
    if the task isn't fully done. Update only the topic notes your change made stale —
    don't rewrite unaffected ones.
-2. Run `node bin/memory.js validate <app>` (from the wrapper root) and fix any reported
+2. Set `memory/<app>/meta.json` `sourceCommit` to the app HEAD you synchronized (after the
+   app commit exists, or the working-tree intent SHA the orchestrator will push) and bump
+   `lastSynchronizedAt`.
+3. Run `node bin/memory.js validate <app>` (from the wrapper root) and fix any reported
    issue before finishing.
-3. In your final report to whoever invoked you: summarize what changed (files touched),
-   how you verified it, and anything you flagged above that needs a human decision.
-4. **Jira.** Do NOT call the Atlassian tools yourself — ticket writes stay with the main
+4. Remind the orchestrator/parent that the **wrapper** must commit/push `memory/` (app
+   commits alone do not sync MAIW). Prefer the parent does that in the same session.
+5. In your final report to whoever invoked you: summarize what changed (files touched),
+   how you verified it, confirm memory was updated + validated, and anything you flagged
+   above that needs a human decision.
+6. **Jira.** Do NOT call the Atlassian tools yourself — ticket writes stay with the main
    session (one place, one audit trail). Instead, if your change resolves a tracked
    finding, end your report with a clearly-marked block the orchestrator can post
    verbatim: the ticket key, what changed (files), how it was verified, and whether it's
