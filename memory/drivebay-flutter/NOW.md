@@ -7,7 +7,7 @@
 ## Current state
 
 - **KAN-39 Done** — pushed `1a1d51b` (keep previous listing detail on reopen).
-- **DEBUG_API logging still local only** (not committed):
+- **DEBUG_API logging shipped** — pushed `a5824c3`:
   - `Env.debugApi` / `debugApiDefineSet` / `isLocalDevApi`
   - `DebugApiInterceptor` logs method/path/status/timing/connection errors (no tokens/bodies)
   - Auto-on in debug builds against localhost / `*.test` / private LAN; force with
@@ -17,9 +17,7 @@
 - Backend image optimization planned: **KAN-40** (WebP + variants at process time)
 
 ## Exact next action
-
-1. Ask human: commit/push remaining DEBUG_API work if desired.
-2. When prioritized: consume **KAN-40** WebP/variant URLs in Flutter once API exposes them.
+1. When prioritized: consume **KAN-40** WebP/variant URLs in Flutter once API exposes them.
 
 ## Decisions made this session
 
@@ -27,7 +25,7 @@
 
 ## Changed files
 
-- (pending) DEBUG_API: `lib/config/env.dart`, `api_client.dart`, `debug_api_interceptor.dart`,
+- DEBUG_API: `lib/config/env.dart`, `api_client.dart`, `debug_api_interceptor.dart`,
   `main.dart`, `README.md`
 
 ## Verification
