@@ -39,6 +39,11 @@ true (`listing_detail_screen.dart:600-609`) — config comes from `GET` via
 `PlatformConfigRepository`, loaded once per screen in `initState` (`listing_detail_screen.dart:56-58`).
 No TODO/FIXME comments found anywhere under `lib/features/listings/`.
 
+**Gotcha — reopen flash reload** (**Jira: KAN-39**). Re-opening a listing briefly shows content,
+then full-screen loading, then content again. `listingDetailProvider` refetch +
+`detailAsync.when(loading: CircularProgressIndicator)` treats soft reload as first load —
+keep previous data while refreshing / only spinner when no value yet.
+
 ## lib/features/search/ — search hub, filters, sort
 
 `SearchHubScreen` is a 2-page `PageView` (browse + fuel prices from `features/tools/`), synced

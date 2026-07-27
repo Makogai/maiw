@@ -18,8 +18,9 @@
 
 ## Exact next action
 
-1. Ask human: commit/push `apps/drivebay-flutter`?
-2. Hot restart / `flutter run` on device; watch console for `[DriveBayAPI]` lines.
+1. Fix **KAN-39** (listing detail flash-reload on reopen) when prioritized.
+2. Ask human: commit/push pending Flutter DEBUG_API work if still local.
+3. Optional on-device: Recommended sort + For you rail smoke.
 
 ## Decisions made this session
 
