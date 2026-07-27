@@ -250,22 +250,19 @@ in the interceptor chain, not in application code.
 
 - `Env` (`lib/config/env.dart`) — all `--dart-define` compile-time constants, no runtime
   override path exists (confirms `topics/domain.md` FL-1):
-  - `apiBaseUrl` / `API_BASE_URL`, default `https://dev.drivebay.me/api/v1` (`:2-5`) — note
-    this differs from the `https://drivebay.test/api/v1` default recorded in
-    `topics/architecture.md`/`conventions.md`; re-verify which is current before relying on
-    either (this file is more recent evidence — re-check both against `README.md` if it
-    matters for a task).
-  - `resolvedApiBaseUrl` (`:8-16`) force-upgrades `http://` to `https://` **unless** the
-    host is `localhost`/`127.0.0.1`, ends in `.test`/`.local`, or is a private LAN IP
-    (10.x, 172.16–31.x, 192.168.x — `_isPrivateLanHost`, `:41-64`). This is what
-    `ApiClient`'s `baseUrl` actually uses (`api_client.dart:26`), not raw `apiBaseUrl`.
-  - `webBaseUrl` (`:89-98`) strips a trailing `/api/v1` suffix from `resolvedApiBaseUrl` —
-    used by `listing_url.dart` to build web-viewable listing URLs and by deep-link
-    parsing indirectly.
+  - `apiBaseUrl` / `API_BASE_URL`, default `http://192.168.1.226:8000/api/v1` (LAN php -S;
+    was historically `dev.drivebay.me` / `drivebay.test` in older notes).
+  - `resolvedApiBaseUrl` force-upgrades `http://` to `https://` **unless** the host is
+    `localhost`/`127.0.0.1`, ends in `.test`/`.local`, or is a private LAN IP
+    (`_isPrivateLanHost`). This is what `ApiClient`'s `baseUrl` uses.
+  - `isLocalDevApi` — true for those local/LAN hosts.
+  - `debugApi` / `DEBUG_API` + `debugApiDefineSet` — when define unset, `ApiClient.debugApiEnabled`
+    auto-enables in `kDebugMode` for local/LAN; when set, the define wins.
+  - `DebugApiInterceptor` (`lib/core/api/interceptors/debug_api_interceptor.dart`) logs
+    `[DriveBayAPI]` method/path/status/ms/errors; no tokens/bodies. Startup banner in `main.dart`.
+  - `webBaseUrl` strips a trailing `/api/v1` suffix from `resolvedApiBaseUrl`.
   - `acceptLanguage` / `ACCEPT_LANGUAGE` (default `'en'`) — **appears unused as a header
-    value**; the actual `Accept-Language` header comes from `ApiLocale.languageCode`
-    (mutable, locale-feature-driven), not this compile-time constant — don't assume
-    `ACCEPT_LANGUAGE` controls request locale.
+    value**; the actual `Accept-Language` header comes from `ApiLocale.languageCode`.
   - `allowBadCertificates` / `ALLOW_BAD_CERTIFICATES` (default `false`) — dev-only TLS
     bypass, see API client section.
   - `deepLinkScheme` / `DEEP_LINK_SCHEME`, default `'drivebay'` — used by
