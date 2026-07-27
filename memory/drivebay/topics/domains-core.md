@@ -189,7 +189,7 @@ entirely custom, not the Spatie Media Library package the app depends on.
 |---|---|
 | `ListingMediaService` | Upload intake (`queueFromUpload`), synchronous seeder/admin attach (`attachFromPath`), Autodiler placeholder ingestion (`attachAutodilerPlaceholder`), delete/reorder/requeue (`ListingMediaService.php:15-330`) |
 | `ProcessListingMediaJob` | Queued: resizes+watermarks the incoming file via `ListingImageProcessor`, flips asset to `processing_status=completed`, then calls `ListingPublishCoordinator::checkListingReady` (`ProcessListingMediaJob.php:17-176`) |
-| `ListingImageProcessor` | Uses **Intervention Image** (`Image::decodePath`, `cover()`, `JpegEncoder`) for resize + watermark compositing — not Spatie (`ListingImageProcessor.php:8-178`) |
+| `ListingImageProcessor` | Uses **Intervention Image** (`Image::decodePath`, `cover()`, `JpegEncoder`) for resize + watermark compositing — not Spatie (`ListingImageProcessor.php:8-178`). **Planned**: also emit WebP + sized variants at process time (**Jira: KAN-40**) |
 | `WatermarkGenerator`, `WatermarkPreviewService` | Generate/cache the watermark image and admin preview render |
 | `ListingMediaModerationService` | Admin approve/disallow/remove of individual photos; bulk-approve Autodiler placeholders; `photo_approval_requested` flag lifecycle on `Vehicle` (`ListingMediaModerationService.php:14-225`) |
 

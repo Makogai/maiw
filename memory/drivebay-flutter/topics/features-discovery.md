@@ -39,7 +39,7 @@ true (`listing_detail_screen.dart:600-609`) — config comes from `GET` via
 `PlatformConfigRepository`, loaded once per screen in `initState` (`listing_detail_screen.dart:56-58`).
 No TODO/FIXME comments found anywhere under `lib/features/listings/`.
 
-**Gotcha — reopen flash reload** (**Jira: KAN-39**, fixed). Was caused by
+**Gotcha — reopen flash reload** (**Jira: KAN-39**, Done — `1a1d51b`). Was caused by
 `listingDetailProvider` watching `appPlatformConfigProvider` while the screen’s `initState`
 calls `load()` — config update re-ran the future and `when(loading:)` wiped the UI. Fix:
 stop watching config on the detail provider (screen still watches flags); use

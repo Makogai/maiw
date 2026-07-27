@@ -23,9 +23,9 @@
 
 ## Exact next action
 
-1. Human: commit + push drivebay KAN-33 (and any pending KAN-31/32) with Attribution OFF.
-2. Main session: Jira comment/transition **KAN-33**; note partial **KAN-17** (Analytics stubs remain).
-3. Enable digests in target env via `RECOMMENDATIONS_DIGEST_ENABLED=true` when ready.
+1. Next product slice when prioritized: **KAN-40** — WebP + sized variants at listing image
+   process time (keep JPEG fallback; API `variants`; backfill; then Flutter/web prefer WebP).
+2. Enable digests in target env via `RECOMMENDATIONS_DIGEST_ENABLED=true` when ready.
 
 ## Decisions made this session
 

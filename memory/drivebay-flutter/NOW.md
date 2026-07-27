@@ -6,39 +6,30 @@
 
 ## Current state
 
-- **DEBUG_API logging shipped in working tree** (pending app commit/push ask):
+- **KAN-39 Done** — pushed `1a1d51b` (keep previous listing detail on reopen).
+- **DEBUG_API logging still local only** (not committed):
   - `Env.debugApi` / `debugApiDefineSet` / `isLocalDevApi`
   - `DebugApiInterceptor` logs method/path/status/timing/connection errors (no tokens/bodies)
   - Auto-on in debug builds against localhost / `*.test` / private LAN; force with
     `--dart-define=DEBUG_API=true|false`
-  - Startup banner in `main.dart` prints resolved API base/host
-  - README updated for LAN HTTP + DEBUG_API
+  - Startup banner in `main.dart`; README updated
 - Default `API_BASE_URL` remains `http://192.168.1.226:8000/api/v1`
-- Sibling Laravel note: `MARKETPLACE_HOSTS` must include LAN IP for web `/`; API health OK
+- Backend image optimization planned: **KAN-40** (WebP + variants at process time)
 
 ## Exact next action
 
-1. Hot-restart Flutter and verify KAN-39 (reopen listing — no spinner flash).
-2. Ask human: commit/push `apps/drivebay-flutter` (DEBUG_API + KAN-39).
-3. Mark KAN-39 Done after push.
+1. Ask human: commit/push remaining DEBUG_API work if desired.
+2. When prioritized: consume **KAN-40** WebP/variant URLs in Flutter once API exposes them.
 
 ## Decisions made this session
 
-- Auto-enable debug API logs for local/LAN in `kDebugMode` so phones don’t need an extra
-  define; explicit `DEBUG_API` overrides.
+- Auto-enable debug API logs for local/LAN in `kDebugMode`; explicit `DEBUG_API` overrides.
 
 ## Changed files
 
-- `lib/config/env.dart`
-- `lib/core/api/api_client.dart`
-- `lib/core/api/interceptors/debug_api_interceptor.dart`
-- `lib/main.dart`
-- `README.md`
+- (pending) DEBUG_API: `lib/config/env.dart`, `api_client.dart`, `debug_api_interceptor.dart`,
+  `main.dart`, `README.md`
 
 ## Verification
 
-- `flutter analyze` on touched files (see session)
-
-## Blockers and unknowns
-
-- Device still must reach `192.168.1.226:8000` on same Wi‑Fi; firewall may block.
+- KAN-39: product-verified reopen with no spinner flash.
