@@ -8,9 +8,8 @@
 
 - **KAN-39 Done** — pushed `1a1d51b` (keep previous listing detail on reopen).
 - **DEBUG_API logging shipped** — pushed `a5824c3`.
-- **Local uncommitted UI:** listing cards no longer show make/model under the title
-  (`listing_card_grid_tile.dart`, `listing_card_tile.dart`); earlier overflow fix
-  (always `Expanded` image, lower aspect ratios) still local if not committed.
+- **Local uncommitted UI:** listing cards drop make/model under title; shorter images
+  (grid `childAspectRatio` ~0.72/0.68; list tile `16/9` / `2/1`).
 - Default `API_BASE_URL` remains `http://192.168.1.226:8000/api/v1`
 - Backend image optimization: **KAN-40** (WebP + variants at process time)
 
@@ -22,6 +21,7 @@
 ## Decisions made this session
 
 - Drop redundant make/model subtitle under listing card titles (title is enough).
+- Shorter card photos: raise grid aspect ratios; list images use wider ratios.
 
 ## Changed files
 
