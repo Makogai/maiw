@@ -159,6 +159,12 @@ profile/locale, plus the Spatie-Permission roles that gate staff/admin access.
 | `EmailVerificationService` | Issues/verifies 6-digit hashed codes (`EmailVerificationCode`), rate-limited resend, phone normalization helper — `Domains/User/Services/EmailVerificationService.php:14,34,94,113` |
 | `UserProfileService` | Updates `UserProfile` fields + phone (via `PhoneNumberNormalizer`) + preferred language — `Domains/User/Services/UserProfileService.php:32` |
 | `UserLocaleService` | Persists `preferred_language_code`, resolves effective locale for a (possibly null) user — `Domains/User/Services/UserLocaleService.php:12,23` |
+| `AccountDeletionService` | Soft-delete with 7-day grace (`requestDeletion` / `restore` / `purgeExpired`); helpers `isRestorable` / `graceEndsAt` / `daysUntilPurge` (**Jira: KAN-36**, **KAN-41**) — `Domains/User/Services/AccountDeletionService.php` |
+
+**Account restore API (**Jira: KAN-41**)**: login uses `User::withTrashed()`; restorable
+self-deletes get `403` + `meta.reason=account_pending_deletion` + `days_remaining`.
+`POST /api/v1/auth/account/restore` restores + returns `authPayload`. Listings archived
+at deletion stay archived.
 
 **Models**: `User` (`Models/Domains/User/Models/User.php`) uses `Spatie\Permission\Traits\
 HasRoles` (`:32,39`) and `Laravel\Sanctum\HasApiTokens` (`:29,37`) — API tokens and roles live
