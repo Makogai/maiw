@@ -18,9 +18,9 @@
 
 ## Exact next action
 
-1. Fix **KAN-39** (listing detail flash-reload on reopen) when prioritized.
-2. Ask human: commit/push pending Flutter DEBUG_API work if still local.
-3. Optional on-device: Recommended sort + For you rail smoke.
+1. Hot-restart Flutter and verify KAN-39 (reopen listing — no spinner flash).
+2. Ask human: commit/push `apps/drivebay-flutter` (DEBUG_API + KAN-39).
+3. Mark KAN-39 Done after push.
 
 ## Decisions made this session
 

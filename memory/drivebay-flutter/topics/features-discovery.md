@@ -12,7 +12,7 @@ One screen: `listing_detail_screen.dart` (`ListingDetailScreen`, keyed by `publi
 
 | Concern | Evidence |
 |---|---|
-| Data provider | `listingDetailProvider` (`FutureProvider.family<ListingDetailResult, String>`) watches `authNotifierProvider` + `appPlatformConfigProvider` so it reloads on login/logout and once platform config lands (`lib/providers/providers.dart:227-232`) |
+| Data provider | `listingDetailProvider` (`FutureProvider.family`) watches `authNotifierProvider` only (not platform config — avoids reopen flash **KAN-39**). Screen watches `appPlatformConfigProvider` for feature flags. |
 | Repository | `ListingRepository.getDetail` → `GET /listings/{publicId}` returns one JSON body parsed twice into `ListingDetail` and `ListingDetailMeta` (`lib/repositories/listing_repository.dart:22-39`) |
 | Similar listings | `similarListingsProvider` family → `ListingRepository.getSimilar` → `GET /listings/{publicId}/similar?limit=6`, rendered as a 2-col grid at the bottom of the body (`lib/features/listings/listing_detail_screen.dart:526,696-737`). Backend-side this is `RecommendationService.similarListings()` (`ListingSimilarity` table, falls back to same-make/model query when empty — see `memory/drivebay/topics/domains-core.md` Recommendation section) |
 | Contact | `ListingRepository.contactSeller` → `POST /listings/{publicId}/contact` (only offered when authenticated; otherwise the sheet only shows phone/email/WhatsApp/Viber deep links) — `listing_detail_screen.dart:157-209`, `widgets/contact_seller_sheet.dart` |
@@ -39,10 +39,11 @@ true (`listing_detail_screen.dart:600-609`) — config comes from `GET` via
 `PlatformConfigRepository`, loaded once per screen in `initState` (`listing_detail_screen.dart:56-58`).
 No TODO/FIXME comments found anywhere under `lib/features/listings/`.
 
-**Gotcha — reopen flash reload** (**Jira: KAN-39**). Re-opening a listing briefly shows content,
-then full-screen loading, then content again. `listingDetailProvider` refetch +
-`detailAsync.when(loading: CircularProgressIndicator)` treats soft reload as first load —
-keep previous data while refreshing / only spinner when no value yet.
+**Gotcha — reopen flash reload** (**Jira: KAN-39**, fixed). Was caused by
+`listingDetailProvider` watching `appPlatformConfigProvider` while the screen’s `initState`
+calls `load()` — config update re-ran the future and `when(loading:)` wiped the UI. Fix:
+stop watching config on the detail provider (screen still watches flags); use
+`skipLoadingOnReload` / `skipLoadingOnRefresh` on detail + similar `when`s.
 
 ## lib/features/search/ — search hub, filters, sort
 
