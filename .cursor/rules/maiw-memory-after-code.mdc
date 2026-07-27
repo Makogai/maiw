@@ -31,7 +31,9 @@ Before you treat the task as done:
 5. **Auto-commit and auto-push the MAIW wrapper** in the same session (Cursor and Claude
    Code). Do not wait for the user to ask — see `maiw-push-memory`. Verify
    `git log -1 --format=full` is clean of AI trailers before/after.
-6. If Jira/Confluence are involved, follow `jira-confluence-source-of-truth` too.
+6. If `apps/<name>/` has local commits or uncommitted work ready to ship, **ask** (do not
+   assume): “Want me to commit and push `apps/<name>`?” Only do it after they agree.
+7. If Jira/Confluence are involved, follow `jira-confluence-source-of-truth` too.
 
 ## Incomplete work
 

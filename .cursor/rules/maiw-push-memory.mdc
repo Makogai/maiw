@@ -22,5 +22,6 @@ you must write `memory/` here and push the wrapper, or the next machine/agent is
    `git config` identity; never add AI as author.
 3. If push is blocked (network, auth, secrets in the diff, or mixed with unrelated dirty
    files), tell the user once with the blocker — otherwise proceed.
-4. Do **not** auto-commit or auto-push nested app repos under `apps/` unless the user
-   explicitly asks — this rule is for the **wrapper only**.
+4. Do **not** auto-commit or auto-push nested app repos under `apps/`. When app work left
+   uncommitted or unpushed changes, **ask once** at the end of the turn, e.g. “Want me to
+   commit and push `apps/<name>`?” — only proceed after they say yes.

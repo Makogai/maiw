@@ -24,10 +24,10 @@
       docs change, **auto-commit and auto-push in the same session** (Cursor, Claude Code,
       Codex). Do not wait for the user to ask. Still obey §9: no AI author/`Co-authored-by`;
       verify `git log -1 --format=full` is clean. See `.cursor/rules/maiw-push-memory.mdc`.
-    - **App repos under `apps/`:** Do **not** auto-commit or auto-push unless the user
-      explicitly asks. When they do ask, confirm attribution is disabled (Cursor Agents →
-      Attribution OFF; Claude `attribution.commit`/`pr` empty + `includeCoAuthoredBy:
-      false`) and that `git log -1 --format=full` has no AI trailers before pushing.
+    - **App repos under `apps/`:** Never auto-commit/push. When work finishes with app
+      changes ready to ship, **ask the user** once: “Want me to commit and push
+      `apps/<name>`?” Proceed only if they say yes. Then confirm attribution is disabled and
+      `git log -1 --format=full` has no AI trailers before pushing.
 11. **Jira is the source of truth for tickets** (`KAN`). Before starting work: search/read the
     issue and linked Confluence. While working: keep the ticket current. On finish: comment,
     transition, update Confluence when docs drift. See `JIRA.md` and

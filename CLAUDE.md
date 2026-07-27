@@ -19,8 +19,10 @@ Use the project skill in `.claude/skills/maiw/` for MAIW requests, including nat
 **Mandatory after any `apps/<name>/` code change:** update `memory/<name>/` (NOW + stale topics +
 `meta.json`), run `node bin/memory.js validate <name>`, then **auto-commit and auto-push the
 MAIW wrapper** in the same session — do not wait for the user to ask. See `core/OPERATING.md` §7
-and §10 (wrapper auto-push). App-only commits do not update memory; nested `apps/` repos are
-**not** auto-pushed unless the user explicitly asks.
+and §10 (wrapper auto-push). App-only commits do not update memory.
+
+**App repos:** do **not** auto-commit/push. When `apps/<name>/` work is ready, ask once:
+“Want me to commit and push `apps/<name>`?” — only proceed after they say yes.
 
 Issue tracking for the apps lives in Jira project `KAN` ("Drivebay LLC"). When you find a bug,
 file it (checking for duplicates first) and tag the finding in memory with its key; when you fix

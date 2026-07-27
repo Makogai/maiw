@@ -13,5 +13,5 @@ coding session with stale or unpushed `memory/<app>/`.
 **Never set yourself (Cursor / any AI) as a contributor** — no git author/committer, no
 `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
 identity. Keep Attribution OFF; verify `git log -1 --format=full` is clean after wrapper commits.
-Nested `apps/` repos: only commit/push when the user asks. See @core/OPERATING.md §9–10 and
-@core/ATTRIBUTION.md.
+Nested `apps/` repos: **ask** “Want me to commit and push?” — do not auto-push. See
+@core/OPERATING.md §9–10 and @core/ATTRIBUTION.md.

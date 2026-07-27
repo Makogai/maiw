@@ -61,5 +61,5 @@ before pushing.
    `Codex`, `noreply@anthropic.com`, or `cursoragent` as author.
 3. **Wrapper auto-push:** agents (Cursor / Claude Code) **should** commit and push the MAIW
    wrapper after memory/docs updates without waiting for the human — still only after a clean
-   attribution check. **App repos** under `apps/`: prefer the human pushes, or only when they
-   explicitly ask the agent to.
+   attribution check. **App repos** under `apps/`: ask “Want me to commit and push?” and wait
+   for yes.

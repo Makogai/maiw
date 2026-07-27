@@ -9,8 +9,8 @@ compact, evidence-backed, and resumable. Never overwrite valid existing memory.
 
 **Mandatory after any `apps/<name>/` code change:** update `memory/<name>/` (NOW + stale topics +
 `meta.json`), validate with `node bin/memory.js validate <name>`, then **auto-commit and
-auto-push the MAIW wrapper** (do not wait to be asked). Nested `apps/` repos are not auto-pushed
-unless the user explicitly asks. See `core/OPERATING.md` §7 and §10.
+auto-push the MAIW wrapper** (do not wait to be asked). For nested `apps/` repos, **ask**
+“Want me to commit and push?” and only proceed after yes. See `core/OPERATING.md` §7 and §10.
 
 **Never set yourself (Codex / any AI) as a contributor** — no git author/committer, no
 `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
