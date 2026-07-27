@@ -2,24 +2,23 @@
 
 ## Goal
 
-- Backend bug queue: **KAN-9** favorites_count maintenance.
+- Backend bug queue: **KAN-8** ad impression tracking.
 
 ## Current state
 
-- **KAN-7 Done** — pushed `18b1d4f` (dedicated Autodiler imports Horizon queue). Restart Horizon on Coolify.
-- **KAN-9 implemented locally (uncommitted)**:
-  - `FavoriteService` atomically maintains `listings.favorites_count`
-  - `favorites:backfill-counts` command (+ admin Artisan allowlist)
-  - 9 Pest tests passing
-- Note: brand SVGs under `public/images/brands/` keep appearing dirty during agent runs —
-  always `git checkout -- public/images/brands/` before commit; do not ship those diffs.
+- **KAN-7 Done** — `18b1d4f` (restart Horizon after Coolify deploy).
+- **KAN-9 Done** — `1197f74` (run `favorites:backfill-counts` once after deploy).
+- **KAN-8 implemented locally (uncommitted)**:
+  - `POST /go/promo/{advertisement}/impression`
+  - `AdSlot.vue` + `useAdImpressions.js` (IntersectionObserver, once per ad+placement/session)
+  - Tests green (AdvertisementTest + PagePayload)
+- Always discard dirty `public/images/brands/*` before commits.
 
 ## Exact next action
 
-1. Human: commit + push KAN-9 (PHP/tests only — never brand SVGs).
-2. After deploy: run `php artisan favorites:backfill-counts` (or admin Artisan runner).
-3. Next: **KAN-8** (ad impressions).
+1. Human: commit + push KAN-8 (exclude brand SVGs); frontend build ships with deploy.
+2. Next: **KAN-10** (dual staff-auth gates).
 
 ## Verification
 
-- FavoriteServiceTest 6/6, BackfillFavoriteCountsCommandTest 3/3.
+- AdvertisementTest 6/6, AdvertisementPagePayloadTest 1/1.

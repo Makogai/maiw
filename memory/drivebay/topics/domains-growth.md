@@ -136,7 +136,10 @@ Key classes:
 
 **Doc discrepancy #1**: `docs/advertising/advertising.md` says `GET /go/ad/{advertisement}` "increments `clicks_count` and redirects to `target_url`." In code, `/go/ad/{advertisement}` is just a redirect shim to `route('promo.click', ...)`; the actual click-tracking + redirect logic (`AdvertisementDeliveryService::recordClick()` then `redirect()->away($target_url)`) lives at `/go/promo/{advertisement}` via `AdClickController` — `routes/web.php:61-63`, `app/Http/Controllers/Web/AdClickController.php:12-23`.
 
-**Doc discrepancy #2 / gotcha** (**Jira: KAN-8**): `impressions_count` is **never incremented** anywhere in the app. `AdvertisementDeliveryService::recordImpression()` exists and is fully implemented, but no controller, route, or frontend code calls it — `resources/js/Components/Ads/AdSlot.vue` only reads `page.props.ads[placement]` and renders a click link; there is no impression-tracking call. This means `impressions_limit`-based ad rotation cutoff (in `scopeActive()`) never actually triggers from impressions in practice, only from `starts_at`/`ends_at`. Verified via grep — zero callers of `recordImpression()` besides its own definition.
+- `AdvertisementDeliveryService` — serves ads for placements; `recordClick()` and
+  `recordImpression()` (**Jira: KAN-8** — impressions wired via `POST /go/promo/{ad}/impression`
+  + `AdSlot.vue` IntersectionObserver / `useAdImpressions.js`).
+
 
 **Connections**: `AdvertisementDeliveryService` reads `config('advertising.placements')`/`config('advertising.sizes')`; frontend gets ads via Inertia shared prop `page.props.ads[placement]` (same mechanism family as Engagement's shared prop, but a separate service).
 
