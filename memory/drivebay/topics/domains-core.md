@@ -243,7 +243,7 @@ plus favorites, saved searches, compare lists, and recently-viewed.
 | Class | Role |
 |---|---|
 | `SearchService` | `search()` picks Meilisearch (`ListingSearchDocument::search()`) unless `requiresDatabaseSearch()` forces the raw-SQL path; catches any Scout/Meilisearch exception and falls back silently (`SearchService.php:15-55,392-398`) |
-| `FavoriteService` | Simple `firstOrCreate`/delete/exists on `Favorite` (`FavoriteService.php:12-51`) |
+| `FavoriteService` | `firstOrCreate`/delete/exists on `Favorite`; atomically maintains `listings.favorites_count` on add/remove (**Jira: KAN-9**) (`FavoriteService.php`) |
 | `SavedSearchService` | CRUD for `SavedSearch` + its `features` pivot, column mapping via `SearchFilterColumns` |
 | `CompareService` | Up to `MAX_ITEMS = 4` listings, either from a comma-joined `public_id` query string or the user's persisted `ComparisonList` (`CompareService.php:13-81`) |
 | `RecentlyViewedService` | **Session-only** (Laravel session, 12-item cap), not a DB table — separate from `UserListingInteraction`, which is the Recommendation domain's own view-tracking table (`RecentlyViewedService.php:11-27`) |
@@ -277,10 +277,9 @@ plus favorites, saved searches, compare lists, and recently-viewed.
   them with the current filter builder), **and** as an automatic fallback on any Scout exception
   (`SearchService.php:392-398`). This isn't a doc bug so much as an unwritten exception — worth
   knowing before assuming every search request hits Meilisearch.
-- (**Jira: KAN-9**) `Listing.favorites_count` is a fillable/cast column but **no code path increments or decrements
-  it** — `FavoriteService::add/remove` never touches it (confirmed by repo-wide grep for
-  `favorites_count`, only read in `SellerAnalyticsService`). Treat it as unmaintained/possibly
-  stale rather than a live counter.
+- (**Jira: KAN-9** fixed): `FavoriteService` now maintains `listings.favorites_count`; use
+  `favorites:backfill-counts` once after deploy for historical rows. `SellerAnalyticsService`
+  still reads the column.
 
 ---
 

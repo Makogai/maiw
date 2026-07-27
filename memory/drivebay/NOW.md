@@ -2,25 +2,24 @@
 
 ## Goal
 
-- Backend bug queue: **KAN-7** Horizon/Autodiler timeout ordering.
+- Backend bug queue: **KAN-9** favorites_count maintenance.
 
 ## Current state
 
-- **KAN-41 Done** — `937ee72`.
-- **KAN-7 implemented locally (uncommitted)**:
-  - Dedicated `redis-imports` connection (`retry_after` 1200s) + `supervisor-imports`
-    (timeout 960s), listed in all Horizon environments
-  - `ImportAutodilerListingsJob` routes there when `QUEUE_CONNECTION=redis`
-  - Ordering: job 900 < supervisor 960 < retry_after 1200
+- **KAN-7 Done** — pushed `18b1d4f` (dedicated Autodiler imports Horizon queue). Restart Horizon on Coolify.
+- **KAN-9 implemented locally (uncommitted)**:
+  - `FavoriteService` atomically maintains `listings.favorites_count`
+  - `favorites:backfill-counts` command (+ admin Artisan allowlist)
+  - 9 Pest tests passing
+- Note: brand SVGs under `public/images/brands/` keep appearing dirty during agent runs —
+  always `git checkout -- public/images/brands/` before commit; do not ship those diffs.
 
 ## Exact next action
 
-1. Human: commit + push KAN-7 on `apps/drivebay`.
-2. After Coolify deploy: restart Horizon so `supervisor-imports` starts.
-3. Next ticket: **KAN-9** (`favorites_count`).
+1. Human: commit + push KAN-9 (PHP/tests only — never brand SVGs).
+2. After deploy: run `php artisan favorites:backfill-counts` (or admin Artisan runner).
+3. Next: **KAN-8** (ad impressions).
 
 ## Verification
 
-- Config/diff review; Autodiler API tests green (per implementer).
-- Critical fix vs implementer draft: `supervisor-imports` must appear under
-  `environments.*` or Horizon never starts it.
+- FavoriteServiceTest 6/6, BackfillFavoriteCountsCommandTest 3/3.
