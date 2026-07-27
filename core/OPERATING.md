@@ -19,12 +19,15 @@
    files, package contributor metadata, PR co-author fields, or any other credit list. Commits and
    contributions belong to the human user only. Never change `git config` `user.name` /
    `user.email`. Product toggles: see `ATTRIBUTION.md`.
-10. **Pause before git commit/push.** Do not silently commit or push. Stop, tell the user to
-    confirm attribution is disabled (Cursor Agents → Attribution OFF; Claude
-    `attribution.commit`/`pr` empty + `includeCoAuthoredBy: false`), and to run
-    `git log -1 --format=full` and ensure there is **no** AI `Co-authored-by` / `Made-with`
-    trailer. Prefer that the user runs commit/push themselves. Only continue after they
-    explicitly approve.
+10. **Git commit/push policy.**
+    - **MAIW wrapper (this repo root):** After memory, rules, `core/`, or other wrapper
+      docs change, **auto-commit and auto-push in the same session** (Cursor, Claude Code,
+      Codex). Do not wait for the user to ask. Still obey §9: no AI author/`Co-authored-by`;
+      verify `git log -1 --format=full` is clean. See `.cursor/rules/maiw-push-memory.mdc`.
+    - **App repos under `apps/`:** Do **not** auto-commit or auto-push unless the user
+      explicitly asks. When they do ask, confirm attribution is disabled (Cursor Agents →
+      Attribution OFF; Claude `attribution.commit`/`pr` empty + `includeCoAuthoredBy:
+      false`) and that `git log -1 --format=full` has no AI trailers before pushing.
 11. **Jira is the source of truth for tickets** (`KAN`). Before starting work: search/read the
     issue and linked Confluence. While working: keep the ticket current. On finish: comment,
     transition, update Confluence when docs drift. See `JIRA.md` and

@@ -3,21 +3,24 @@ description: Keep MAIW wrapper (memory/docs/Jira conventions) committed and push
 alwaysApply: true
 ---
 
-# MAIW wrapper sync
+# MAIW wrapper sync — auto commit + push
 
 When you change files in the **MAIW wrapper repo** (`d:\code\maiw` root — e.g. `memory/`,
-`core/`, `.cursor/rules/`, adapters, Confluence/Jira convention docs), keep remote up to date.
+`core/`, `.cursor/rules/`, `.claude/`, adapters, Confluence/Jira convention docs), keep
+remote up to date **without waiting for the user to ask**.
 
 This **includes** memory updates required after `apps/<name>/` code changes (see
 `maiw-memory-after-code`). App commits in nested repos do **not** update wrapper memory —
 you must write `memory/` here and push the wrapper, or the next machine/agent is blind.
 
-1. **Prefer** committing and pushing those wrapper changes in the same session (do not leave
-   durable memory/docs only local).
-2. If commit/push is blocked (attribution gate, unclear scope, secrets, or mixed with
-   unrelated dirty files), **ask the user** before proceeding.
-3. Still follow `core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`: never set the AI as
-   author/`Co-authored-by`; pause so the user can confirm Attribution is OFF and
-   `git log -1 --format=full` is clean before push when required.
-4. Do **not** auto-commit or auto-push the nested app repos under `apps/` unless the user
-   explicitly asks — this rule is for the wrapper only.
+## Policy (Cursor + Claude Code + Codex)
+
+1. **Auto-commit and auto-push** wrapper changes in the same session. Do not leave durable
+   memory/docs only local. Do not ask “should I push the wrapper?” — just do it.
+2. Before/after commit: ensure Attribution is off and `git log -1 --format=full` has **no**
+   AI `Co-authored-by` / `Made-with` trailer (`core/ATTRIBUTION.md`). Never change
+   `git config` identity; never add AI as author.
+3. If push is blocked (network, auth, secrets in the diff, or mixed with unrelated dirty
+   files), tell the user once with the blocker — otherwise proceed.
+4. Do **not** auto-commit or auto-push nested app repos under `apps/` unless the user
+   explicitly asks — this rule is for the **wrapper only**.

@@ -8,11 +8,11 @@ operations, follow `core/OPERATING.md` and `core/MEMORY_STANDARD.md`. Keep memor
 compact, evidence-backed, and resumable. Never overwrite valid existing memory.
 
 **Mandatory after any `apps/<name>/` code change:** update `memory/<name>/` (NOW + stale topics +
-`meta.json`), validate with `node bin/memory.js validate <name>`, and commit/push the wrapper.
-Do not end a coding task with stale memory. See `core/OPERATING.md` §7.
+`meta.json`), validate with `node bin/memory.js validate <name>`, then **auto-commit and
+auto-push the MAIW wrapper** (do not wait to be asked). Nested `apps/` repos are not auto-pushed
+unless the user explicitly asks. See `core/OPERATING.md` §7 and §10.
 
 **Never set yourself (Codex / any AI) as a contributor** — no git author/committer, no
 `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never change `git config`
-identity. **Before any `git commit` or `git push`: stop**, tell the user to verify attribution is
-off and `git log -1 --format=full` is clean, and prefer they run git themselves. See
+identity. Keep Attribution off and verify `git log -1 --format=full` is clean. See
 `core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`.

@@ -28,8 +28,9 @@ Before you treat the task as done:
 3. Set `memory/<name>/meta.json` `sourceCommit` to the app HEAD you synchronized (short SHA)
    and refresh `lastSynchronizedAt`.
 4. Run from wrapper root: `node bin/memory.js validate <name>` and fix failures.
-5. **Commit and push the MAIW wrapper** so memory is not local-only (see
-   `maiw-push-memory` rule). Prefer doing this in the same session.
+5. **Auto-commit and auto-push the MAIW wrapper** in the same session (Cursor and Claude
+   Code). Do not wait for the user to ask — see `maiw-push-memory`. Verify
+   `git log -1 --format=full` is clean of AI trailers before/after.
 6. If Jira/Confluence are involved, follow `jira-confluence-source-of-truth` too.
 
 ## Incomplete work

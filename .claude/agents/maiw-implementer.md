@@ -48,9 +48,10 @@ cheaper too.
 4. Never set yourself (or any AI) as a contributor — no git author/committer, no
    `Co-authored-by` / `Made-with`, no CONTRIBUTORS credit. Human user only; never
    change `git config` identity (`core/OPERATING.md` §9, `core/ATTRIBUTION.md`).
-5. Do not run `git commit` or `git push` yourself. Stop and tell the orchestrator/user
-   to verify attribution is off and `git log -1 --format=full` is clean, then let the
-   human commit/push (`core/OPERATING.md` §10).
+5. Do not run `git commit` or `git push` on **app** repos under `apps/` yourself unless the
+   parent prompt explicitly asks. Memory/wrapper updates you write must be finished by the
+   **parent session** with **auto-commit + auto-push of the MAIW wrapper** in the same turn
+   (`core/OPERATING.md` §10) — say so clearly in your report if the parent has not pushed yet.
 6. If you discover memory is wrong (a fact, a file path, a line number) fix it while
    you're there rather than leaving it stale for the next session.
 
@@ -69,8 +70,9 @@ shipping without tests when tests were required).
    `lastSynchronizedAt`.
 3. Run `node bin/memory.js validate <app>` (from the wrapper root) and fix any reported
    issue before finishing.
-4. Remind the orchestrator/parent that the **wrapper** must commit/push `memory/` (app
-   commits alone do not sync MAIW). Prefer the parent does that in the same session.
+4. Tell the parent session to **auto-commit and auto-push the MAIW wrapper now** (memory
+   files you updated). App commits alone do not sync MAIW; do not wait for the user to ask
+   (`core/OPERATING.md` §10).
 5. In your final report to whoever invoked you: summarize what changed (files touched),
    how you verified it, confirm memory was updated + validated, and anything you flagged
    above that needs a human decision.

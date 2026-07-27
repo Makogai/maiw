@@ -21,7 +21,8 @@ and continue using [operations.md](references/operations.md).
 Always read `memory/<app>/NOW.md` then `INDEX.md`; load only relevant topics. Preserve valid memory,
 avoid broad relearning, cite code evidence, and never store secrets or personal/customer data.
 After any `apps/<app>/` code change, updating `memory/<app>/` + `node bin/memory.js validate <app>`
-+ wrapper push is **mandatory** before calling the task done (`core/OPERATING.md` §7).
++ **auto-commit/push of the wrapper** is **mandatory** before calling the task done
+(`core/OPERATING.md` §7 and §10). Do not wait for the user to ask to push memory.
 Never set the AI as a contributor (no git author/`Co-authored-by`/CONTRIBUTORS credit); see
-`core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`. Pause before commit/push; prefer the human.
+`core/OPERATING.md` §9–10 and `core/ATTRIBUTION.md`.
 
