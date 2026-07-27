@@ -2,56 +2,66 @@
 
 ## Goal
 
-- KAN-29 recommendations end-to-end. Phases 1–3 done in code (KAN-30/31/32).
-  Phase 4 email digests (**KAN-33**) done in code this session.
+- Media cleanup + optimization: remove stale Spatie dependency/docs (**KAN-16**) and
+  extend the custom listing-image pipeline with WebP + thumbnail variants (**KAN-40**).
 
 ## Current state
 
-- **KAN-33 done in code** (pending commit/push by parent/human):
-  - Models fleshed: `EmailCampaign`, `EmailCampaignRecipient`, `NotificationTemplate`.
-  - `RecommendationDigestService` + `RecommendationDigestMail` + markdown view.
-  - Job `SendRecommendationDigestsJob`, Artisan `recommendations:send-digests`,
-    weekly schedule (Mon 09:00 default) gated by `recommendations.digest.enabled`
-    (default **false** — set `RECOMMENDATIONS_DIGEST_ENABLED=true` to send).
-  - Opt-in gate: `users.marketing_email_opt_in`; verified email; non-expired candidates;
-    same-day idempotency via digest campaign recipients / `segment_json.digest_day`.
-  - Pest: `tests/Feature/Recommendation/RecommendationDigestTest.php` (4 passed).
-  - Docs: `docs/recommendations/recommendation_architecture.md` digest section.
-- Subsumes **KAN-17** for email campaign/template/recipient digest path only;
-  Analytics `ListingPerformanceDaily` / `SellerPerformanceDaily` stubs still open.
-- Prior: KAN-31 For you + KAN-32 search sort still pending commit/push if not already.
+- **KAN-16 implemented in working tree** (pending app commit/push):
+  - removed `spatie/laravel-medialibrary` from `composer.json`
+  - updated `composer.lock` with the targeted package removals only
+  - deleted `config/media-library.php`
+  - corrected stale custom-vs-Spatie docs/rules in `CLAUDE.md`,
+    `docs/architecture/system-overview.md`, `.cursor/rules/laravel-style.mdc`
+- **KAN-40 implemented in working tree** (pending app commit/push):
+  - `media_assets.variants_json` migration + model cast/helpers
+  - `ListingImageProcessor` now emits original JPEG + original WebP + thumb JPEG + thumb WebP
+  - `ProcessListingMediaJob` / `ListingMediaService::attachFromPath()` persist variant metadata
+  - `ListingMediaPresenter` / listing resources expose additive variant URLs
+  - card/detail responses now prefer optimized URLs for existing consumers
+  - new command: `media:backfill-listing-variants`
+- `PublicMediaUrlResolver` cleaned up to use `incoming_path` instead of removed `metadata_json`
 
 ## Exact next action
 
-1. Next product slice when prioritized: **KAN-40** — WebP + sized variants at listing image
-   process time (keep JPEG fallback; API `variants`; backfill; then Flutter/web prefer WebP).
-2. Enable digests in target env via `RECOMMENDATIONS_DIGEST_ENABLED=true` when ready.
+1. Human: commit + push `apps/drivebay` KAN-16/KAN-40 work.
+2. After app push, run the new migration and backfill command in the target environment:
+   `php artisan migrate` then `php artisan media:backfill-listing-variants`.
+3. Optional follow-up after rollout: measure card/detail payload savings and decide if AVIF/CDN
+   deserves a later ticket.
 
 ## Decisions made this session
 
-- Digest default **disabled** (`RECOMMENDATIONS_DIGEST_ENABLED` default false) so schedule
-  is inert until ops opts in.
-- Code-first `NotificationTemplate` upsert by `code=recommendation_digest` (no seed migration).
-- No Filament UI, no Flutter, no new migrations.
+- Stay fully custom for media; no Spatie migration.
+- Keep canonical JPEG path/`url` support while adding additive `variants`.
+- Generate variants inside the existing processing path so listing publish readiness semantics
+  remain unchanged.
 
 ## Changed files
 
-- Models: `EmailCampaign`, `EmailCampaignRecipient`, `NotificationTemplate`; `User::recommendationCandidates()`
-- `config/recommendations.php` digest section
-- `RecommendationDigestService`, `SendRecommendationDigestsJob`, `SendRecommendationDigestsCommand`
-- `RecommendationDigestMail`, `resources/views/mail/recommendation-digest.blade.php`
-- `routes/console.php`, `bootstrap/app.php`
-- `lang/{en,sr}/marketplace.php` digest strings
-- `tests/Feature/Recommendation/RecommendationDigestTest.php`
-- `docs/recommendations/recommendation_architecture.md`
-- Memory: `NOW.md`, `topics/domains-growth.md`
+- `composer.json`, `composer.lock`, `config/media-library.php`
+- `app/Domains/Media/Services/{ListingImageProcessor,ListingMediaService}.php`
+- `app/Domains/Media/Jobs/ProcessListingMediaJob.php`
+- `app/Domains/Media/Console/BackfillListingMediaVariantsCommand.php`
+- `app/Models/Domains/Media/Models/MediaAsset.php`
+- `app/Support/Media/{ListingMediaPresenter,PublicMediaUrlResolver}.php`
+- `app/Http/Resources/Api/V1/{ListingCardResource,ListingDetailResource}.php`
+- `app/Http/Controllers/Api/V1/SellerMediaApiController.php`
+- `bootstrap/app.php`, `config/drivebay.php`
+- `database/migrations/2026_07_27_120500_add_variants_json_to_media_assets_table.php`
+- docs/rules: `CLAUDE.md`, `.cursor/rules/laravel-style.mdc`,
+  `docs/architecture/system-overview.md`, `docs/database/database_schema.dbml`
 
 ## Verification
 
-- `php artisan test --compact tests/Feature/Recommendation/RecommendationDigestTest.php` → 4 passed
-- `vendor/bin/pint --dirty` → pass
+- `php -l` passed on all touched PHP files, including new migration/command.
+- `ReadLints` on changed backend files returned no diagnostics.
+- Composer lockfile update was narrowed to the five Spatie-related removals, but local
+  Composer autoload refresh on Windows stalled after writing files, so `artisan` boot
+  could not be re-verified in this session.
 
 ## Blockers and unknowns
 
-- Digests stay off until env flag enabled.
-- Ranking quality for digest content still depends on candidates being rebuilt (KAN-30 schedule).
+- Local CLI Composer on Windows repeatedly hangs at `Generating optimized autoload files`
+  after package removal, leaving `vendor/composer/autoload_static.php` stale for runtime
+  verification until a clean install/dump-autoload completes.

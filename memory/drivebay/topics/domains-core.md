@@ -181,22 +181,24 @@ routing.
 
 ## Media
 
-Purpose: listing photo upload, async processing (resize/watermark), and admin photo moderation —
-entirely custom, not the Spatie Media Library package the app depends on.
+Purpose: listing photo upload, async processing (resize/watermark + variant generation), and
+admin photo moderation — entirely custom; Spatie Media Library was removed (**Jira: KAN-16**).
 
 **Key services**
 | Class | Role |
 |---|---|
 | `ListingMediaService` | Upload intake (`queueFromUpload`), synchronous seeder/admin attach (`attachFromPath`), Autodiler placeholder ingestion (`attachAutodilerPlaceholder`), delete/reorder/requeue (`ListingMediaService.php:15-330`) |
-| `ProcessListingMediaJob` | Queued: resizes+watermarks the incoming file via `ListingImageProcessor`, flips asset to `processing_status=completed`, then calls `ListingPublishCoordinator::checkListingReady` (`ProcessListingMediaJob.php:17-176`) |
-| `ListingImageProcessor` | Uses **Intervention Image** (`Image::decodePath`, `cover()`, `JpegEncoder`) for resize + watermark compositing — not Spatie (`ListingImageProcessor.php:8-178`). **Planned**: also emit WebP + sized variants at process time (**Jira: KAN-40**) |
+| `ProcessListingMediaJob` | Queued: processes the incoming file via `ListingImageProcessor`, persists `variants_json`, flips asset to `processing_status=completed`, then calls `ListingPublishCoordinator::checkListingReady` (`ProcessListingMediaJob.php:17-176`) |
+| `ListingImageProcessor` | Uses **Intervention Image** to emit original JPEG + original WebP + thumb JPEG + thumb WebP, with watermarking applied during first-pass processing (`ListingImageProcessor.php:8-178`) (**Jira: KAN-40**) |
+| `BackfillListingMediaVariantsCommand` | One-off/idempotent regeneration of missing WebP/thumb variants for already processed public listing images (`app/Domains/Media/Console/BackfillListingMediaVariantsCommand.php`) |
 | `WatermarkGenerator`, `WatermarkPreviewService` | Generate/cache the watermark image and admin preview render |
 | `ListingMediaModerationService` | Admin approve/disallow/remove of individual photos; bulk-approve Autodiler placeholders; `photo_approval_requested` flag lifecycle on `Vehicle` (`ListingMediaModerationService.php:14-225`) |
 
 **Models** (`app/Models/Domains/Media/Models/`)
-- `MediaAsset` — the physical file record: disk/path/dimensions/checksum, `is_import_placeholder` +
-  `requires_reupload` + `approval_requested` flags drive the whole Autodiler-photo-approval flow;
-  computed `url` accessor only resolves for `disk === 'public'` (`MediaAsset.php:100-115`).
+- `MediaAsset` — the physical file record: disk/path/dimensions/checksum, `variants_json`,
+  `is_import_placeholder` + `requires_reupload` + `approval_requested` flags drive the whole
+  Autodiler-photo-approval flow; computed `url` accessor only resolves for `disk === 'public'`
+  and helper methods expose variant URLs (`MediaAsset.php:100-190`).
 - `ListingMedia` — the join between a `Listing` and a `MediaAsset` (role/sort_order/is_primary/
   moderation_status); `getIsCoverAttribute()` is just an alias for `is_primary` (`ListingMedia.php:41-44`).
 
@@ -217,17 +219,15 @@ entirely custom, not the Spatie Media Library package the app depends on.
   `processing_status=completed`) (`ListingAutoPublishEvaluator.php:109-132`).
 
 **Non-obvious rules / stale docs**
-- **Doc mismatch** (**Jira: KAN-16**): `apps/drivebay/CLAUDE.md`'s tech-stack table lists "Media | Spatie Media
-  Library (compression, thumbnails, watermarking)" and `composer.json` does declare
-  `spatie/laravel-medialibrary: ^11.21`, but no code under `app/` uses
-  `Spatie\MediaLibrary\...` or the `InteractsWithMedia` trait (confirmed by repo-wide grep). The
-  entire pipeline is hand-rolled (`MediaAsset`/`ListingMedia` models + `Intervention\Image` +
-  manual `Storage::disk()` calls). Treat the Spatie mention as stale/aspirational, not current
-  behavior, until proven otherwise.
+- **KAN-16 fixed**: stale Spatie docs/rules/config were removed; the supported architecture is the
+  custom `MediaAsset` / `ListingMedia` + `Intervention\Image` pipeline only.
 - Uploaded originals land at `listings/{id}/incoming/{uuid}.jpg`, processed output at
   `listings/{id}/{uuid}.jpg` on `config('drivebay.media.disk', 'public')`
   (`ListingMediaService.php:30-31`) — the incoming file is deleted only after successful processing
   (`ProcessListingMediaJob.php:65`).
+- **KAN-40**: variants live in `media_assets.variants_json` and are generated inline with the
+  canonical processed image so `ListingPublishCoordinator` / `ListingAutoPublishEvaluator` still
+  treat one `processing_status=completed` as the publish-ready boundary.
 - `ListingMediaService::delete()` reassigns `is_primary`/`media_role=cover` to the next photo by
   `sort_order` when the deleted photo was primary (`ListingMediaService.php:214-230`) — order
   matters for what becomes the new cover.
