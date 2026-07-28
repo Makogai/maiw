@@ -1,7 +1,7 @@
 # drivebay — Current handoff
 
 ## Goal
-Carry forward shipped KAN-51 listing share-preview work on backend app HEAD `648857c`, while
+Carry forward shipped KAN-51 listing share-preview work on backend app HEAD `7f8c7ed`, while
 preserving shipped KAN-23 saved-search notification routing and KAN-35 buyer viewing reschedule
 behavior.
 
@@ -23,19 +23,23 @@ behavior.
   - `AdminPushTestService` now defaults saved-search test pushes to `/account/saved-searches`;
   - focused tests cover both the presented route and the queued push payload route.
 - KAN-35 Done `727abc9` — buyer viewing appointments now support committed in-place reschedule via `POST /api/v1/viewing/appointments/{appointment}/reschedule`, handled by `BuyerViewingApiController::reschedule()` behind a buyer-only `ViewingAppointmentPolicy::reschedule()`. `ViewingAppointmentService::reschedule()` re-validates the replacement slot before and inside the transaction, resets reminder history so the day-before reminder can re-fire, returns presenter payloads with `can_reschedule`, and `ViewingNotificationService` emits `viewing.rescheduled` notifications. Backend coverage passed in `tests/Feature/ApiViewingTest.php` and `tests/Feature/ViewingSchedulingTest.php`.
-- KAN-51 Done `648857c` —
+- KAN-51 Done `7f8c7ed` —
   listing pages now point `og:image` / `twitter:image` to a generated `1200x630` share card at
   `/og/listings/{publicId}.jpg?v={fingerprint}`. `ListingOgImageService` composes the "second
   variant" layout: cover image on top, solid light footer, bold title/price/location, and caches
   the rendered JPG under `storage/app/public/og/listings/`. `ListingOgImageController` serves the
   cached file, `SeoHead.vue` now emits the corrected `og:image:width=1200`,
-  `og:image:height=630`, `og:image:alt`, `twitter:title`, and `twitter:description`, and focused
-  coverage passed in `tests/Feature/ListingOgImageTest.php`. `docs/og-preview-mock.html` remains
-  as the visual mock source file in the app repo.
+  `og:image:height=630`, `og:image:alt`, `twitter:title`, and `twitter:description`. Follow-up
+  commit `7f8c7ed` bundled Roboto TTFs under `resources/fonts/` so OG rendering no longer depends
+  on container OS fonts, and mirrored the listing `seo` payload into the initial Blade response
+  for marketplace + storefront listing pages so crawlers can read real OG/Twitter tags even when
+  Inertia SSR is unavailable. Focused coverage passed in `tests/Feature/ListingOgImageTest.php`.
+  `docs/og-preview-mock.html` remains as the visual mock source file in the app repo.
 - Prior: KAN-7/8/9/41 Done
 
-App HEAD: `648857c`
+App HEAD: `7f8c7ed`
 
 ## Exact next action
-Verify one real dev listing URL in a social-card debugger (or by sharing it into a chat client)
-to confirm the crawler can reach `/og/listings/{publicId}.jpg` and render the expected preview.
+Re-check a real dev listing URL over raw HTTP (or in a social-card debugger) after Coolify
+redeploys to confirm the first HTML response contains `og:*` / `twitter:*` tags and
+`/og/listings/{publicId}.jpg` returns `200 image/jpeg`.

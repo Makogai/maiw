@@ -84,6 +84,11 @@ All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO
   (`/og/listings/{publicId}.jpg?v={fingerprint}`) instead of the raw uploaded cover photo.
   That URL is intentionally host-relative via `url(...)`, so dealer storefront hosts emit their
   own absolute OG image URL without a separate SEO code path.
+- Important deployment nuance from dev validation: `@inertiaHead` alone was not enough for crawlers
+  when Inertia SSR was unavailable on the server. Listing controllers now also pass `seo` into the
+  Blade root view via `withViewData(...)`, and `resources/views/app.blade.php` mirrors the key
+  OG/Twitter/canonical/JSON-LD tags directly into the initial HTML response. This is the fallback
+  that makes social bots work even if the SSR worker is down.
 
 ### composables/ (resources/js/composables/*.js) — reusable logic, one line each
 
