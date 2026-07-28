@@ -56,7 +56,8 @@ clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate
 mailables (`EmailVerificationCodeMail`, `PasswordResetMail`, `ListingStatusMail`,
 `RecommendationDigestMail`) use `html:` views (not Markdown). Digest cards show title,
 € price, city/mileage; unsubscribe → account. Strings in `lang/{en,sr}/mail.php`.
-Restart `queue:work` after template edits before Mailpit QA.
+`mail:test-all` sends the full preview pack (or one selected mailable) straight to a chosen
+inbox for Mailpit QA. Restart `queue:work` after template edits before testing queued flows.
 
 **Moderation emails (**Jira: KAN-60**, local WIP)**: `ModerationNoticeMail` queued from
 `UserWarningService` (issue / lift / lift-all) and `UserSellingRestrictionService`

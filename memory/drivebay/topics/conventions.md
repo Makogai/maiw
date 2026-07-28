@@ -12,6 +12,7 @@ Only verified/non-obvious additions below.
 | Run dev (app+queue+Vite) | `composer run dev` | `apps/drivebay/README.md`, `apps/drivebay/package.json` |
 | Docker infra up/down/fresh | `composer run docker:up`/`docker:down`/`docker:fresh` | `apps/drivebay/README.md` |
 | Run tests | `php artisan test --compact` | `apps/drivebay/README.md` |
+| Preview all mailables | `php artisan mail:test-all seller@drivebay.test [--locale=sr] [--only=password-reset]` | `app/Console/Commands/SendTestEmailsCommand.php`, `docs/development/transactional-emails.md` |
 | Format PHP after edits | `vendor/bin/pint --dirty --format agent` | `apps/drivebay/AGENTS.md` |
 
 ## Structure and naming
