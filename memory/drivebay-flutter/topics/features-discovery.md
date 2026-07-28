@@ -187,18 +187,17 @@ listed anything — there is no capability check gating the "As seller" tab
 3. `ViewingRepository.book(...)` → `POST /listings/{id}/viewing/appointments`, returns the created
    `ViewingAppointment`, then shows a success screen inside the same sheet (no navigation).
 
-**Local KAN-35 delta (working tree only, not in app HEAD `5187eea`)**: the same
+**KAN-35 shipped behavior (app HEAD `f49e7b0`)**: the same
 `BookViewingSheet` now also supports **reschedule mode** when opened with an `appointmentUuid`.
 `MyViewingsScreen` uses that path from buyer appointment cards, pre-fills the existing buyer note,
 submits through `ViewingRepository.reschedule(...)`, invalidates `buyerViewingsProvider`, and shows
-`viewingRescheduled` in a snackbar on success. Future agents should treat this as implemented in the
-local working tree even though `sourceCommit` cannot encode it yet.
+`viewingRescheduled` in a snackbar on success.
 
 Cancellation: `ViewingRepository.cancel` → `POST /viewing/appointments/{uuid}/cancel`, only offered
 when `appointment.canCancel` is true (server-computed flag, `my_viewings_screen.dart:305`,
 `_AppointmentCard`).
 
-**Local KAN-35 delta (working tree only, not in app HEAD `5187eea`)**: buyer cards also expose a
+**KAN-35 shipped behavior (app HEAD `f49e7b0`)**: buyer cards also expose a
 `Reschedule` action when `appointment.canReschedule` is true and `appointment.listing` is present.
 The buyer flow still uses `GET /listings/{publicId}/viewing/dates` and `.../slots` from the listing
 being viewed; there is no separate reschedule-specific availability endpoint in the Flutter client.

@@ -35,7 +35,7 @@ primary source, not a second-hand summary.
 | `seller_profile_repository.dart` | `/dealers/{slug}`; `/sellers/{id}` | GET; GET | Yes — `PublicDealerApiController`/`PublicSellerApiController` in `catalog.php` (buyer-facing, distinct from the seller-dashboard `/dealer/*` routes — see gaps) | `lib/repositories/seller_profile_repository.dart:98,112` |
 | `taxonomy_repository.dart` | `/vehicle-types`; `/makes`; `/makes/{id}/models` | GET×3 | Partial — `GET /model-groups` (`catalog.php:32`) is never called | `lib/repositories/taxonomy_repository.dart:14,28,47` |
 | `tools_repository.dart` | `/tools/registration/options`; `/tools/registration/calculate`; `/tools/fuel-consumption/options`; `/tools/fuel-consumption/calculate`; `/tools/fuel-consumption/ai-estimate` | GET; POST; GET; POST; POST | Yes — full `tools.php` (5/5) | `lib/repositories/tools_repository.dart:14,31,58,75,104` |
-| `viewing_repository.dart` | `/listings/{id}/viewing/dates`; `/listings/{id}/viewing/slots`; `/listings/{id}/viewing/appointments`; `/viewings`; `/seller/viewings`; `/seller/viewing`; `/viewing/appointments/{id}/cancel` | GET; GET; POST; GET; GET; GET+PUT; POST | Yes — full `viewing.php` (8/8) at synced HEAD; **local KAN-35 working tree also adds** `/viewing/appointments/{id}/reschedule` via `POST` | `lib/repositories/viewing_repository.dart:12,36,58,78,92,106,123,144`; local-only `reschedule()` below |
+| `viewing_repository.dart` | `/listings/{id}/viewing/dates`; `/listings/{id}/viewing/slots`; `/listings/{id}/viewing/appointments`; `/viewings`; `/seller/viewings`; `/seller/viewing`; `/viewing/appointments/{id}/cancel`; `/viewing/appointments/{id}/reschedule` | GET; GET; POST; GET; GET; GET+PUT; POST; POST | Yes — full `viewing.php` (9/9) at synced HEAD, including buyer reschedule in KAN-35 | `lib/repositories/viewing_repository.dart:12,36,58,78,92,106,123,144` |
 
 One-line purpose per repository:
 
@@ -61,8 +61,8 @@ One-line purpose per repository:
 - **seller_profile** — buyer-facing public dealer storefront + private-seller profile pages.
 - **taxonomy** — vehicle-types/makes/models for listing forms and search filters.
 - **tools** — registration-fee and fuel-consumption calculators (incl. AI estimate).
-- **viewing** — viewing-appointment booking (buyer) + settings/inbox (seller); local KAN-35 working
-  tree also adds buyer rescheduling in place via `/viewing/appointments/{uuid}/reschedule`.
+- **viewing** — viewing-appointment booking/rescheduling (buyer) + settings/inbox (seller), via
+  the shared viewing endpoints including `/viewing/appointments/{uuid}/reschedule`.
 
 ## Models
 
@@ -116,7 +116,7 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
 | `vehicle_make.dart` (+freezed/g) | `VehicleMake` | make pick-list item | `taxonomy_repository` |
 | `vehicle_model.dart` (+freezed/g) | `VehicleModel` | model pick-list item (carries unused `vehicleModelGroupId`) | `taxonomy_repository` |
 | `vehicle_type.dart` (+freezed/g) | `VehicleType` | vehicle-type pick-list item (car/motorcycle/van/etc.) | `taxonomy_repository` |
-| `viewing.dart` | `ViewingSlot`, `ViewingDateOption`, `ViewingAppointment`, `ViewingInbox`, `SellerViewingSettings` | viewing date/slot options, booked appointment, buyer/seller inboxes; local KAN-35 working tree adds `ViewingAppointment.canReschedule` parsing | `viewing_repository` |
+| `viewing.dart` | `ViewingSlot`, `ViewingDateOption`, `ViewingAppointment`, `ViewingInbox`, `SellerViewingSettings` | viewing date/slot options, booked appointment, buyer/seller inboxes; `ViewingAppointment` parses both `canCancel` and `canReschedule` | `viewing_repository` |
 
 ### Backend model/shape correspondences worth knowing
 
@@ -141,11 +141,10 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
   from the phase table only.
 - `PromotionType`/`PaymentCheckoutSession` mirror `promotion_types` (phase 12) and
   `payments`/`invoices` (phase 11).
-- **Local KAN-35 delta (working tree only, not in app HEAD `5187eea`)**: `ViewingAppointment`
-  now reads a server-computed `can_reschedule` flag alongside `can_cancel`, and
-  `ViewingRepository.reschedule()` posts `{starts_at, buyer_note?}` to
-  `/viewing/appointments/{uuid}/reschedule`, expecting the same `{appointment: ...}` envelope as
-  booking/cancellation.
+- **KAN-35 shipped contract (app HEAD `f49e7b0`)**: `ViewingAppointment` reads a server-computed
+  `can_reschedule` flag alongside `can_cancel`, and `ViewingRepository.reschedule()` posts
+  `{starts_at, buyer_note?}` to `/viewing/appointments/{uuid}/reschedule`, expecting the same
+  `{appointment: ...}` envelope as booking/cancellation.
 
 ## Contract gaps found
 
