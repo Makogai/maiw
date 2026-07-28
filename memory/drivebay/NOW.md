@@ -2,21 +2,16 @@
 
 ## Goal
 
-Brand packs shipped locally (DriveBay + AutoKlik); next is QA + commit/push when ready.
+Pick next KAN backlog item after brand packs push.
 
 ## Current state
 
-- App HEAD still **`1729d6d`** on remote; **uncommitted** deploy-time branding:
-  - `BRAND=drivebay|autoklik` via `config/brand.php` + `config/brands/*`
-  - Helpers `brand()` / `brandify()`; Inertia shared `brand`; CSS accent override in
-    `app.blade.php`; SEO `og:site_name`; mail/Filament/Logo wired
-  - Lang strings use `:app` placeholder
-  - Docs: `docs/development/branding.md`
-  - Test: `tests/Unit/BrandConfigTest.php` (pass)
-- Switch: set `BRAND=autoklik` in `.env`, `php artisan config:clear`
-- Atlassian MCP unavailable this session — no Jira ticket filed yet
+- App HEAD **`c29efaf`** (pushed): deploy-time brand packs DriveBay + AutoKlik
+  (`BRAND=…`, `config/brands/*`, Inertia/mail/SEO/Filament wired).
+- Docs: `docs/development/branding.md`
+- Left untracked intentionally: `docs/og-preview-mock.html`
 
 ## Exact next action
 
-Want me to commit and push `apps/drivebay`? Optionally file a KAN ticket for brand packs.
-Smoke-check web with `BRAND=autoklik` (logo/teal accents/titles).
+Pick next To Do from the KAN board. Optional: file a KAN ticket for brand packs
+(Atlassian MCP was down when this shipped).

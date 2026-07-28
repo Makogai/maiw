@@ -2,20 +2,15 @@
 
 ## Goal
 
-Brand packs + prior KAN-44 snappiness work are local; commit/push when ready.
+Ship remaining **KAN-44** snappiness WIP (still local), or pick next ticket.
 
 ## Current state
 
-- App HEAD was **`ba9f5fa`**; **uncommitted**:
-  - **Brand packs:** `lib/brand/brand.dart` (`BRAND` dart-define), assets under
-    `assets/brands/{drivebay,autoklik}/`, Android flavors `drivebay`/`autoklik`,
-    palette + logo + `MaterialApp.title` from `Brand.current`
-  - Docs: `docs/development/branding.md`; helper `tool/run_brand.ps1`
-  - Run: `flutter run --flavor autoklik --dart-define=BRAND=autoklik`
-  - **Also still uncommitted:** KAN-44 snappiness WIP (images/SWR/search isolation)
-- iOS display name / launcher icon PNG not auto-switched yet (documented)
+- App HEAD **`768c642`** (pushed): DriveBay/AutoKlik build-time brand packs
+  (`--flavor` + `--dart-define=BRAND=`, `lib/brand/brand.dart`).
+- **Still uncommitted:** KAN-44 performance work (network image helper, SWR cache,
+  search slivers isolation, etc.).
 
 ## Exact next action
 
-Want me to commit and push `apps/drivebay-flutter` (brand packs alone, or with KAN-44)?
-Device-check AutoKlik flavor build.
+Want me to commit and push the remaining KAN-44 changes?
