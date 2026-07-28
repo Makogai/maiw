@@ -179,16 +179,10 @@ on the same model. Relations: `profile` (hasOne `UserProfile`), `dealerMembershi
   `moderation.manage`, `taxonomy.import`, `billing.view`, `system.settings`; roles `admin`
   (all perms), `moderator` (view+moderate subset), `super_admin` (all perms via
   `Permission::all()`).
-- **Dual authorization pattern (gotcha)** (**Jira: KAN-10**): staff/admin checks combine the `User.type` enum
-  column (`admin`/`moderator`/`dealer_employee`/`private`) **and** Spatie roles, e.g.
-  `StaffAccessService::isStaff()` — `in_array($user->type, ['admin','moderator']) ||
-  $user->hasAnyRole([...])` (`Domains/Moderation/Services/StaffAccessService.php:9-19`), and
-  `User::canAccessPanel()` (Filament admin gate) uses the identical
-  type-or-role check (`User.php:87-98`). A user could satisfy one but not the other —
-  when adding a new staff check, replicate *both* conditions or centralize them.
-  `AdminUserSeeder` only calls `assignRole('super_admin')` (`database/seeders/
-  AdminUserSeeder.php:28`) — it does not also set `type = 'admin'`, relying on the role
-  half of the check.
+- **Staff authorization (**Jira: KAN-10** fixed)**: `User::canAccessPanel()` delegates to
+  `StaffAccessService::isStaff()` (`User.php` + `StaffAccessService.php`) — type
+  `admin`/`moderator` OR Spatie `admin`/`super_admin`/`moderator`. `AdminUserSeeder`
+  already sets both `type = 'admin'` and `super_admin` role.
 - Policies use `$user->can('permission.name')` (Spatie's `can` macro via
   `register_permission_check_method`), e.g. `ListingPolicy` —
   `Domains/Listing/Policies/ListingPolicy.php:31,50,55,60`.
