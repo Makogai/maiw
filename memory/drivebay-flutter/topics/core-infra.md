@@ -113,6 +113,12 @@ in the interceptor chain, not in application code.
     (`lib/utils/listing_url.dart:16-27`, `:31-40`).
   - Listing public IDs are extracted by taking everything before the first `-` in the
     last path segment (`listing_url.dart:55-63`), so `AB123-toyota-corolla` → `AB123`.
+  - **KAN-27 (Android App Links)**: hosts `dev|qa|www|drivebay.me` are in
+    `AndroidManifest.xml` (`autoVerify`) + custom scheme `drivebay://`. Server
+    `public/.well-known/assetlinks.json` must list the **installed APK’s** SHA-256
+    (debug keystore differs per machine; no placeholder strings). Without a matching
+    fingerprint + deploy, taps fall to the browser/chooser even though in-app routing
+    works via `adb` forced intents / `drivebay://`.
 
 ## lib/core/experiments/ — client side of server-driven A/B variants
 

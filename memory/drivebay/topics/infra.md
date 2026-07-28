@@ -219,3 +219,19 @@ be run manually/in CI if the OpenAPI doc needs regenerating for a release.
 Monitoring: Telescope (local only), Horizon dashboard at `/horizon` (gated per
 `HorizonServiceProvider` above), Sentry via `SENTRY_LARAVEL_DSN` (prod, optional),
 `php artisan backup:run` / `config/backup.php` (not inspected this pass).
+
+## Mobile App Links / Universal Links (`public/.well-known/`) — **Jira: KAN-27**
+
+Static association files for Android App Links + iOS Universal Links:
+
+- `public/.well-known/assetlinks.json` — package `me.makogai.drivebay`; fingerprints
+  must be real SHA-256 strings only (no placeholders — Google DAL returns
+  `ERROR_CODE_MALFORMED_CONTENT` and autoVerify fails). Debug keystores differ per
+  machine; list every debug/release cert that should open `https://…/listings|dealers`.
+- `public/.well-known/apple-app-site-association` — still needs Apple Team ID
+  (placeholder). Serve as `application/json` (dev currently returns
+  `application/octet-stream`).
+- Ops notes: `public/.well-known/README.md`. Flutter hosts already cover
+  `dev|qa|www|drivebay.me` in the Android manifest / iOS entitlements.
+- Android works without Play Store: debug SHA in assetlinks + deploy to host +
+  `pm verify-app-links --re-verify`.
