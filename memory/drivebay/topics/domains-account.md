@@ -212,7 +212,7 @@ broker / `password_reset_tokens`. Web guest routes `password.request|email|reset
 authenticated `PUT /account/password`. API: `POST /auth/forgot-password`,
 `POST /auth/reset-password`, `PUT /account/password`. Reset revokes all Sanctum tokens +
 devices + auth sessions; change-password keeps the current API token (or regenerates the
-web session).
+web session). Reset + verification mails use the KAN-59 DriveBay HTML shell (not Markdown).
 
 ## Geography
 

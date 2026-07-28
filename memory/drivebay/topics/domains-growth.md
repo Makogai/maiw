@@ -51,6 +51,13 @@ clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate
 `config('recommendations.digest.enabled')` and `users.marketing_email_opt_in` —
 `app/Domains/Recommendation/Services/RecommendationDigestService.php`.
 
+**Branded transactional HTML (**Jira: KAN-59**, local WIP)**: shared Blade components
+`resources/views/components/mail/drivebay-{layout,button,code,listing}.blade.php`;
+mailables (`EmailVerificationCodeMail`, `PasswordResetMail`, `ListingStatusMail`,
+`RecommendationDigestMail`) use `html:` views (not Markdown). Digest cards show title,
+€ price, city/mileage; unsubscribe → account. Strings in `lang/{en,sr}/mail.php`.
+Restart `queue:work` after template edits before Mailpit QA.
+
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
 **KAN-23 shipped at app HEAD `8e99c98`**: the original mobile ticket text is stale
