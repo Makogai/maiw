@@ -141,7 +141,7 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
   from the phase table only.
 - `PromotionType`/`PaymentCheckoutSession` mirror `promotion_types` (phase 12) and
   `payments`/`invoices` (phase 11).
-- **KAN-24 local wiring on top of app HEAD `f49e7b0`**: `ListingDetailScreen` now uses
+- **KAN-24 shipped at app HEAD `f25defc`**: `ListingDetailScreen` now uses
   `ListingAnalytics.recordClick()` for buyer CTA actions as well as search-card interactions:
   tapping the bottom-bar `Contact` button sends `click_type=contact` with
   `placement=detail_actions`, and choosing `Share listing` sends `click_type=share` with the same

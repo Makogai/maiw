@@ -2,14 +2,13 @@
 
 ## Goal
 
-- Keep MAIW memory accurate for local **KAN-24** listing-detail analytics wiring on top of app
-  HEAD `f49e7b0`, while preserving the already-pushed **KAN-35** buyer rescheduling flow.
+- Keep MAIW memory accurate for shipped **KAN-24** listing-detail analytics wiring at app HEAD
+  `f25defc`, while preserving the already-pushed **KAN-35** buyer rescheduling flow.
 
 ## Current state
 
-- App HEAD is **`f49e7b0`** with one local, uncommitted Flutter change in
-  `lib/features/listings/listing_detail_screen.dart`.
-- **KAN-24 in progress (local only)**:
+- App HEAD is **`f25defc`**.
+- **KAN-24 shipped `f25defc` in `apps/drivebay-flutter`**:
   - buyer listing-detail `Contact` CTA now records a `contact` click with
     `placement=detail_actions` before opening the contact sheet;
   - buyer listing-detail `Share listing` action now records a `share` click with
@@ -31,9 +30,8 @@
 
 ## Exact next action
 
-1. QA `KAN-24` on-device by tapping `Contact` and `Share listing` from an active buyer-visible
-   listing, then commit/push `apps/drivebay-flutter` if the seller analytics counters/events now
-   appear as expected.
+1. Tackle **KAN-23** next: mobile still has no saved-search creation/editing UI or repository even
+   though saved-search match notifications already exist.
 
 ## Decisions made this session
 
