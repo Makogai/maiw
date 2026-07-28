@@ -2,74 +2,23 @@
 
 ## Goal
 
-- Keep MAIW memory accurate for shipped **KAN-24** listing-detail analytics wiring at app HEAD
-  `f25defc`, while preserving the already-pushed **KAN-35** buyer rescheduling flow.
+QA and ship **KAN-52** contact-seller default-to-chat on top of app HEAD `071ec63`
+(local uncommitted).
 
 ## Current state
 
-- App HEAD is **`586f818`**.
-- **KAN-23 investigation corrected a stale ticket description**:
-  - saved-search repository/UI already shipped in Flutter at `c74fbe6`;
-  - the remaining local fix is notification routing, not saved-search CRUD creation.
-- **KAN-23 Done `586f818`**:
-  - `PushNotificationService._routeFromMessage()` now falls back to
-    `/account/saved-searches` for `saved_search.match`, so alerts still open the Saved Searches
-    screen even when older payloads omit `mobile_route`.
-- **KAN-24 shipped `f25defc` in `apps/drivebay-flutter`**:
-  - buyer listing-detail `Contact` CTA now records a `contact` click with
-    `placement=detail_actions` before opening the contact sheet;
-  - buyer listing-detail `Share listing` action now records a `share` click with
-    `placement=detail_actions` before opening the native share sheet;
-  - per-channel contact tracking inside `ContactSellerSheet` still records `phone`, `email`,
-    `whatsapp`, and `viber`, now tagged with `placement=detail_contact_sheet`.
-- **KAN-35 done `f49e7b0` in `apps/drivebay-flutter`**:
-  - `ViewingAppointment` now parses `canReschedule` in addition to `canCancel`.
-  - `ViewingRepository` adds `reschedule()` for `POST /viewing/appointments/{uuid}/reschedule`.
-  - `BookViewingSheet` now supports both booking and rescheduling modes, pre-fills the existing
-    buyer note, and reuses the same date/slot picker.
-  - `MyViewingsScreen` adds a buyer-side reschedule action and success snackbar.
-  - push routing now treats `viewing.rescheduled` the same as other viewing notifications and opens
-    `/account/viewings`.
-  - `app_en.arb` / `app_sr.arb` plus generated localization Dart files were updated for the new
-    reschedule copy.
-- Default `API_BASE_URL` remains `http://192.168.1.226:8000/api/v1`.
-- Backend **KAN-40** variants API is live (`e3385fe`); Flutter still uses primary image URLs.
+- App HEAD is **`071ec63`** (+ uncommitted KAN-52).
+- **KAN-52 In Review (local)**:
+  - Listing detail Contact no longer dead-ends when `contact_channels` is null.
+  - Authenticated buyers open the contact sheet with in-app chat only; guests go to login.
+  - When the seller shared phone/WhatsApp/Viber/email, the multi-channel sheet is unchanged.
+  - Hint copy `sellerContactViaChatOnly` when chat is the only option.
+  - `ListingContactChannels.hasExternalChannels` helper + unit test.
+- Prior shipped: KAN-23/24/35 Done.
 
 ## Exact next action
 
-1. If saved-search alerts still do not arrive end-to-end after the shipped route fixes, inspect the
-   backend alert-generation schedule and matching rules next rather than rebuilding mobile CRUD.
-
-## Decisions made this session
-
-- Treat the missing QA events as top-level detail-screen CTAs, not replacements for the existing
-  per-channel contact analytics inside the sheet. `(**Jira: KAN-24**)`
-- Treat buyer rescheduling as an in-place update flow that reuses the existing booking sheet instead
-  of creating a second UI.
-- Keep wrapper memory aligned with the pushed reschedule flow and backend `KAN-35` contract.
-
-## Changed files
-
-- `lib/core/push/push_notification_service.dart`
-- `lib/features/listings/listing_detail_screen.dart`
-- `lib/models/viewing.dart`
-- `lib/repositories/viewing_repository.dart`
-- `lib/features/listings/widgets/book_viewing_sheet.dart`
-- `lib/features/viewings/my_viewings_screen.dart`
-- `lib/core/push/push_notification_service.dart`
-- `lib/l10n/app_en.arb`
-- `lib/l10n/app_sr.arb`
-- `lib/l10n/app_localizations.dart`
-- `lib/l10n/app_localizations_en.dart`
-- `lib/l10n/app_localizations_sr.dart`
-
-## Verification
-
-- `dart format lib/features/listings/listing_detail_screen.dart`
-- `flutter analyze lib/features/listings/listing_detail_screen.dart` -> only the pre-existing
-  `_openReportListing` unused warning in that file; no new blocking diagnostics from the KAN-24 fix
-- `flutter gen-l10n`
-- `dart format ...`
-- `flutter analyze` on touched files: only one pre-existing info in
-  `lib/core/push/push_notification_service.dart` (`prefer_initializing_formals`); no blocking
-  errors
+1. Commit + push `apps/drivebay-flutter` KAN-52.
+2. QA: listing with no shared contacts → Contact opens chat sheet; listing with phone → sheet
+   still shows channels.
+3. Mark KAN-52 Done after QA.
