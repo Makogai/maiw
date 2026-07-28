@@ -99,11 +99,15 @@ plain `Request`, no dedicated Form Request.
 `/dealer`): `storefront`, `domain`, `domain/verify`. Matches `docs/api/modules/dealer.md`
 "Routes only" phase-5 status — thin, likely minimal validation.
 
-**viewing.php** (8 endpoints) — `ListingViewingApiController`, `BuyerViewingApiController`,
-`SellerViewingApiController`. Public: `dates`, `slots` per listing. `auth:sanctum,
-verified, throttle:api-write`: book appointment (`CancelListingViewingRequest` is **Web**
-namespace, used for `cancel`), buyer's `/viewings` list, seller's `/seller/viewing`
-show/update (`UpdateSellerViewingSettingsRequest`, **Web** namespace) + `/seller/viewings`.
+**viewing.php** (8 committed endpoints + 1 local-only working-tree endpoint) —
+`ListingViewingApiController`, `BuyerViewingApiController`, `SellerViewingApiController`.
+Public: `dates`, `slots` per listing. `auth:sanctum, verified, throttle:api-write`: book
+appointment (`CancelListingViewingRequest` is **Web** namespace, used for `cancel`), buyer's
+`/viewings` list, seller's `/seller/viewing` show/update (`UpdateSellerViewingSettingsRequest`,
+**Web** namespace) + `/seller/viewings`. Local KAN-35 working tree also adds `POST
+/viewing/appointments/{appointment}/reschedule` → `BuyerViewingApiController::reschedule`
+with inline validation for `starts_at` + optional `buyer_note`; memory keeps this marked
+local-only until committed because app HEAD is still `734ba07`.
 
 **fuel-prices.php** (4 endpoints, `FuelPriceApiController`, `FuelPriceAlertApiController`)
 — public `fuel-prices`, `fuel-prices/latest`; `auth:sanctum, verified` for
@@ -169,6 +173,11 @@ of `Route::match` so Scramble can document both methods — see `routes/api/v1/e
 After route changes, re-run `composer run api:docs` before release; entrypoint does not run it
 automatically (see `topics/infra.md` deployment note). Primary contract chain:
 `routes/api/v1/*.php` → `docs/api/modules/*.md` → `docs/api/v1/openapi.json`.
+
+**Local KAN-35 doc follow-up**: when the app repo commits the buyer reschedule endpoint, refresh
+the API docs chain above for the new viewing route. The working-tree change is implemented and
+tested, but this memory pass did not claim regenerated module/OpenAPI artifacts because the app
+changes are still uncommitted.
 
 ## Database
 

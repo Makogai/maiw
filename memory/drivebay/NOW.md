@@ -1,7 +1,7 @@
 # drivebay — Current handoff
 
 ## Goal
-Backend bug/hygiene queue after KAN-11.
+Carry forward local KAN-35 backend work for buyer viewing reschedule without falsely claiming it is committed.
 
 ## Current state
 - KAN-10 Done `c0eb9bd`
@@ -11,9 +11,10 @@ Backend bug/hygiene queue after KAN-11.
 - KAN-14 Done `15ce16c` — `docs/development/docker-setup.md` documents postgres:16 on 5432 (not MySQL/MariaDB)
 - KAN-15 Done `e7b9d36` — `CLAUDE.md` + `system-overview.md` Stripe + fake only (no PayPal claimed)
 - KAN-17 Done `734ba07` — clarified `EmailCampaign`/`EmailCampaignRecipient`/`NotificationTemplate` are live via `RecommendationDigestService` (not dead stubs); removed empty `ListingPerformanceDaily`/`SellerPerformanceDaily` models + migration `2026_07_28_091500_drop_unused_performance_daily_tables.php`; updated `docs/database/migration_plan.md`; left `PageEvent` empty model (table still in schema / FKs)
+- KAN-35 Local only, uncommitted in `apps/drivebay` — buyer reschedule for viewing appointments is implemented in the working tree: `POST /api/v1/viewing/appointments/{appointment}/reschedule`, `BuyerViewingApiController::reschedule()`, buyer-only `ViewingAppointmentPolicy::reschedule()`, in-place `ViewingAppointmentService::reschedule()` with slot revalidation + reminder reset + presenter `can_reschedule`, `ViewingNotificationService` `viewing.rescheduled` notifications, EN/SR translations, and backend coverage in `tests/Feature/ApiViewingTest.php` + `tests/Feature/ViewingSchedulingTest.php`. Verified locally with `php artisan test tests/Feature/ApiViewingTest.php tests/Feature/ViewingSchedulingTest.php` passing.
 - Prior: KAN-7/8/9/41 Done
 
 App HEAD: `734ba07`
 
 ## Exact next action
-Pick next hygiene ticket from Jira backlog. Remaining analytics stub: `PageEvent` (empty model, `page_events` table + FKs, no writers) — see `topics/domains-growth.md`.
+Commit the KAN-35 working-tree changes in `apps/drivebay` when ready, then refresh wrapper memory `sourceCommit` from the new app HEAD. Until then, treat KAN-35 reschedule behavior as local-only and not present at committed HEAD `734ba07`.

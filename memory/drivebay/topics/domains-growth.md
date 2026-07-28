@@ -53,6 +53,14 @@ clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate
 
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
+**Local-only KAN-35 behavior (not in app HEAD `734ba07`)**: the current `apps/drivebay`
+working tree extends viewing notifications with `viewing.rescheduled` for both seller and buyer.
+Metadata carries `appointment_uuid`, the new `starts_at`, `previous_starts_at_label`, and
+`meeting_note`; reminder dedupe is reset by deleting prior `viewing.reminder` rows for that
+appointment UUID before creating the reschedule notifications. Because these are ordinary
+`Notification` inserts, existing `NotificationObserver` push fan-out should also cover
+reschedules once the app change is committed.
+
 **External integration**: Firebase Cloud Messaging. Config: `config('firebase.projects.app.credentials')` (path/inline-JSON/array), `config('firebase.default')` env `FIREBASE_PROJECT` — `config/firebase.php:12,20`. No secret values captured here.
 
 ## Engagement

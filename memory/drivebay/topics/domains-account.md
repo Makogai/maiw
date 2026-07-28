@@ -96,12 +96,12 @@ weekly availability.
 
 | Class | Role |
 |---|---|
-| `ViewingAppointmentService` | `book()` (validates not-own-listing, active listing, slot availability inside a DB transaction with a re-check to close a race window), `cancel()`, presenters for upcoming/past lists — `Domains/Viewing/Services/ViewingAppointmentService.php:22,53,87,205` |
+| `ViewingAppointmentService` | `book()` (validates not-own-listing, active listing, slot availability inside a DB transaction with a re-check to close a race window), `cancel()`, presenters for upcoming/past lists; local KAN-35 working tree also adds in-place `reschedule()` with the same slot re-check pattern, reminder-history reset, and presenter `can_reschedule` — `Domains/Viewing/Services/ViewingAppointmentService.php:22,53,87,115,310` |
 | `ViewingSlotService` | Computes available slots/dates for a listing from seller weekly rules minus booked appointments — `Domains/Viewing/Services/ViewingSlotService.php:21,81,116` |
 | `ViewingSettingsService` | Seller weekly-rule CRUD, per-listing scheduling toggle, meeting-note text, seller timezone resolution — `Domains/Viewing/Services/ViewingSettingsService.php:18,47,77,98,130` |
-| `ViewingNotificationService` | Writes `Notification` rows directly (booked/cancelled/reminder), locale-aware — `Domains/Viewing/Services/ViewingNotificationService.php:16,68,139` |
+| `ViewingNotificationService` | Writes `Notification` rows directly (booked/cancelled/reminder); local KAN-35 working tree adds `clearReminderHistory()` and dual-party `viewing.rescheduled` notifications — `Domains/Viewing/Services/ViewingNotificationService.php:16,68,139,140,185` |
 | `ViewingAppointmentLifecycleService` | Cron-driven: day-before reminders, marks past appointments `completed` (seller-timezone aware) — `Domains/Viewing/Services/ViewingAppointmentLifecycleService.php:14,38` |
-| `ViewingAppointmentPolicy` | `book()` requires verified email + not own listing; `cancel()` requires being buyer or seller — `Domains/Viewing/Policies/ViewingAppointmentPolicy.php:11,20` |
+| `ViewingAppointmentPolicy` | `book()` requires verified email + not own listing; `cancel()` requires being buyer or seller; local KAN-35 working tree adds buyer-only `reschedule()` for future confirmed appointments — `Domains/Viewing/Policies/ViewingAppointmentPolicy.php:11,20,29` |
 | `ProcessViewingAppointmentsCommand` | Console entry point invoking the lifecycle service (reminders + completion) — `Domains/Viewing/Console/ProcessViewingAppointmentsCommand.php` |
 
 **Models**: `ListingViewingAppointment` (buyer/seller/listing FKs, `starts_at`/`ends_at`,
@@ -114,6 +114,16 @@ event — no `Events/`/`Listeners/` folder exists under `Domains/Viewing/`). Vie
 Listing (`seller_user_id`, `status` gating). Policy registered globally in
 `AppServiceProvider::boot()` — `Gate::policy(ListingViewingAppointment::class,
 ViewingAppointmentPolicy::class)` (`app/Providers/AppServiceProvider.php:67`).
+
+**Local-only KAN-35 behavior (not in app HEAD `734ba07`)**: buyer reschedule is implemented in
+the current working tree and keeps the same `ListingViewingAppointment` row instead of
+cancel+rebook. It is buyer-only, limited to future confirmed appointments, re-validates the
+replacement slot before and inside the transaction, updates `starts_at`/`ends_at` in place,
+preserves/replaces `buyer_note`, clears prior `viewing.reminder` history for that appointment
+UUID so the day-before reminder can fire again for the new date, and exposes `can_reschedule`
+only for the buyer in presenter payloads. Verified by local tests
+`tests/Feature/ApiViewingTest.php` and `tests/Feature/ViewingSchedulingTest.php`, but this note
+must remain qualified until the app repo commits KAN-35.
 
 **Gotcha**: slot-availability race is handled with a double-check pattern (check before and
 inside the transaction) plus a unique-constraint violation caught by string-matching
