@@ -72,12 +72,18 @@ needs a matching column added server-side to be persisted as a saved search even
 itself accepts it ad hoc.
 
 **Pagination**: page-based infinite scroll, not cursor-based. `perPage = 24` (`search_repository.dart:47`).
-`_onScrollPosition` triggers `loadMore()` once the scroll position is within 200px of
-`maxScrollExtent` (`search_screen.dart:126-131`); `loadMore()` no-ops while already loading/no more
+`_onScrollPosition` triggers `loadMore()` once the scroll position is within **800px** of
+`maxScrollExtent` (`search_screen.dart` `_loadMorePrefetch`, **KAN-34**); `loadMore()` no-ops while already loading/no more
 pages (`search_notifier.dart:88-91`); `hasMore` is derived client-side as
 `combined.length < result.meta.total` (`search_notifier.dart:100-106`), so an inconsistent/stale
 `total` from the API would desync pagination — nothing guards against `total` decreasing between
-pages.
+pages. Search also sets `cacheExtent: 600` and stable `ValueKey(publicId)` on tiles (**KAN-44**).
+
+**Perf / caching (**Jira: KAN-44**)**: listing tiles/galleries use `DrivebayNetworkImage`
+(disk cache + downsample). `listingDetailProvider` / `similarListingsProvider` use
+`keepAliveWithTtl` (~8 min). Featured + recommendations use SWR (`SwrCache`, ~2 min fresh)
+in addition to keepAlive; pull-to-refresh clears those SWR keys. Live `/search` still
+cache-busts with `_ts`.
 
 **Sort options** (**Jira: KAN-32**, subsumes **KAN-25**): client sends one of
 `freshness | recommendation | popularity | price_asc | price_desc | year_desc | year_asc`

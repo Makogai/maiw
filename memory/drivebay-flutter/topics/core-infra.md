@@ -120,6 +120,15 @@ in the interceptor chain, not in application code.
     fingerprint + deploy, taps fall to the browser/chooser even though in-app routing
     works via `adb` forced intents / `drivebay://`.
 
+## lib/core/cache/ — keepAlive TTL + SWR (**Jira: KAN-44**)
+
+- `keep_alive_ttl.dart` — `keepAliveWithTtl(ref, duration)` closes the keepAlive link
+  after the last listener leaves for `duration`.
+- `swr_cache.dart` — in-memory stale-while-revalidate for hub rails only (not live
+  search). Docs: `apps/drivebay-flutter/docs/development/performance.md`.
+- Images: `DrivebayNetworkImage` / `DrivebayNetworkImageFill` wrap
+  `cached_network_image` + `imageCacheWidth` decode downsampling.
+
 ## lib/core/experiments/ — client side of server-driven A/B variants
 
 - `AbSubjectService` (`lib/core/experiments/ab_subject_service.dart`) generates and caches
