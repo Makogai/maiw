@@ -73,6 +73,18 @@ listing cards, form inputs, modals, taxonomy pickers; see
 All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO pattern
 (`Layouts/AppLayout.vue:19`, `Layouts/GuestLayout.vue` usage in `Pages/Auth/Login.vue:20`).
 
+### SEO / social-card notes
+
+- `resources/js/Components/SeoHead.vue` is the single emission point for page-level SEO tags.
+  Listing-share work (KAN-51) expanded it beyond the prior minimal set so it now also emits
+  `og:image:alt`, `twitter:title`, and `twitter:description`, and corrected the hardcoded OG image
+  dimensions from `1600x1200` to the new generated social-card size `1200x630`.
+- Listing pages still pass SEO through the same `seo` prop contract, but `app/Support/Seo/SeoData.php`
+  now points listing `og:image` / `twitter:image` at a generated card URL
+  (`/og/listings/{publicId}.jpg?v={fingerprint}`) instead of the raw uploaded cover photo.
+  That URL is intentionally host-relative via `url(...)`, so dealer storefront hosts emit their
+  own absolute OG image URL without a separate SEO code path.
+
 ### composables/ (resources/js/composables/*.js) — reusable logic, one line each
 
 | Composable | Purpose |

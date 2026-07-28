@@ -1,8 +1,9 @@
 # drivebay — Current handoff
 
 ## Goal
-Carry forward shipped KAN-23 saved-search notification routing fixes at backend app HEAD
-`8e99c98`, while preserving shipped KAN-35 buyer viewing reschedule behavior.
+Carry forward uncommitted KAN-51 listing share-preview work on backend app HEAD `8e99c98`,
+while preserving shipped KAN-23 saved-search notification routing and KAN-35 buyer viewing
+reschedule behavior.
 
 ## Current state
 - KAN-10 Done `c0eb9bd`
@@ -22,10 +23,19 @@ Carry forward shipped KAN-23 saved-search notification routing fixes at backend 
   - `AdminPushTestService` now defaults saved-search test pushes to `/account/saved-searches`;
   - focused tests cover both the presented route and the queued push payload route.
 - KAN-35 Done `727abc9` — buyer viewing appointments now support committed in-place reschedule via `POST /api/v1/viewing/appointments/{appointment}/reschedule`, handled by `BuyerViewingApiController::reschedule()` behind a buyer-only `ViewingAppointmentPolicy::reschedule()`. `ViewingAppointmentService::reschedule()` re-validates the replacement slot before and inside the transaction, resets reminder history so the day-before reminder can re-fire, returns presenter payloads with `can_reschedule`, and `ViewingNotificationService` emits `viewing.rescheduled` notifications. Backend coverage passed in `tests/Feature/ApiViewingTest.php` and `tests/Feature/ViewingSchedulingTest.php`.
+- KAN-51 in progress on top of app HEAD `8e99c98` (not yet committed in `apps/drivebay`) —
+  listing pages now point `og:image` / `twitter:image` to a generated `1200x630` share card at
+  `/og/listings/{publicId}.jpg?v={fingerprint}`. `ListingOgImageService` composes the "second
+  variant" layout: cover image on top, solid light footer, bold title/price/location, and caches
+  the rendered JPG under `storage/app/public/og/listings/`. `ListingOgImageController` serves the
+  cached file, `SeoHead.vue` now emits the corrected `og:image:width=1200`,
+  `og:image:height=630`, `og:image:alt`, `twitter:title`, and `twitter:description`, and focused
+  coverage passed in `tests/Feature/ListingOgImageTest.php`. `docs/og-preview-mock.html` remains
+  as the visual mock source file in the app repo.
 - Prior: KAN-7/8/9/41 Done
 
-App HEAD: `727abc9`
+App HEAD: `8e99c98`
 
 ## Exact next action
-If saved-search alerts still fail to arrive end-to-end after this route fix, investigate the
-hourly `search:send-saved-search-alerts` scheduler semantics and matching logic next.
+If the user approves shipping this slice, commit the `apps/drivebay` KAN-51 OG image changes,
+push the app repo, then verify one real shared listing URL against a live social-card debugger.
