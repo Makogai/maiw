@@ -10,7 +10,8 @@ Mailpit-QA the full branded email pack with the new preview command, then commit
   - **KAN-59**: branded shell for verify/reset/listing-status/digest, plus password-reset CTA stacking fix
   - **KAN-60**: `ModerationNoticeMail` for warning + selling-restriction issue/lift/expire
   - Admin users create flow: `send_verification_email` toggle sends the verification email immediately for new unverified users
-  - QA helper: `php artisan mail:test-all <email> [--locale=sr] [--only=...]`
+  - QA helper: `php artisan mail:test-all <email> [--locale=sr] [--only=...]` (also
+  Filament System → Artisan commands → “Send all test emails”, to signed-in admin)
 - Docs: `docs/development/transactional-emails.md`
 - Verified: `MailTestAllCommandTest`, `AdminUserAccountOpsTest`, `BrandedMailLayoutTest`, `ModerationNoticeMailTest`
 - Tickets: [KAN-59](https://drivebayme.atlassian.net/browse/KAN-59) + [KAN-60](https://drivebayme.atlassian.net/browse/KAN-60) In Review
