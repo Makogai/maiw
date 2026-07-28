@@ -71,12 +71,9 @@ worker, scheduler all share `base`'s `ENTRYPOINT`):
 7700), **redis** (`redis:7-alpine`, port 6379), **mailpit** (SMTP 1025 / UI 8025),
 **adminer** (profile `tools` only, port 8080) — `docker-compose.yml:8-79`.
 
-**Discrepancy found** (**Jira: KAN-14**): `docs/development/docker-setup.md`'s "What Docker runs" table
-says the DB service is **mysql (MariaDB 11)** on port 3306
-(`docs/development/docker-setup.md:57-65`), but the actual `docker-compose.yml` only
-defines a **postgres:16-alpine** service on port 5432 — there is no mysql/mariadb
-service anywhere in the compose files. Treat the doc's DB row as stale; Postgres is what
-actually runs.
+(**Jira: KAN-14** fixed `15ce16c`): `docs/development/docker-setup.md` "What Docker runs"
+table now matches `docker-compose.yml` — **postgres** (PostgreSQL 16) on port **5432**;
+no MySQL/MariaDB service in compose.
 
 `docker-compose.coolify.yml` is a **reference/blueprint**, not what Coolify literally
 runs (Coolify deploys each service as its own app per `docs/development/deployment.md`):

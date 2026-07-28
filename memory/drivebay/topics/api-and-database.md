@@ -155,36 +155,20 @@ oversight, but it does mean the "separate contract spaces" rule in CLAUDE.md is 
 for authorization boundaries, not literally true for validation rule classes. Worth
 knowing before assuming any `Api/V1` controller has a matching `Requests/Api/V1` sibling.
 
-### Finding: `docs/api/v1/openapi.json` is stale relative to routes and hand-written module docs (**Jira: KAN-13**)
+### OpenAPI + module docs (**Jira: KAN-13** fixed `cd53e3e`)
 
-Diffed all 105 route-file (method, normalized-path) pairs against the 89 operations
-actually present in `docs/api/v1/openapi.json` (methods keyed per path). **16 real
-endpoints are missing from the generated spec**, and it has **one stale/phantom path**:
+Regenerated `docs/api/v1/openapi.json` via `composer run api:docs` (`composer.json:93`).
+Prior gap (16 missing operations + phantom `PUT /seller/listings/{publicId}/viewing`) is
+closed. Module docs filled for endpoints that were code-only: account locale, featured
+listings, experiments, notification unread helpers, messaging typing/report, seller show +
+request-photo-review.
 
-Missing from openapi.json (present in code, and in most cases in `docs/api/modules/*.md`):
-`GET/PUT /account/locale`, `GET /billing/config` (documented in `modules/billing.md:9`),
-`GET /experiments` (undocumented anywhere except code — no module doc at all),
-`GET /featured-listings` (undocumented anywhere), `GET/PUT /fuel-prices/alerts`
-(documented in `modules/fuel-prices.md:87-88`), `GET /notifications/unread-count`,
-`GET /notifications/latest-unread` (both undocumented anywhere),
-`GET/POST /payments/{payment}/checkout,confirm` (documented in `modules/billing.md:12-13`),
-`GET /seller/listings/{publicId}` (show; undocumented in `modules/seller-listings.md` too),
-`POST /seller/listings/{publicId}/request-photo-review` (undocumented in module doc too),
-`PUT/POST /messages/threads/{thread}/mute` (documented in `modules/messaging.md:13`),
-`POST /messages/threads/{thread}/typing`, `POST /messages/threads/{thread}/report` (both
-undocumented anywhere).
+**Scramble nuance**: thread mute uses separate `PUT` and `POST` routes (same action) instead
+of `Route::match` so Scramble can document both methods — see `routes/api/v1/engagement.php`.
 
-Phantom in openapi.json but not in code: `PUT /v1/seller/listings/{publicId}/viewing` —
-no such route exists; the real path is `PUT /seller/viewing` (`routes/api/v1/viewing.php:19`,
-inside `Route::prefix('seller')`). Looks like a stale artifact from before that route was
-under a different prefix.
-
-Practical implication: **trust `routes/api/v1/*.php` + `docs/api/modules/*.md` over
-`docs/api/v1/openapi.json` for anything touching these specific endpoints** until
-`composer run api:docs` (defined `composer.json:93`) is re-run. `GET /experiments`,
-`GET /featured-listings`, notification unread-count/latest-unread, and messaging
-typing/report are undocumented in *any* doc (module docs or openapi) — only discoverable
-by reading the controllers.
+After route changes, re-run `composer run api:docs` before release; entrypoint does not run it
+automatically (see `topics/infra.md` deployment note). Primary contract chain:
+`routes/api/v1/*.php` → `docs/api/modules/*.md` → `docs/api/v1/openapi.json`.
 
 ## Database
 

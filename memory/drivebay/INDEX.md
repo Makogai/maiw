@@ -8,7 +8,7 @@ verified against code or wasn't already written down.
 
 | Need | Read | Freshness |
 |---|---|---|
-| Resume current work | `NOW.md` | current session handoff (2026-07-15) |
+| Resume current work | `NOW.md` | current session handoff (2026-07-28) |
 | Architecture/boundaries | `topics/architecture.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Business behavior | `topics/domain.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Local coding/testing patterns | `topics/conventions.md`, then `apps/drivebay/AGENTS.md` | partial |
@@ -27,9 +27,9 @@ verified against code or wasn't already written down.
 
 - `topics/domains-core.md` — deep reference for the 6 core marketplace domains (Listing,
   Vehicle, Moderation, Media, Search, Recommendation): key services/models, cross-domain
-  event/job wiring, and gotchas (e.g. `ListingUpdated` has no listener, Media domain does
-  not actually use Spatie Media Library, recommendation rebuild jobs are not scheduled).
-  Read this before touching any of those six domains instead of re-exploring `app/Domains/`.
+  event/job wiring, and gotchas (e.g. Media domain does not actually use Spatie Media Library,
+  recommendation rebuild jobs are not scheduled). Read this before touching any of those six
+  domains instead of re-exploring `app/Domains/`.
 - `topics/frontend-and-admin.md` — deep reference for `resources/js/` (Pages→controller
   map, Components/ subfolders, composables/ one-liners, confirmed Vue/Inertia/Tailwind
   v4 conventions, vite.config.js) and `app/Filament/Admin/` (all 32 resources with
@@ -56,8 +56,8 @@ verified against code or wasn't already written down.
   of re-exploring `app/Domains/`.
 - `topics/api-and-database.md` — deep reference for `routes/api/v1/*.php` (endpoint
   tables: method/path/controller/auth per route file) and the DB schema (migration
-  phases, schema-evolution history). Flags that `docs/api/v1/openapi.json` is stale (16
-  endpoints missing, 1 phantom path) and 8 API controllers intentionally reuse
-  `Requests/Web/*` Form Requests. Read this before adding/changing an API endpoint or
-  touching migrations instead of re-deriving the route/schema map from scratch.
+  phases, schema-evolution history). OpenAPI regenerated (**Jira: KAN-13** `cd53e3e`); 8
+  API controllers still intentionally reuse `Requests/Web/*` Form Requests. Read this before
+  adding/changing an API endpoint or touching migrations instead of re-deriving the
+  route/schema map from scratch.
 

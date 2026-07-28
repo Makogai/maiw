@@ -37,7 +37,7 @@ verified against code and not obvious from those.
 
 ## External systems and persistence
 
-- Firebase Cloud Messaging (push), Stripe + PayPal (billing), Sentry (prod error
+- Firebase Cloud Messaging (push), Stripe + fake gateway (billing), Sentry (prod error
   tracking), Telescope (local). Schema is authoritative in
   `docs/database/database_schema.dbml`; migration order fixed by
   `docs/database/migration_plan.md` — never invent tables/columns.

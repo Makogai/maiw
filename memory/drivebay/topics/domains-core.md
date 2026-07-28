@@ -32,13 +32,10 @@ in sync with that lifecycle.
 - `ListingService::publish/approve` dispatches `ListingPublished` event + `SyncListingSearchDocumentJob`.
   Only one listener is registered: `SendListingPublishedNotification` → Notification domain, wired in
   `app/Providers/AppServiceProvider.php:69` (no dedicated EventServiceProvider in this app).
-- **Gotcha** (**Jira: KAN-12**): `ListingUpdated` is dispatched from both `ListingService::update`
-  (`ListingService.php:169`) and `ListingModerationService::applyChanges/completeAdminPanelEdit`
-  (`app/Domains/Moderation/Services/ListingModerationService.php:184,270`) but **has no registered
-  listener anywhere** — confirmed by grep across `app/Providers` and `app/Domains/*/Listeners`. It's a
-  dead event today; don't assume something reacts to it.
-  - `ListingService::update` — falls, listing→active — pushes to search sync but not the
-  domain event.
+- (**Jira: KAN-12** fixed `bbaa5b6`): removed dead `ListingUpdated` event class and all dispatches
+  from `ListingService::update` and `ListingModerationService::applyChanges/completeAdminPanelEdit`.
+  Listing updates still fan out via direct `SyncListingSearchDocumentJob` dispatch and
+  `PriceDropNotificationService` where applicable — no domain event on update.
 - Media → Listing: `ProcessListingMediaJob::handle` calls
   `ListingPublishCoordinator::checkListingReady()` after each asset finishes, which auto-publishes the
   listing once no media is left `queued`/`processing` (`app/Domains/Media/Jobs/ProcessListingMediaJob.php:87`).

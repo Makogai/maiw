@@ -72,12 +72,10 @@ Stripe class exists AND `drivebay.billing.stripe_secret` is set, else falls back
 values here): `config/drivebay.php` `billing.stripe_key`/`stripe_secret`/
 `stripe_webhook_secret` (`config/drivebay.php:76-80`).
 
-**Stale doc** (**Jira: KAN-15**): `apps/drivebay/CLAUDE.md` and `docs/architecture/system-overview.md` list
-"Stripe + PayPal" as payment gateways. **No PayPal gateway class, config keys, or route
-exists in code** — only `StripePaymentGateway` and `FakePaymentGateway` implement
-`PaymentGatewayInterface` (`Domains/Billing/Gateways/`, `Domains/Billing/Contracts/
-PaymentGatewayInterface.php`). Treat PayPal as not-yet-implemented, not as a working
-integration.
+(**Jira: KAN-15** fixed `e7b9d36`): `apps/drivebay/CLAUDE.md` and
+`docs/architecture/system-overview.md` now document **Stripe + in-app `fake` gateway**
+only. Code still has only `StripePaymentGateway` and `FakePaymentGateway` implementing
+`PaymentGatewayInterface` — no PayPal integration exists.
 
 **Models**: `Invoice` morphTo `billable` (Listing or DealerAccount today), hasMany `items`
 (`InvoiceItem`) and `payments` (`Payment`) — `Models/Domains/Billing/Models/Invoice.php:53,83,88`.
@@ -258,11 +256,8 @@ switches (`app/Features/`) vs. the custom Experiment A/B system — before writi
 
 ## Doc-accuracy notes for this pass
 
-1. **PayPal is documented but not implemented** (**Jira: KAN-15**). `apps/drivebay/CLAUDE.md` ("Tech stack",
-   "External systems") and `docs/architecture/system-overview.md` both say
-   "Stripe + PayPal"; code only has `StripePaymentGateway` + `FakePaymentGateway`
-   (`Domains/Billing/Gateways/`), and `config/drivebay.php` billing config has no PayPal
-   keys. Treat as future/aspirational, not current behavior.
+1. **Billing gateways** (**Jira: KAN-15** fixed): docs and code align on Stripe + `fake` only;
+   PayPal is not implemented and no longer claimed in top-level docs.
 2. **Pennant and Experiment are unrelated systems** despite both being "feature-flag-shaped"
    — see Experiment section above. Not previously called out anywhere in existing docs.
 3. Billing (Invoice/Payment/Refund) and Messaging/Viewing have **no Filament admin
