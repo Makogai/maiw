@@ -21,6 +21,12 @@ Use the project skill in `.claude/skills/maiw/` for MAIW requests, including nat
 MAIW wrapper** in the same session — do not wait for the user to ask. See `core/OPERATING.md` §7
 and §10 (wrapper auto-push). App-only commits do not update memory.
 
+**Mandatory before substantive work in this workspace:** refresh the MAIW wrapper repo first, then
+refresh the relevant nested `apps/<name>` repo(s), before relying on memory or changing code. If a
+repo is dirty and pull would be risky, stop and ask instead of auto-merging, stashing, or
+overwriting local changes. If app code moved, sync memory before treating `memory/<name>/` as
+current.
+
 **App repos:** do **not** auto-commit/push. When `apps/<name>/` work is ready, ask once:
 “Want me to commit and push `apps/<name>`?” — only proceed after they say yes.
 

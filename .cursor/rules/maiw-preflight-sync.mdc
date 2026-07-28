@@ -1,0 +1,28 @@
+---
+description: Refresh wrapper and app repos before starting work
+alwaysApply: true
+---
+
+# MAIW Preflight Sync
+
+At the start of any substantive work in this workspace, refresh code context before relying on
+memory or making changes.
+
+Default preflight:
+- Pull the MAIW wrapper repo first.
+- Pull the relevant nested app repo(s) under `apps/` before coding, debugging, reviewing, or
+  planning implementation details.
+- If an app repo moved, sync that app's memory before treating `memory/<app>/NOW.md` and topics as
+  current.
+
+Safety rules:
+- Do this proactively; do not wait for the user to ask.
+- If local uncommitted changes would make pull risky, stop and tell the user what is dirty instead
+  of auto-merging or stashing.
+- Never overwrite local changes, reset branches, or change git identity during preflight.
+
+Preferred commands:
+- Use `git pull` for the wrapper repo.
+- Use `git pull` inside each relevant `apps/<name>` repo.
+- Use `node bin/maiw.js ensure <name>` or `/maiw sync <name>` when memory freshness also needs to be
+  reconciled.
