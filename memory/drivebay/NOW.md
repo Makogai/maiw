@@ -1,24 +1,12 @@
 # drivebay — Current handoff
 
 ## Goal
-
-- Backend bug queue: **KAN-10** centralize staff authorization.
+Backend bug queue continuing after KAN-11.
 
 ## Current state
-
-- **KAN-8 Done** — `5f5449c` (ad impressions; needs frontend build on deploy).
-- **KAN-9 Done** — `1197f74` (run `favorites:backfill-counts` once).
-- **KAN-7 Done** — `18b1d4f` (restart Horizon after deploy).
-- **KAN-10 implemented locally (uncommitted)**:
-  - `User::canAccessPanel()` → `StaffAccessService::isStaff()`
-  - `AdminUserSeeder` already sets type+role (ticket text was stale)
-  - `StaffAccessTest` 6/6 passed
+- KAN-10 Done `c0eb9bd`
+- KAN-11 Done (TTL + prompt/model cache bust on FuelEconomy AI estimates)
+- Prior: KAN-7/8/9/41 Done
 
 ## Exact next action
-
-1. Human: commit + push KAN-10.
-2. Next: **KAN-11** (FuelEconomy AI cache TTL).
-
-## Verification
-
-- StaffAccessTest 6 passed.
+Next hygiene: **KAN-13** (OpenAPI stale) or **KAN-12** (dead ListingUpdated event).
