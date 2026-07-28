@@ -44,7 +44,7 @@ separate "forgot password" screen exists in this folder.
 |---|---|
 | State | `AuthNotifier` (`Notifier<AuthState>`), global `authNotifierProvider` — `lib/features/auth/auth_notifier.dart:43,199` |
 | `AuthState` fields | `status` (`unknown`/`guest`/`authenticated`), `user`, `warningStatus`, `sellingRestriction` — populated straight from the login/verify/bootstrap `SessionUser` response, not from a separate call — `auth_notifier.dart:16-41` |
-| Repository | `AuthRepository` — `login`, `register`, `verifyEmail`, `resendVerificationEmail`, `restoreSession`, `logout` — `lib/repositories/auth_repository.dart:10` |
+| Repository | `AuthRepository` — `login`, `register`, `verifyEmail`, `resendVerificationEmail`, `forgotPassword`, `resetPassword`, `restoreSession`, `logout` — `lib/repositories/auth_repository.dart` (**Jira: KAN-56**) |
 | Token storage | `TokenStorage` wraps `flutter_secure_storage`, single key `sanctum_token` — `lib/core/auth/token_storage.dart:3-17` |
 
 **Login flow**: `LoginScreen._submit` → `authNotifierProvider.login()` →
@@ -53,7 +53,11 @@ notifier invalidates `accountProvider`, loads favorites, syncs preferred languag
 only if `firebaseReady` — calls `pushNotificationServiceProvider.syncDeviceToken()`
 (`auth_notifier.dart:96-117`). **Device-token registration happens after** every
 successful login/verify/bootstrap, never before — there is no anonymous/pre-auth device
-token registration path.
+token registration path. Login links to `/forgot-password`; forgot/reset screens live
+under `lib/features/auth/`; change password is `/account/change-password` via
+`AccountRepository.changePassword` → `PUT /account/password` (**Jira: KAN-56**). Deep
+links: web `/reset-password` and `drivebay://reset-password`
+(`parsePasswordResetRouteFromUri` in `listing_url.dart`).
 
 **Email verification requirement**: `AuthRepository.restoreSession()` clears the stored
 token and returns `null` if `emailVerifiedAt` is null/empty

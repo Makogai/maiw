@@ -2,18 +2,17 @@
 
 ## Goal
 
-Carry forward after shipped **KAN-52** contact-seller chat default at app HEAD `dfe2a5c`.
+QA **KAN-56** Flutter password reset + change password (with backend API from same ticket).
 
 ## Current state
 
-- App HEAD is **`dfe2a5c`**.
-- **KAN-52 Done `dfe2a5c`**:
-  - Listing detail Contact no longer dead-ends when `contact_channels` is null.
-  - Authenticated buyers open the contact sheet with in-app chat only; guests go to login.
-  - When the seller shared phone/WhatsApp/Viber/email, the multi-channel sheet is unchanged.
-  - Hint copy `sellerContactViaChatOnly` when chat is the only option.
-- Prior shipped: KAN-23/24/35 Done.
+- App HEAD is **`dfe2a5c`** with **uncommitted KAN-56** Flutter work.
+- Forgot/reset screens + login link; Profile → Change password.
+- API: `AuthRepository.forgotPassword/resetPassword`, `AccountRepository.changePassword`.
+- Deep links for web + `drivebay://reset-password`.
+- Test: `test/password_reset_deep_link_test.dart` passed.
+- Prior: KAN-52 Done at `dfe2a5c`.
 
 ## Exact next action
 
-Pick the next Flutter/backend To Do from the KAN board.
+Commit/push when approved; QA mobile forgot → token/deep link → reset → login, and change password from profile.

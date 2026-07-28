@@ -13,8 +13,8 @@ primary source, not a second-hand summary.
 
 | Repository | Endpoint(s) called | Method | Matches backend? | Evidence |
 |---|---|---|---|---|
-| `account_repository.dart` | `/account`; `/account/warnings/{uuid}/acknowledge`; `/account/profile`; `/account/locale` | GET; POST; PATCH; GET+PUT | Yes — all 5 in `auth.php` | `lib/repositories/account_repository.dart:12,26,36,51,69` |
-| `auth_repository.dart` | `/auth/login`; `/auth/register`; `/auth/verify-email`; `/auth/verification/resend`; `/auth/me`; `/auth/logout` | POST×4; GET; POST | Yes — full `auth.php` register/login flow | `lib/repositories/auth_repository.dart:26,46,65,85,101,122` |
+| `account_repository.dart` | `/account`; `/account/warnings/{uuid}/acknowledge`; `/account/profile`; `/account/password`; `/account/locale` | GET; POST; PATCH; PUT; GET+PUT | Yes — auth.php account + password change (**Jira: KAN-56**) | `lib/repositories/account_repository.dart` |
+| `auth_repository.dart` | `/auth/login`; `/auth/register`; `/auth/verify-email`; `/auth/verification/resend`; `/auth/forgot-password`; `/auth/reset-password`; `/auth/me`; `/auth/logout` | POST×6; GET; POST | Yes — full `auth.php` register/login/password reset (**Jira: KAN-56**) | `lib/repositories/auth_repository.dart` |
 | `autodiler_import_repository.dart` | `/seller/import/autodiler/preview`; `/seller/import/autodiler`; `/seller/import/autodiler/status` | POST; POST; GET | Yes — all 3 `AutodilerImportApiController` routes in `seller.php` | `lib/repositories/autodiler_import_repository.dart:17,40,63` |
 | `billing_repository.dart` | `/payments/{id}/checkout`; `/payments/{id}/confirm` | GET; POST | Yes — `engagement.php` `PaymentApiController` | `lib/repositories/billing_repository.dart:13,27` |
 | `device_token_repository.dart` | `/auth/device-tokens` | POST; DELETE | Yes — `auth.php` | `lib/repositories/device_token_repository.dart:13,27` |
