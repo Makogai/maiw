@@ -1,7 +1,7 @@
 # drivebay — Current handoff
 
 ## Goal
-Carry forward shipped KAN-51 listing share-preview work on backend app HEAD `ab783c7`, while
+Carry forward shipped KAN-51 listing share-preview work on backend app HEAD `03b2cbb`, while
 preserving shipped KAN-23 saved-search notification routing and KAN-35 buyer viewing reschedule
 behavior.
 
@@ -23,7 +23,7 @@ behavior.
   - `AdminPushTestService` now defaults saved-search test pushes to `/account/saved-searches`;
   - focused tests cover both the presented route and the queued push payload route.
 - KAN-35 Done `727abc9` — buyer viewing appointments now support committed in-place reschedule via `POST /api/v1/viewing/appointments/{appointment}/reschedule`, handled by `BuyerViewingApiController::reschedule()` behind a buyer-only `ViewingAppointmentPolicy::reschedule()`. `ViewingAppointmentService::reschedule()` re-validates the replacement slot before and inside the transaction, resets reminder history so the day-before reminder can re-fire, returns presenter payloads with `can_reschedule`, and `ViewingNotificationService` emits `viewing.rescheduled` notifications. Backend coverage passed in `tests/Feature/ApiViewingTest.php` and `tests/Feature/ViewingSchedulingTest.php`.
-- KAN-51 Done `ab783c7` —
+- KAN-51 Done `03b2cbb` —
   listing pages now point `og:image` / `twitter:image` to a generated `1200x630` share card at
   `/og/listings/{publicId}.jpg?v={fingerprint}`. `ListingOgImageService` composes the "second
   variant" layout: cover image on top, solid light footer, bold title/price/location, and caches
@@ -33,15 +33,13 @@ behavior.
   commit `7f8c7ed` bundled Roboto TTFs under `resources/fonts/` so OG rendering no longer depends
   on container OS fonts, and mirrored the listing `seo` payload into the initial Blade response
   for marketplace + storefront listing pages so crawlers can read real OG/Twitter tags even when
-  Inertia SSR is unavailable. Follow-up commits `09ed5bc`, `51e75a0`, and `ab783c7` refine the
-  live card layout against real dealer photos by switching `EUR` to `€`, moving the title to
-  manual line breaks, adding year + mileage footer stats, re-centering the crop, compressing the
-  footer, and then adding subtle separators plus a derived engine label in the metadata row.
-  Focused coverage passed in `tests/Feature/ListingOgImageTest.php`.
+  Inertia SSR is unavailable. Later refinements switch `EUR` to `€`, add year/mileage/engine
+  footer stats with separators, re-center the crop, and keep titles strictly single-line with
+  truncation (`03b2cbb`). Focused coverage passed in `tests/Feature/ListingOgImageTest.php`.
   `docs/og-preview-mock.html` remains as the visual mock source file in the app repo.
 - Prior: KAN-7/8/9/41 Done
 
-App HEAD: `ab783c7`
+App HEAD: `03b2cbb`
 
 ## Exact next action
 Re-check a real dev listing URL over raw HTTP (or in a social-card debugger) after Coolify
