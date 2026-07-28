@@ -12,6 +12,8 @@ Ship KAN-55 Filament admin Users ops console (In Review, local uncommitted on to
     (`deleted_by` = admin id, archives live listings), admin restore
   - Filament `ViewUser` page + header actions on View/Edit; richer `UsersTable`
     (verified icon/filter, roles, phone search, active warning/restriction counts)
+  - `UserListingsRelationManager` on user View/Edit — seller listings tab with status,
+    price, city, views, filters, and links into ListingResource view/edit
   - API login blocks `banned`/`suspended` with `meta.reason=account_blocked`
   - Tests: `tests/Feature/AdminUserAccountOpsTest.php` + `ApiAuthTest` — 9 passed
 - Prior shipped: KAN-10/11/12/13/14/15/17/23/35 Done
