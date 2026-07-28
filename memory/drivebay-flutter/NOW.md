@@ -8,6 +8,13 @@
 ## Current state
 
 - App HEAD is **`f25defc`**.
+- **KAN-23 investigation corrected a stale ticket description**:
+  - saved-search repository/UI already shipped in Flutter at `c74fbe6`;
+  - the remaining local fix is notification routing, not saved-search CRUD creation.
+- **KAN-23 local only**:
+  - `PushNotificationService._routeFromMessage()` now falls back to
+    `/account/saved-searches` for `saved_search.match`, so alerts still open the Saved Searches
+    screen even when older payloads omit `mobile_route`.
 - **KAN-24 shipped `f25defc` in `apps/drivebay-flutter`**:
   - buyer listing-detail `Contact` CTA now records a `contact` click with
     `placement=detail_actions` before opening the contact sheet;
@@ -30,8 +37,9 @@
 
 ## Exact next action
 
-1. Tackle **KAN-23** next: mobile still has no saved-search creation/editing UI or repository even
-   though saved-search match notifications already exist.
+1. Commit and push the local Flutter saved-search notification fallback if you want this KAN-23
+   follow-up shipped now; otherwise the next substantive product gap is no longer CRUD itself, but
+   deeper saved-search alert behavior if notifications still fail to arrive end-to-end.
 
 ## Decisions made this session
 
@@ -43,6 +51,7 @@
 
 ## Changed files
 
+- `lib/core/push/push_notification_service.dart`
 - `lib/features/listings/listing_detail_screen.dart`
 - `lib/models/viewing.dart`
 - `lib/repositories/viewing_repository.dart`

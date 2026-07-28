@@ -207,6 +207,12 @@ prepared to render distinctly): `fuel_price.updated`, `import.autodiler.complete
 surface implied by `SellerNotificationPresenter` on the backend
 (`memory/drivebay/topics/domains-growth.md`).
 
+**KAN-23 clarification on top of app HEAD `f25defc`**: mobile saved-search CRUD is already
+present (`saved_search_repository.dart`, `save_search_dialog.dart`, `saved_searches_screen.dart`,
+profile route, and search-screen save button; originally shipped in `c74fbe6`). The follow-up fix
+in this session is push routing: `saved_search.match` now has a Flutter-side fallback route to
+`/account/saved-searches` even if an older FCM payload arrives without `mobile_route`.
+
 ## Push notification tap → in-feature navigation (cross-cutting)
 
 Full push plumbing lives in `lib/core/push/` (out of scope here per the task, already
@@ -224,6 +230,7 @@ covered elsewhere) — this section only traces how a tap reaches a feature scre
    ._routeFromMessage()` prefers an explicit `data['mobile_route']`, else falls back to
    `/listings/{public_id}` for listing-shaped payloads, `/messages/{thread_uuid}` for
    `type == 'message.received'`, `/account/viewings` for viewing events,
+   `/account/saved-searches` for `saved_search.match`,
    `/account` for warning/selling-restriction events, or the fuel-prices route —
    `push_notification_service.dart:232-266`. So a message push works even if the server
    payload omits `mobile_route`, as long as `thread_uuid`/`thread_id` is present.
