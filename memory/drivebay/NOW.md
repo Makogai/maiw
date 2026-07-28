@@ -1,9 +1,9 @@
 # drivebay — Current handoff
 
 ## Goal
-Carry forward uncommitted KAN-51 listing share-preview work on backend app HEAD `8e99c98`,
-while preserving shipped KAN-23 saved-search notification routing and KAN-35 buyer viewing
-reschedule behavior.
+Carry forward shipped KAN-51 listing share-preview work on backend app HEAD `648857c`, while
+preserving shipped KAN-23 saved-search notification routing and KAN-35 buyer viewing reschedule
+behavior.
 
 ## Current state
 - KAN-10 Done `c0eb9bd`
@@ -23,7 +23,7 @@ reschedule behavior.
   - `AdminPushTestService` now defaults saved-search test pushes to `/account/saved-searches`;
   - focused tests cover both the presented route and the queued push payload route.
 - KAN-35 Done `727abc9` — buyer viewing appointments now support committed in-place reschedule via `POST /api/v1/viewing/appointments/{appointment}/reschedule`, handled by `BuyerViewingApiController::reschedule()` behind a buyer-only `ViewingAppointmentPolicy::reschedule()`. `ViewingAppointmentService::reschedule()` re-validates the replacement slot before and inside the transaction, resets reminder history so the day-before reminder can re-fire, returns presenter payloads with `can_reschedule`, and `ViewingNotificationService` emits `viewing.rescheduled` notifications. Backend coverage passed in `tests/Feature/ApiViewingTest.php` and `tests/Feature/ViewingSchedulingTest.php`.
-- KAN-51 in progress on top of app HEAD `8e99c98` (not yet committed in `apps/drivebay`) —
+- KAN-51 Done `648857c` —
   listing pages now point `og:image` / `twitter:image` to a generated `1200x630` share card at
   `/og/listings/{publicId}.jpg?v={fingerprint}`. `ListingOgImageService` composes the "second
   variant" layout: cover image on top, solid light footer, bold title/price/location, and caches
@@ -34,8 +34,8 @@ reschedule behavior.
   as the visual mock source file in the app repo.
 - Prior: KAN-7/8/9/41 Done
 
-App HEAD: `8e99c98`
+App HEAD: `648857c`
 
 ## Exact next action
-If the user approves shipping this slice, commit the `apps/drivebay` KAN-51 OG image changes,
-push the app repo, then verify one real shared listing URL against a live social-card debugger.
+Verify one real dev listing URL in a social-card debugger (or by sharing it into a chat client)
+to confirm the crawler can reach `/og/listings/{publicId}.jpg` and render the expected preview.
