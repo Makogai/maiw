@@ -50,8 +50,8 @@ verified against code or wasn't already written down.
   FuelPricing, FuelEconomy): key services/models, a cross-domain connection map (e.g.
   FuelPricing writes `Notification` rows directly, `NotificationObserver` pushes on
   *any* `in_app` row, Moderation warnings hijack the Engagement popup slot), Firebase/
-  Meta-Graph/OpenAI/data.gov.me external integrations, and gotchas (dead `EmailCampaign`/
-  `ListingPerformanceDaily` stub models, ad `impressions_count` never incremented, stale
+  Meta-Graph/OpenAI/data.gov.me external integrations, and gotchas (empty `PageEvent` stub,
+  ad `impressions_count` never incremented, stale
   `/go/ad/{id}` doc claim). Read this before touching any of those eight domains instead
   of re-exploring `app/Domains/`.
 - `topics/api-and-database.md` — deep reference for `routes/api/v1/*.php` (endpoint

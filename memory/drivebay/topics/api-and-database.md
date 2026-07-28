@@ -198,7 +198,7 @@ the dbml was kept in sync with it).
 | 11 Billing | payment_providers/methods, invoices(+items), payments, refunds, subscription_plans, subscriptions |
 | 12 Promotions | promotion_types, listing_promotions |
 | 13 Moderation | seller_reviews, reports, user_warnings, user_selling_restrictions, fraud_signals, moderation_cases, admin_actions, audit_logs |
-| 14 Analytics | listing_impressions/views/click_events, page_events, user_listing_interactions, listing_similarity, recommendation_profiles/candidates, {listing,seller}_performance_daily |
+| 14 Analytics | listing_impressions/views/click_events, page_events, user_listing_interactions, listing_similarity, recommendation_profiles/candidates |
 | 15 Integrations | api_clients, import_jobs, platform_social_accounts, listing_social_posts |
 | 16 Platform/engagement | platform_settings, engagement_campaigns(+events), experiments(+variants,assignments) |
 | 17 Fuel pricing | montenegro_fuel_price_snapshots, fuel_price_alert_preferences |
@@ -265,6 +265,9 @@ accurate against these migrations for the 5 tables this task targeted).
 - `backfill_message_thread_unread_counts` (2026-06-04) is a data-only migration (no
   schema change), confirming unread counts are a denormalized/cached column somewhere on
   `message_threads`, not computed live.
+- `drop_unused_performance_daily_tables` (2026-07-28, **Jira: KAN-17** `734ba07`) drops
+  `listing_performance_daily` and `seller_performance_daily` — empty stub tables that never
+  had producing jobs; `docs/database/migration_plan.md` Phase 14 note updated.
 
 ### Seeders and factories
 

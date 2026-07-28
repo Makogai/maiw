@@ -1,8 +1,8 @@
 # drivebay — Growth & engagement domains (Notification, Engagement, Analytics, Promotion, SocialPublishing, Advertising, FuelPricing, FuelEconomy)
 
 Supplements `topics/architecture.md`, `topics/domain.md`, and `apps/drivebay/CLAUDE.md` — does
-not repeat their domain-list/tech-stack content. Verified against code at commit `8f7840f`
-(2026-07-15). All paths below are relative to `apps/drivebay/`.
+not repeat their domain-list/tech-stack content. Verified against code at commit `734ba07`
+(2026-07-28). All paths below are relative to `apps/drivebay/`.
 
 ## Cross-domain map (read this first — the most valuable part)
 
@@ -43,16 +43,13 @@ Models: `Notification` (table `notifications`) — the domain model, `belongsTo(
 
 **Gotcha — two unrelated "notification" systems.** `App\Models\Domains\Notification\Models\Notification` (table `notifications`) is the domain's own seller/buyer notification record. Separately, `App\Support\Notifications\EloquentDatabaseNotification` (table `database_notifications`, with a `DatabaseNotificationAction` relation for action buttons) is Laravel's built-in `DatabaseNotification` used for the **Filament admin** notification bell. They are not related and must not be conflated — `app/Models/Domains/Notification/Models/DatabaseNotificationAction.php:9`, `app/Support/Notifications/EloquentDatabaseNotification.php:9-13`.
 
-**Gotcha — email campaign models were stubs; digest path now wired** (**Jira: KAN-33**,
-partially addresses **Jira: KAN-17**). `EmailCampaign`, `EmailCampaignRecipient`, and
-`NotificationTemplate` now have `$fillable`/casts/relations. Weekly recommendation digests
-use them via `RecommendationDigestService` (`campaign_type=digest`),
-`RecommendationDigestMail`, `SendRecommendationDigestsJob`, and
-`recommendations:send-digests` — gated by `config('recommendations.digest.enabled')` and
-`users.marketing_email_opt_in`. **Still open under KAN-17**: Analytics
-`ListingPerformanceDaily` / `SellerPerformanceDaily` remain empty stubs with no writers —
-`app/Models/Domains/Analytics/Models/ListingPerformanceDaily.php`,
-`SellerPerformanceDaily.php`.
+**Email campaign models are live (not stubs)** (**Jira: KAN-33** wired, **Jira: KAN-17**
+clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate` have
+`$fillable`/casts/relations. Weekly recommendation digests use them via
+`RecommendationDigestService` (`campaign_type=digest`), `RecommendationDigestMail`,
+`SendRecommendationDigestsJob`, and `recommendations:send-digests` — gated by
+`config('recommendations.digest.enabled')` and `users.marketing_email_opt_in` —
+`app/Domains/Recommendation/Services/RecommendationDigestService.php`.
 
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
@@ -85,7 +82,14 @@ Key classes:
 
 Models: `ListingView`, `ListingImpression`, `ListingClickEvent` (+ `ListingClickEventContext` child for arbitrary key/value context per click), all `$timestamps = false` (use an explicit `created_at` only, no `updated_at`) — `app/Models/Domains/Analytics/Models/ListingView.php:9-20`, `ListingClickEvent.php:9-22`.
 
-**Gotcha — dead aggregate tables** (**Jira: KAN-17**). `ListingPerformanceDaily` and `SellerPerformanceDaily` are empty stub models (no `$fillable`, no casts, no relations) and there is **no** Console command, Job, or any other code anywhere under `app/` that writes to them — likely a planned daily-rollup feature that was never implemented; do not assume these tables are populated — `app/Models/Domains/Analytics/Models/ListingPerformanceDaily.php`, `SellerPerformanceDaily.php` (both empty), confirmed via repo-wide grep for `ListingPerformanceDaily::`/`SellerPerformanceDaily::` (zero hits) and no matching Console/Job class.
+**Removed unused daily rollup stubs** (**Jira: KAN-17** `734ba07`). Empty
+`ListingPerformanceDaily`/`SellerPerformanceDaily` models and their tables were dropped —
+migration `database/migrations/2026_07_28_091500_drop_unused_performance_daily_tables.php`;
+`docs/database/migration_plan.md` Phase 14 updated. They never had writers.
+
+**Gotcha — `PageEvent` still an empty stub**. `page_events` table remains in schema (Phase 14;
+FK from `user_listing_interactions.page_event_id`) but `PageEvent` is an empty model with
+no writers — `app/Models/Domains/Analytics/Models/PageEvent.php`.
 
 **Connections**: `recordView`/`recordImpressions`/`recordClick` are called from `Web/ListingController`, `Web/ListingAnalyticsController`, `Api/V1/ListingAnalyticsApiController`, `Web/Storefront/StorefrontListingController`, and — separately — `Web/AdClickController` calls `AdvertisementDeliveryService::recordClick()` (Advertising's own counter, not `ListingAnalyticsService`). `ListingController@show` calls `ListingAnalyticsService` and `RecommendationService` in the same method, i.e. every listing view is both an analytics event and recommendation-training signal.
 
