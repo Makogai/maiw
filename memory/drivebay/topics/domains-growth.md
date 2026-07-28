@@ -51,18 +51,17 @@ clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate
 `config('recommendations.digest.enabled')` and `users.marketing_email_opt_in` —
 `app/Domains/Recommendation/Services/RecommendationDigestService.php`.
 
-**Branded transactional HTML (**Jira: KAN-59**, local WIP)**: shared Blade components
-`resources/views/components/mail/drivebay-{layout,button,code,listing}.blade.php`;
+**Branded transactional HTML (**Jira: KAN-59** Done, app `2fb7f12`)**: shared Blade
+components `resources/views/components/mail/drivebay-{layout,button,code,listing}.blade.php`;
 mailables (`EmailVerificationCodeMail`, `PasswordResetMail`, `ListingStatusMail`,
-`RecommendationDigestMail`) use `html:` views (not Markdown). Digest cards show title,
-€ price, city/mileage; unsubscribe → account. Strings in `lang/{en,sr}/mail.php`.
-`mail:test-all` sends the full preview pack (or one selected mailable) straight to a chosen
-inbox for Mailpit QA. Restart `queue:work` after template edits before testing queued flows.
+`RecommendationDigestMail`) use `html:` views. Listing/digest cards via
+`MailListingCardFactory` (cover thumb when available, title, meta, € price).
+`mail:test-all` + Filament Artisan “Send all test emails”. Matrix:
+`docs/development/transactional-emails.md`. Restart `queue:work` after template edits.
 
-**Moderation emails (**Jira: KAN-60**, local WIP)**: `ModerationNoticeMail` queued from
+**Moderation emails (**Jira: KAN-60** Done, same commit)**: `ModerationNoticeMail` from
 `UserWarningService` (issue / lift / lift-all) and `UserSellingRestrictionService`
 (issue / lift / natural expiry). CTA → account `#warnings` / `#selling-restrictions`.
-Matrix: `docs/development/transactional-emails.md`.
 
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 

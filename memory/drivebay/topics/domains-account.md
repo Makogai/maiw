@@ -215,7 +215,7 @@ devices + auth sessions; change-password keeps the current API token (or regener
 web session). Reset + verification mails use the KAN-59 DriveBay HTML shell (not Markdown).
 Filament create-user also has a `send_verification_email` toggle that immediately issues the
 verification mail for new unverified users; existing users keep the resend header action.
-Warnings and selling restrictions also email via `ModerationNoticeMail` (**Jira: KAN-60**).
+Warnings and selling restrictions also email via `ModerationNoticeMail` (**Jira: KAN-60** Done).
 
 ## Geography
 
