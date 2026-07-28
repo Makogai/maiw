@@ -58,6 +58,11 @@ mailables (`EmailVerificationCodeMail`, `PasswordResetMail`, `ListingStatusMail`
 € price, city/mileage; unsubscribe → account. Strings in `lang/{en,sr}/mail.php`.
 Restart `queue:work` after template edits before Mailpit QA.
 
+**Moderation emails (**Jira: KAN-60**, local WIP)**: `ModerationNoticeMail` queued from
+`UserWarningService` (issue / lift / lift-all) and `UserSellingRestrictionService`
+(issue / lift / natural expiry). CTA → account `#warnings` / `#selling-restrictions`.
+Matrix: `docs/development/transactional-emails.md`.
+
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
 **KAN-23 shipped at app HEAD `8e99c98`**: the original mobile ticket text is stale
