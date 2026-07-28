@@ -206,6 +206,14 @@ Filament Role/Permission admin resource exists (`app/Filament/Admin/Resources/Us
 manages `User` rows only, with `UserWarnings` and `UserSellingRestrictions` relation
 managers — no role editor in the admin UI); role assignment is seeder/code-only today.
 
+**Password reset / change (**Jira: KAN-56**)**: custom `PasswordResetService` on
+`password_resets` (SHA-256 token hash, expiry, single-use) — not Laravel's `Password`
+broker / `password_reset_tokens`. Web guest routes `password.request|email|reset|update`;
+authenticated `PUT /account/password`. API: `POST /auth/forgot-password`,
+`POST /auth/reset-password`, `PUT /account/password`. Reset revokes all Sanctum tokens +
+devices + auth sessions; change-password keeps the current API token (or regenerates the
+web session).
+
 ## Geography
 
 **Purpose**: countries/regions/cities/districts reference data plus phone-country/dial-code

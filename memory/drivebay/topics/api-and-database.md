@@ -37,12 +37,15 @@ controller spot-checked; no deviations found beyond the two documented exception
 | POST | `/auth/login` | Auth@login | `throttle:api-auth` |
 | POST | `/auth/verify-email` | Auth@verifyEmail | `throttle:api-auth` |
 | POST | `/auth/verification/resend` | Auth@resendVerification | `throttle:api-auth` |
+| POST | `/auth/forgot-password` | Auth@forgotPassword | `throttle:api-auth` (**Jira: KAN-56**) |
+| POST | `/auth/reset-password` | Auth@resetPassword | `throttle:api-auth` (**Jira: KAN-56**) |
 | GET/PUT | `/account/locale` | Account@show\|updateLocale | `auth:sanctum` only (no `verified`) |
 | GET | `/auth/me` | Auth@me | `auth:sanctum, verified` |
 | POST | `/auth/logout` | Auth@logout | `auth:sanctum, verified` |
 | POST/DELETE | `/auth/device-tokens` | Auth@storeDeviceToken\|destroyDeviceToken | `auth:sanctum, verified` |
 | GET | `/account` | Account@show | `auth:sanctum, verified` |
 | PATCH | `/account/profile` | Account@updateProfile | `auth:sanctum, verified`; `UpdateAccountProfileRequest` (**Web** namespace, reused — see finding below) |
+| PUT | `/account/password` | Account@updatePassword | `auth:sanctum, verified`; current password required (**Jira: KAN-56**) |
 | POST | `/account/warnings/{warning}/acknowledge` | Account@acknowledgeWarning | `auth:sanctum, verified` |
 
 Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest}`,

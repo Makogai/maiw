@@ -16,7 +16,7 @@ call except where noted.
 |---|---|---|
 | `Account/` | `Index.vue` | `AccountController.php:36` |
 | `Advertise/` | `Index.vue` | `AdvertiseController.php:19` |
-| `Auth/` | `Login.vue`, `Register.vue`, `VerifyEmail.vue` | `Auth/LoginController.php:21`, `Auth/RegisterController.php:25`, `Auth/EmailVerificationController.php:35` |
+| `Auth/` | `Login.vue`, `Register.vue`, `VerifyEmail.vue`, `ForgotPassword.vue`, `ResetPassword.vue` | `Auth/LoginController.php`, `Auth/RegisterController.php`, `Auth/EmailVerificationController.php`, `Auth/PasswordResetController.php` (**Jira: KAN-56**) |
 | `Billing/` | `FakeCheckout.vue` | `Billing/CheckoutController.php:62` (name implies a stubbed/test checkout, not a live gateway page) |
 | `Compare/` | `Index.vue` | `CompareController.php:32` |
 | `Dealers/` | `Show.vue` | `DealerStorefrontController.php:51` **and** `Storefront/StorefrontHomeController.php:37` — same Vue page serves both the marketplace's dealer-profile route and a storefront's home route |
