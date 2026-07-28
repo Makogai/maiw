@@ -2,19 +2,21 @@
 
 ## Goal
 
-Pick next KAN backlog item after **KAN-27** Done.
+Brand packs shipped locally (DriveBay + AutoKlik); next is QA + commit/push when ready.
 
 ## Current state
 
-- App HEAD is **`1729d6d`** (pushed): `assetlinks.json` fingerprints fixed for
-  Android App Links (debug SHAs, no malformed placeholder) + README.
-- **KAN-27 Done**: Android deep links on `dev.drivebay.me` verified on device;
-  Coolify should pick up `1729d6d` so live DAL stops returning
-  `ERROR_CODE_MALFORMED_CONTENT`.
-- iOS AASA Team ID still placeholder (deferred).
-- Left untracked intentionally: `docs/og-preview-mock.html`.
+- App HEAD still **`1729d6d`** on remote; **uncommitted** deploy-time branding:
+  - `BRAND=drivebay|autoklik` via `config/brand.php` + `config/brands/*`
+  - Helpers `brand()` / `brandify()`; Inertia shared `brand`; CSS accent override in
+    `app.blade.php`; SEO `og:site_name`; mail/Filament/Logo wired
+  - Lang strings use `:app` placeholder
+  - Docs: `docs/development/branding.md`
+  - Test: `tests/Unit/BrandConfigTest.php` (pass)
+- Switch: set `BRAND=autoklik` in `.env`, `php artisan config:clear`
+- Atlassian MCP unavailable this session — no Jira ticket filed yet
 
 ## Exact next action
 
-Pick next To Do from the KAN board. After Coolify deploy, optional:
-`adb shell pm verify-app-links --re-verify me.makogai.drivebay`.
+Want me to commit and push `apps/drivebay`? Optionally file a KAN ticket for brand packs.
+Smoke-check web with `BRAND=autoklik` (logo/teal accents/titles).
