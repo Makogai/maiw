@@ -245,6 +245,9 @@ in the interceptor chain, not in application code.
   message-thread list, unread counts, and a specific thread's provider when a message
   notification arrives; other notification types just surface an in-app banner via
   `inAppNotificationPresenterProvider.showFromPush` (`:33-44`).
+  - **Local KAN-35 delta (working tree only, not in app HEAD `5187eea`)**:
+    `_routeFromMessage` also maps `type == 'viewing.rescheduled'` to `/account/viewings`, matching
+    the existing `viewing.booked` / `viewing.cancelled` / `viewing.reminder` behavior.
 
 ## lib/config/ — environment and seed data
 

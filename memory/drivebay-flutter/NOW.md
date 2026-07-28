@@ -2,33 +2,57 @@
 
 ## Goal
 
-- Listing card layout polish shipped.
+- Keep MAIW memory accurate for local **KAN-35** Flutter reschedule work without pretending the
+  feature exists at app HEAD.
 
 ## Current state
 
-- **KAN-39 Done** — `1a1d51b`.
-- **DEBUG_API logging shipped** — `a5824c3`.
-- **Card polish pushed** — `de1f215`:
-  - no make/model under title (`listing_card_grid_tile`, `listing_card_tile`)
-  - shorter images (search grid `0.72`/`0.68`; list `16/9` / `2/1`)
-- Default `API_BASE_URL` remains `http://192.168.1.226:8000/api/v1`
-- Backend **KAN-40** variants API is live (`e3385fe`); Flutter still uses primary image URLs
+- App HEAD is **`5187eea`**.
+- **KAN-35 local only, not committed in `apps/drivebay-flutter`**:
+  - `ViewingAppointment` now parses `canReschedule` in addition to `canCancel`.
+  - `ViewingRepository` adds `reschedule()` for `POST /viewing/appointments/{uuid}/reschedule`.
+  - `BookViewingSheet` now supports both booking and rescheduling modes, pre-fills the existing
+    buyer note, and reuses the same date/slot picker.
+  - `MyViewingsScreen` adds a buyer-side reschedule action and success snackbar.
+  - push routing now treats `viewing.rescheduled` the same as other viewing notifications and opens
+    `/account/viewings`.
+  - `app_en.arb` / `app_sr.arb` plus generated localization Dart files were updated for the new
+    reschedule copy.
+- This behavior is **in the working tree on top of `5187eea` only**. `meta.json` tracks the last
+  synchronized committed app revision, so read the topics below for the local-only delta.
+- Default `API_BASE_URL` remains `http://192.168.1.226:8000/api/v1`.
+- Backend **KAN-40** variants API is live (`e3385fe`); Flutter still uses primary image URLs.
 
 ## Exact next action
 
-1. When prioritized: consume **KAN-40** WebP/variant URLs in Flutter once ready to adopt.
+1. If the KAN-35 Flutter work is ready to ship, ask to commit/push `apps/drivebay-flutter`, then
+   update `memory/drivebay-flutter/meta.json` again so `sourceCommit` matches the committed
+   reschedule behavior exactly.
 
 ## Decisions made this session
 
-- Drop redundant make/model subtitle under listing card titles.
-- Shorter card photos via higher grid aspect ratios / wider list ratios.
+- Treat buyer rescheduling as an in-place update flow that reuses the existing booking sheet instead
+  of creating a second UI.
+- Keep wrapper memory explicit that KAN-35 is local/uncommitted, while still recording the working
+  tree behavior for future agents.
 
 ## Changed files
 
-- `lib/features/search/listing_card_grid_tile.dart`
-- `lib/features/search/listing_card_tile.dart`
-- `lib/features/search/search_screen.dart`
+- `lib/models/viewing.dart`
+- `lib/repositories/viewing_repository.dart`
+- `lib/features/listings/widgets/book_viewing_sheet.dart`
+- `lib/features/viewings/my_viewings_screen.dart`
+- `lib/core/push/push_notification_service.dart`
+- `lib/l10n/app_en.arb`
+- `lib/l10n/app_sr.arb`
+- `lib/l10n/app_localizations.dart`
+- `lib/l10n/app_localizations_en.dart`
+- `lib/l10n/app_localizations_sr.dart`
 
 ## Verification
 
-- Visual: cards show title → specs → price; images less tall.
+- `flutter gen-l10n`
+- `dart format ...`
+- `flutter analyze` on touched files: only one pre-existing info in
+  `lib/core/push/push_notification_service.dart` (`prefer_initializing_formals`); no blocking
+  errors
