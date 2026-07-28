@@ -23,7 +23,7 @@ primary source, not a second-hand summary.
 | `favorite_repository.dart` | `/favorites`; `/favorites/{id}` | GET; POST; DELETE | Yes — full `FavoriteApiController` CRUD in `engagement.php` | `lib/repositories/favorite_repository.dart:12,24,32` |
 | `fuel_price_repository.dart` | `/fuel-prices`; `/fuel-prices/latest`; `/fuel-prices/alerts` | GET; GET; GET+PUT | Yes — full `fuel-prices.php` (4/4) | `lib/repositories/fuel_price_repository.dart:13,28,49,65` |
 | `geography_repository.dart` | `/countries`; `/regions`; `/cities`; `/city-districts` | GET×4 | Yes — full `GeographyApiController` in `catalog.php` | `lib/repositories/geography_repository.dart:15,28,47,64` |
-| `listing_repository.dart` | `/listings/{id}`; `/listings/{id}/contact`; `/listings/{id}/analytics/view|click|engagement`; `/analytics/listing-impressions`; `/listings/{id}/similar`; `/recommendations` | GET; POST; POST×3; POST; GET; GET | Yes — show (`sanctum.optional`), contact, analytics, similar, recommendations (`sanctum.optional`, **Jira: KAN-31**) | `lib/repositories/listing_repository.dart` |
+| `listing_repository.dart` | `/listings/{id}`; `/listings/{id}/contact`; `/listings/{id}/analytics/view|click|engagement`; `/analytics/listing-impressions`; `/listings/{id}/similar`; `/recommendations` | GET; POST; POST×3; POST; GET; GET | Yes — show (`sanctum.optional`), contact, analytics, similar, recommendations (`sanctum.optional`, **Jira: KAN-31**, **Jira: KAN-24**) | `lib/repositories/listing_repository.dart` |
 | `message_repository.dart` | `/messages/threads`; `/messages/threads/{id}`; `/messages/threads/{id}/reply`; `/messages/threads/{id}/typing`; `/messages/threads/{id}/mute` | GET; GET; POST; POST; POST | Yes — mute route is `Route::match(['put','post'], ...)`, mobile uses the POST variant | `lib/repositories/message_repository.dart:27,55,137,153,195,223` |
 | `notification_repository.dart` | `/notifications`; `/notifications/unread-count`; `/notifications/latest-unread`; `/notifications/{id}/read`; `/notifications/read-all` | GET×3; POST×2 | Yes — full `NotificationApiController` (5/5) | `lib/repositories/notification_repository.dart:12,26,42,61,74` |
 | `platform_config_repository.dart` | `/config/app` (called twice, decoded into two different model shapes) | GET | Yes — `campaigns.php:7`, single-action controller | `lib/repositories/platform_config_repository.dart:13,26` |
@@ -141,6 +141,13 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
   from the phase table only.
 - `PromotionType`/`PaymentCheckoutSession` mirror `promotion_types` (phase 12) and
   `payments`/`invoices` (phase 11).
+- **KAN-24 local wiring on top of app HEAD `f49e7b0`**: `ListingDetailScreen` now uses
+  `ListingAnalytics.recordClick()` for buyer CTA actions as well as search-card interactions:
+  tapping the bottom-bar `Contact` button sends `click_type=contact` with
+  `placement=detail_actions`, and choosing `Share listing` sends `click_type=share` with the same
+  placement before invoking the native share sheet. Existing channel taps from
+  `ContactSellerSheet` (`phone` / `email` / `whatsapp` / `viber`) still flow through the same
+  click endpoint, now tagged with `placement=detail_contact_sheet`.
 - **KAN-35 shipped contract (app HEAD `f49e7b0`)**: `ViewingAppointment` reads a server-computed
   `can_reschedule` flag alongside `can_cancel`, and `ViewingRepository.reschedule()` posts
   `{starts_at, buyer_note?}` to `/viewing/appointments/{uuid}/reschedule`, expecting the same
@@ -167,7 +174,7 @@ web/dashboard-only):
 | `GET/POST /saved-searches`, `PATCH/DELETE /saved-searches/{id}` | `SavedSearchApiController` | `engagement.php:19-22` | **(Jira: KAN-23)** No `saved_search_repository.dart` exists at all — the entire saved-search feature (create/list/edit/delete) is unimplemented in mobile, even though `lib/features/notifications/notification_type_image.dart:12,21` already has an icon mapping for `saved_search.match` notifications — i.e. mobile can *receive* a saved-search-match push but the user can never *create* a saved search from the app. |
 | `GET /seller/analytics`, `GET /seller/listings/{id}/analytics` | `SellerAnalyticsApiController` | `seller.php:17-18` | No seller analytics dashboard/repository in mobile. |
 | `GET /dealer/storefront`, `GET /dealer/domain`, `POST /dealer/domain/verify` | `DealerApiController` | `dealer.php` | No seller-side storefront/custom-domain management screen. Distinct from the buyer-facing `GET /dealers/{slug}` public profile page that `seller_profile_repository.dart:98` *does* call — easy to conflate the two "dealer" surfaces. |
-| `POST /analytics/listing-impressions`, `POST /listings/{id}/analytics/engagement`, `POST /listings/{id}/analytics/click` | `ListingAnalyticsApiController` | `analytics.php:7,9,10` | **(Jira: KAN-24)** `listing_repository.dart:61` only fires the `.../analytics/view` variant; impression-batch, engagement, and click analytics are never sent by mobile — search result impressions/clicks are effectively untracked client-side. |
+| `POST /analytics/listing-impressions`, `POST /listings/{id}/analytics/engagement`, `POST /listings/{id}/analytics/click` | `ListingAnalyticsApiController` | `analytics.php:7,9,10` | Partial gap closed: mobile already sends search/detail impressions, detail-view engagement, search-card clicks, and now detail CTA clicks (`contact`, `share`) via `ListingAnalytics`; remaining gap is broader seller-analytics/dashboard consumption rather than raw event emission. `(**Jira: KAN-24**)` |
 
 Repository/model note: the 23 repositories map to exactly the endpoints listed in the table above;
 no repository was found calling a path absent from the actual route files (the backend memory
