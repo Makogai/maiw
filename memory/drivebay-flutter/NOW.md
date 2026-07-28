@@ -2,15 +2,14 @@
 
 ## Goal
 
-Ship remaining **KAN-44** snappiness WIP (still local), or pick next ticket.
+Pick next mobile KAN item after KAN-44 push.
 
 ## Current state
 
-- App HEAD **`768c642`** (pushed): DriveBay/AutoKlik build-time brand packs
-  (`--flavor` + `--dart-define=BRAND=`, `lib/brand/brand.dart`).
-- **Still uncommitted:** KAN-44 performance work (network image helper, SWR cache,
-  search slivers isolation, etc.).
+- App HEAD **`cb156bd`** (pushed): KAN-44 snappiness — cached images,
+  search sliver isolation, keepAlive/SWR, favorite select, performance docs.
+- Prior **`768c642`**: DriveBay/AutoKlik brand packs.
 
 ## Exact next action
 
-Want me to commit and push the remaining KAN-44 changes?
+Pick next To Do from the KAN board (or device-QA scroll on a release build).
