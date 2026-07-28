@@ -53,7 +53,7 @@ clarified). `EmailCampaign`, `EmailCampaignRecipient`, and `NotificationTemplate
 
 **Connections**: see cross-domain map above (Listing/Moderation/Media/Autodiler-import → Notification; FuelPricing → Notification; Notification → push via `NotificationObserver` for **any** `in_app` row, including a `saved_search_id`/`notify_push` opt-out check and a `fuel_price.updated`-specific `notify_push` meta check — `app/Observers/NotificationObserver.php:17-31`).
 
-**KAN-23 local follow-up on top of app HEAD `727abc9`**: the original mobile ticket text is stale
+**KAN-23 shipped at app HEAD `8e99c98`**: the original mobile ticket text is stale
 because Flutter already shipped saved-search CRUD in `c74fbe6`; the remaining bug was notification
 routing. `SellerNotificationPresenter::mobileRoute()` now maps `saved_search.match` to
 `/account/saved-searches`, `NotificationObserver::pushData()` copies the presented

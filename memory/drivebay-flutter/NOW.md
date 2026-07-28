@@ -7,11 +7,11 @@
 
 ## Current state
 
-- App HEAD is **`f25defc`**.
+- App HEAD is **`586f818`**.
 - **KAN-23 investigation corrected a stale ticket description**:
   - saved-search repository/UI already shipped in Flutter at `c74fbe6`;
   - the remaining local fix is notification routing, not saved-search CRUD creation.
-- **KAN-23 local only**:
+- **KAN-23 Done `586f818`**:
   - `PushNotificationService._routeFromMessage()` now falls back to
     `/account/saved-searches` for `saved_search.match`, so alerts still open the Saved Searches
     screen even when older payloads omit `mobile_route`.
@@ -37,9 +37,8 @@
 
 ## Exact next action
 
-1. Commit and push the local Flutter saved-search notification fallback if you want this KAN-23
-   follow-up shipped now; otherwise the next substantive product gap is no longer CRUD itself, but
-   deeper saved-search alert behavior if notifications still fail to arrive end-to-end.
+1. If saved-search alerts still do not arrive end-to-end after the shipped route fixes, inspect the
+   backend alert-generation schedule and matching rules next rather than rebuilding mobile CRUD.
 
 ## Decisions made this session
 

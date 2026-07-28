@@ -207,7 +207,7 @@ prepared to render distinctly): `fuel_price.updated`, `import.autodiler.complete
 surface implied by `SellerNotificationPresenter` on the backend
 (`memory/drivebay/topics/domains-growth.md`).
 
-**KAN-23 clarification on top of app HEAD `f25defc`**: mobile saved-search CRUD is already
+**KAN-23 clarification on shipped app HEAD `586f818`**: mobile saved-search CRUD is already
 present (`saved_search_repository.dart`, `save_search_dialog.dart`, `saved_searches_screen.dart`,
 profile route, and search-screen save button; originally shipped in `c74fbe6`). The follow-up fix
 in this session is push routing: `saved_search.match` now has a Flutter-side fallback route to

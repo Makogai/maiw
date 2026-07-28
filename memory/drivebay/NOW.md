@@ -1,8 +1,8 @@
 # drivebay — Current handoff
 
 ## Goal
-Carry forward local KAN-23 saved-search notification routing fixes on top of backend app HEAD
-`727abc9`, while preserving shipped KAN-35 buyer viewing reschedule behavior.
+Carry forward shipped KAN-23 saved-search notification routing fixes at backend app HEAD
+`8e99c98`, while preserving shipped KAN-35 buyer viewing reschedule behavior.
 
 ## Current state
 - KAN-10 Done `c0eb9bd`
@@ -14,7 +14,7 @@ Carry forward local KAN-23 saved-search notification routing fixes on top of bac
 - KAN-17 Done `734ba07` — clarified `EmailCampaign`/`EmailCampaignRecipient`/`NotificationTemplate` are live via `RecommendationDigestService` (not dead stubs); removed empty `ListingPerformanceDaily`/`SellerPerformanceDaily` models + migration `2026_07_28_091500_drop_unused_performance_daily_tables.php`; updated `docs/database/migration_plan.md`; left `PageEvent` empty model (table still in schema / FKs)
 - KAN-23 investigation corrected a stale ticket description: mobile saved-search CRUD already exists
   in Flutter (`c74fbe6`), but backend notifications still needed route cleanup.
-- KAN-23 local only:
+- KAN-23 Done `8e99c98`:
   - `SellerNotificationPresenter` now gives `saved_search.match` a real mobile route:
     `/account/saved-searches`;
   - `NotificationObserver` now forwards the presented `mobile_route` into queued push payload data,
@@ -27,6 +27,5 @@ Carry forward local KAN-23 saved-search notification routing fixes on top of bac
 App HEAD: `727abc9`
 
 ## Exact next action
-Commit and push the backend KAN-23 notification-route fix if QA agrees that saved-search alerts
-should open Saved Searches on mobile; if alert generation still fails entirely, investigate the
-hourly `search:send-saved-search-alerts` scheduler semantics next.
+If saved-search alerts still fail to arrive end-to-end after this route fix, investigate the
+hourly `search:send-saved-search-alerts` scheduler semantics and matching logic next.
