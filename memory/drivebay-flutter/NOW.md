@@ -2,18 +2,15 @@
 
 ## Goal
 
-Point Settings at public legal URLs for Play readiness; commit app.
+Ship Play internal testing build against the host that serves legal pages.
 
 ## Current state
 
-- **Local (uncommitted):** Settings → LEGAL section opens web Privacy / Terms /
-  Cookies / Account deletion via `Env.webBaseUrl` + path (`url_launcher`).
-  New l10n keys in `app_en.arb` / `app_sr.arb` (gen-l10n run).
-- Depends on Laravel hosting those paths (see drivebay
-  `docs/operations/legal-and-play-console.md`).
-- Last pushed HEAD **`ca4572a`** (AutoKlik trust blue).
+- App HEAD **`f711035`** (pushed): Settings → LEGAL opens Privacy / Terms /
+  Cookies / Account deletion via `Env.webBaseUrl` + path.
+- Backend legal pages live on drivebay **`a315547`**.
 
 ## Exact next action
 
-Commit+push when ready; build Play internal testing AAB with production
-`API_BASE_URL` / web origin so legal links resolve on the public site.
+Build Play testing AAB with production `API_BASE_URL` so legal links resolve;
+complete Play Console privacy + account-deletion fields.
