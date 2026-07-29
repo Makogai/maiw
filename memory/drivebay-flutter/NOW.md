@@ -2,14 +2,14 @@
 
 ## Goal
 
-Pick next mobile KAN item after KAN-44 push.
+Pick next mobile KAN item.
 
 ## Current state
 
-- App HEAD **`cb156bd`** (pushed): KAN-44 snappiness — cached images,
-  search sliver isolation, keepAlive/SWR, favorite select, performance docs.
-- Prior **`768c642`**: DriveBay/AutoKlik brand packs.
+- App HEAD **`ca4572a`** (pushed): AutoKlik accents → gentle trust blue.
+- Prior **`cb156bd`**: KAN-44 snappiness; **`768c642`**: brand packs.
 
 ## Exact next action
 
-Pick next To Do from the KAN board (or device-QA scroll on a release build).
+Rebuild with `--flavor autoklik --dart-define=BRAND=autoklik` to confirm blue,
+or pick next KAN To Do.
