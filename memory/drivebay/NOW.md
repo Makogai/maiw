@@ -2,15 +2,16 @@
 
 ## Goal
 
-Pick next KAN backlog item.
+Confirm site boots after BOM fix; then pick next KAN item.
 
 ## Current state
 
-- App HEAD **`1afeb2f`** (pushed): Vite HMR pinned to `127.0.0.1` (was
-  `[::1]:5173` → assets never loaded → Inertia hang + Filament raw JSON).
-- Prior: brand accent cascade + AutoKlik trust blue (`b7df730`).
-- Removed stale `public/hot` locally; restart `npm run dev` after pull.
+- App HEAD **`d85e3c2`** (pushed): stripped UTF-8 BOM from 14 lang files
+  (PowerShell `Set-Content` left BOM → corrupted Inertia/Livewire JSON →
+  JSON popups / broken admin). Verified local Inertia JSON now starts with `{`.
+- Prior: Vite HMR `127.0.0.1` (`1afeb2f`); AutoKlik trust blue (`b7df730`).
 
 ## Exact next action
 
-Restart `npm run dev`, hard-refresh browser. Then pick next KAN item.
+Hard-refresh local. Redeploy Coolify so prod picks up `d85e3c2`. Then smoke
+nav + admin login.
