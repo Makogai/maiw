@@ -59,6 +59,9 @@ Billing: `Billing/CheckoutController`.
   Google's practical limit is 50k URLs/file, this app is nowhere near that yet so no sitemap index
   was built).
 
+Visual card design reference for OG layouts: `docs/og-preview-mock.html` (not served to
+users; design/QA aid for KAN-67).
+
 ## Tests
 
 - `tests/Feature/Web/SitemapTest.php` — 200 + XML content-type, static/legal pages present with
@@ -73,6 +76,9 @@ Billing: `Billing/CheckoutController`.
     `PDOException` (FK violation) rather than a search-related failure. Use a free-text `q=...` param
     instead to trigger the "has filters" branch without touching FK columns.
 - `tests/Feature/SeoBladeMetaTest.php` (KAN-63/64, pre-existing) still green after these changes.
+- `tests/Feature/Web/SharePreviewMetaHarnessTest.php` + `Tests\Support\AssertsSeoHtml` (**KAN-67**) —
+  home / search / privacy / dealer / listing each assert title + description + og:title/description/
+  image + twitter:card + canonical in the **initial HTML**.
 
 ## Verification (2026-07-29)
 

@@ -2,16 +2,13 @@
 
 ## Goal
 
-Continue SEO epic **KAN-62** — next: KAN-67 (QA harness) or KAN-68 (JSON-LD).
+Finish SEO epic **KAN-62** with **KAN-68** (JSON-LD), or pause for deploy/QA.
 
 ## Current state
 
-- **KAN-63** `a5e3ece` — Blade SEO for crawlers (Done)
-- **KAN-64** `eec2b08` — brand default OG images (Done)
-- **KAN-65** `e7c2aaf` — sitemap + noindex (Done)
-- **KAN-66** `b99c424` — dynamic search titles + dealer/storefront canonicals (Done)
-- Still open: **KAN-67**, **KAN-68**
+- **KAN-63..67 Done** on main through **`834a522`** (share-preview harness).
+- Still open under KAN-62: **KAN-68** (WebSite / dealer / richer listing JSON-LD).
 
 ## Exact next action
 
-Implement **KAN-67** (HTML-meta QA harness) or **KAN-68** (JSON-LD), or stop and verify share cards in Facebook/WhatsApp debugger after deploy.
+Implement **KAN-68**, or deploy and verify WhatsApp/Facebook share cards.
