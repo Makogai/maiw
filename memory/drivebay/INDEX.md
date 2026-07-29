@@ -12,7 +12,8 @@ verified against code or wasn't already written down.
 | Architecture/boundaries | `topics/architecture.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Business behavior | `topics/domain.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Local coding/testing patterns | `topics/conventions.md`, then `apps/drivebay/AGENTS.md` | partial |
-| Why a choice was made | `topics/decisions.md` | 1 entry |
+| Why a choice was made | `topics/decisions.md` | entries |
+| SEO (sitemap, robots, noindex, OG) | `topics/seo.md` | KAN-63/64/65 done, current |
 
 ## Change recipes
 
@@ -60,4 +61,9 @@ verified against code or wasn't already written down.
   API controllers still intentionally reuse `Requests/Web/*` Form Requests. Read this before
   adding/changing an API endpoint or touching migrations instead of re-deriving the
   route/schema map from scratch.
+- `topics/seo.md` — deep reference for the SEO epic (**Jira: KAN-62**, sub-tasks KAN-63/64/65
+  done): `SeoData::forPage()`/`forPrivatePage()`, which controllers are `noindex`, the dynamic
+  `sitemap.xml` design (`SitemapGenerator`, dealer/listing filtering gotchas), and a test gotcha
+  around FK-constrained query params. Read this before touching meta tags, robots policy, the
+  sitemap, or before starting KAN-66 (canonicals) / KAN-68 (JSON-LD).
 

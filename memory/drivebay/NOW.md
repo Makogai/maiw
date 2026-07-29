@@ -2,18 +2,16 @@
 
 ## Goal
 
-Ship **KAN-63** (Blade SEO for crawlers), then **KAN-64** (default OG images).
+Continue SEO epic **KAN-62** — next: KAN-67 (QA harness) or KAN-68 (JSON-LD).
 
 ## Current state
 
-- **KAN-63 Done (local, uncommitted):** `resources/views/app.blade.php` reads
-  Inertia `$page['props']['seo']` into Blade `$seo` so WhatsApp/Facebook/etc. get
-  title + OG meta without JS. Fallback brand `<title>`. Tests:
-  `SeoBladeMetaTest` (3 passed). Listing OG + legal tests still green.
-- Last pushed HEAD **`a315547`** (legal pages). Jira epic **KAN-62**.
-- Next open SEO slice: **KAN-64** (pages still won't show an *image* card until
-  default og:image exists — titles/descriptions will).
+- **KAN-63** `a5e3ece` — Blade SEO for crawlers (Done)
+- **KAN-64** `eec2b08` — brand default OG images (Done)
+- **KAN-65** `e7c2aaf` — sitemap + noindex (Done)
+- **KAN-66** `b99c424` — dynamic search titles + dealer/storefront canonicals (Done)
+- Still open: **KAN-67**, **KAN-68**
 
 ## Exact next action
 
-Commit+push `apps/drivebay` for KAN-63, deploy, then implement **KAN-64**.
+Implement **KAN-67** (HTML-meta QA harness) or **KAN-68** (JSON-LD), or stop and verify share cards in Facebook/WhatsApp debugger after deploy.
