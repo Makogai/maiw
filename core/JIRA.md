@@ -26,6 +26,8 @@ tickets consistently and keep them in sync with code + memory.
 - Cross-app product epics (not MAIW-findings):
   - `KAN-29` — **Recommendations end-to-end** (For you, search ranking, email digests);
     spans backend + mobile; related children/slices include KAN-25, KAN-17, KAN-24.
+  - `KAN-62` — **Amazing SEO everywhere** (rich share previews, crawlers, sitemap);
+    children KAN-63..KAN-68; primarily `apps/drivebay` (Flutter shares web URLs).
 - Child issues use `parent: <epic-key>` at creation. Use **Bug** for functional defects,
   **Task** for docs/tech-debt/cleanup, **Story/Feature** for net-new capability.
 - **Labels** (always set both, via `additional_fields.labels`):

@@ -24,6 +24,14 @@ call except where noted.
 | `FuelPrices/` | `Index.vue` | `FuelPriceController.php:22` |
 | `Home/` | `Index.vue` | `HomeController.php:90` |
 | `Legal/` | `Show.vue` | `LegalController.php` — `/privacy`, `/terms`, `/cookies`, `/account-deletion` (Play + web); copy in `lang/{en,sr}/legal.php` |
+
+### SEO / share previews (**Jira: KAN-62**)
+
+- Listings alone inject `$seo` into Blade via `withViewData` + custom OG JPEG — other
+  public pages rely on client `SeoHead.vue`, so WhatsApp/etc. show **plain links**.
+- Child workstreams: KAN-63 (Blade meta), KAN-64 (default OG images), KAN-65 (sitemap/
+  noindex), KAN-66 (search/dealer canonicals), KAN-67 (QA harness), KAN-68 (JSON-LD).
+
 | `Listings/` | `Show.vue` | `ListingController.php:113` |
 | `Messages/` | `Compose.vue`, `Index.vue`, `Show.vue` | `InternalMessageController.php:33`, `MessageController.php:159`/`173` |
 | `Notifications/` | `Index.vue` | `NotificationController.php:28` |

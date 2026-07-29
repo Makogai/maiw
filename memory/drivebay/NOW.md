@@ -2,20 +2,22 @@
 
 ## Goal
 
-Use production legal URLs in Play Console and start internal/closed testing.
+Start **KAN-62** SEO epic (plain share links → rich previews everywhere).
 
 ## Current state
 
-- App HEAD **`a315547`** (pushed): privacy / terms / cookies / account-deletion
-  pages (`LegalController`, `Legal/Show.vue`, `lang/{en,sr}/legal.php`), footer
-  links, Play checklist `docs/operations/legal-and-play-console.md`.
-  Tests: `LegalPagesTest` passed before ship.
-- Operator: DriveBay LLC; `:app` brandify; Montenegro law; 7-day deletion grace.
-- Privacy URL for Play: `https://drivebay.me/privacy` (after deploy).
-  Account deletion: `https://drivebay.me/account-deletion`.
-- Jira not filed (Atlassian MCP was down when pages were added).
+- Legal pages shipped **`a315547`**: `/privacy`, `/terms`, `/cookies`,
+  `/account-deletion` + Play checklist.
+- **Jira: KAN-62** — Amazing SEO everywhere (High). Children:
+  - **KAN-63** Blade meta for all public pages (Highest — fixes plain shares)
+  - **KAN-64** default / page-type OG images
+  - **KAN-65** sitemap + robots/noindex
+  - **KAN-66** search/dealer/storefront canonicals
+  - **KAN-67** HTML-meta QA harness
+  - **KAN-68** JSON-LD expansion
+- Root cause: only listings use `withViewData(['seo'])`; crawlers don't run JS.
 
 ## Exact next action
 
-Deploy so Play can fetch `/privacy` and `/account-deletion`, then paste those
-URLs into Play Console Data safety / privacy fields and start the testing track.
+Pull/implement **KAN-63** first (server-render SEO into Blade), then **KAN-64**
+so homepage/search/legal get `og:image`. Use Facebook/WhatsApp debugger after deploy.
