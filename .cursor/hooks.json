@@ -3,7 +3,7 @@
   "hooks": {
     "beforeShellExecution": [
       {
-        "command": "\"C:/Program Files/nodejs/node.exe\" .cursor/hooks/gate-attribution.js",
+        "command": "node .cursor/hooks/gate-git-attribution.js",
         "matcher": "git",
         "failClosed": false
       }
