@@ -116,9 +116,10 @@ in the interceptor chain, not in application code.
   - **KAN-27 (Android App Links)**: hosts `dev|qa|www|drivebay.me` are in
     `AndroidManifest.xml` (`autoVerify`) + custom scheme `drivebay://`. Server
     `public/.well-known/assetlinks.json` must list the **installed APK’s** SHA-256
-    (debug keystore differs per machine; no placeholder strings). Without a matching
-    fingerprint + deploy, taps fall to the browser/chooser even though in-app routing
-    works via `adb` forced intents / `drivebay://`.
+    (debug keystore differs per machine; Play builds use the upload/App Signing cert —
+    not debug). Without a matching fingerprint + deploy, taps fall to the
+    browser/chooser even though in-app routing works via `adb` forced intents /
+    `drivebay://`.
 
 ## lib/core/cache/ — keepAlive TTL + SWR (**Jira: KAN-44**)
 

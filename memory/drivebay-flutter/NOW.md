@@ -2,29 +2,27 @@
 
 ## Goal
 
-Catch up memory after shipping remaining local WIP on `8299084`.
+Ship DriveBay Play closed-beta AAB with proper release signing.
 
 ## Current state
 
-- App HEAD is **`8299084`** on `main` (pushed).
-- Recent commits:
-  - `770fd91` — **KAN-70** listing compare (Done)
-  - `1358d6f` — **KAN-61** edit profile name fields (Done)
-  - `ecc0637` — chat composer border + notification badge position
-  - `8299084` — branding run docs + default API `dev.drivebay.me`
-- Only leftover dirty: `macos/Flutter/GeneratedPluginRegistrant.swift` (line endings).
+- App HEAD is still **`8299084`** on `main` (pushed). Local dirty: `android/app/build.gradle.kts` now loads release signing from `android/key.properties` + `android/upload-keystore.jks` (both gitignored).
+- Verified release AAB: `build/app/outputs/bundle/drivebayRelease/app-drivebay-release.aab` signed `CN=DriveBay` (not Android Debug).
+- SDK fix on this machine: installed `cmdline-tools/latest` under `%LOCALAPPDATA%\Android\Sdk`; `flutter doctor` clean.
 
 ## Exact next action
 
-1. Pick next ticket from KAN / backlog, or discard macos line-ending noise.
-2. Keep using `--flavor … --dart-define=BRAND=…` for runs.
+1. Back up offline: `android/upload-keystore.jks` + `android/key.properties` (lose = cannot update Play app with same upload key).
+2. Upload the new AAB to Play closed testing.
+3. Ask whether to commit/push the `build.gradle.kts` signing wiring (secrets stay untracked).
+4. After first Play upload, put the **upload** cert SHA-256 into server `assetlinks.json` for App Links (**KAN-27**).
 
 ## Decisions made
 
-- Edit profile v1 = name fields only; contact prefs stay separate. `(**Jira: KAN-61**)`
-- Compare entry = app-bar icon; strip hidden on `/compare`. `(**Jira: KAN-70**)`
+- Play release builds use local upload keystore via Flutter’s `key.properties` pattern; debug fallback only if `key.properties` is missing.
+- Edit profile v1 = name fields only. `(**Jira: KAN-61**)`
+- Compare entry = app-bar icon. `(**Jira: KAN-70**)`
 
 ## Verification
 
-- Pushed to `origin/main`
-- KAN-61 / KAN-70 → Done
+- `flutter build appbundle --release --flavor drivebay --dart-define=BRAND=drivebay` → success; `keytool -printcert` on AAB `META-INF/UPLOAD.RSA` → Owner `CN=DriveBay,…`
