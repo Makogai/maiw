@@ -3,8 +3,8 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "0cfe422",
+  "sourceCommit": "5c89591",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-07-29T11:56:59.000Z"
+  "lastSynchronizedAt": "2026-07-29T13:22:15.000Z"
 }

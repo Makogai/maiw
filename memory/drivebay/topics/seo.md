@@ -1,4 +1,4 @@
-# drivebay — SEO subsystem (KAN-62 epic: KAN-63/64/65/66 done, KAN-67/68 open)
+# drivebay — SEO subsystem (KAN-62 epic done; KAN-69 dynamic OG images added)
 
 Central place: `app/Support/Seo/SeoData.php`. Controllers build an `array`
 via `SeoData::forPage(...)` and pass it as the Inertia `seo` prop; `resources/views/app.blade.php`
@@ -7,9 +7,11 @@ reads that prop server-side (no JS needed) to render `<title>`, meta description
 
 ## `SeoData::forPage()` / `forPrivatePage()`
 
-- `forPage(string $title, string $description, ?string $canonical = null, ?string $robots = null)`
-  — `$robots` defaults to `index,follow`. Also sets `og.image` to the brand default
-  (`BrandDefaultOgImage`, KAN-64) when the page doesn't supply its own OG image.
+- `forPage(string $title, string $description, ?string $canonical = null, ?string $robots = null, ?string $ogImageUrl = null, ?string $ogImageAlt = null)`
+  — `$robots` defaults to `index,follow`. `og.image` defaults to the brand default
+  (`BrandDefaultOgImage`, KAN-64) unless `$ogImageUrl` is passed (absolute URL, e.g. a
+  dynamic OG card — **KAN-69**); `og.image_alt` defaults to `brand('name')` unless
+  `$ogImageAlt` is passed.
 - `forPrivatePage(string $title, string $description, ?string $canonical = null)` — thin wrapper
   that calls `forPage(..., robots: 'noindex,nofollow')`. Added for KAN-65.
 - Controllers pick one of the two by intent: public marketing/browsing pages use `forPage`,
@@ -143,3 +145,84 @@ unrelated to this work (see `NOW.md`). `vendor/bin/pint --test` clean on all fil
   `tests/Feature/DealerStorefrontDomainTest.php` (storefront listing canonical is the
   `https://{subdomain}/vehicles/...` URL, asserted to NOT equal/contain the marketplace
   `listings.show` URL).
+
+## Dynamic OG images (KAN-69) — fuel prices hero card + generic page-type cards
+
+Two new 1200×630 Intervention Image services, both brand-colored (`brand('colors')`,
+never hardcoded orange) and both following `ListingOgImageService`'s pattern: `urlFor()`
+builds a versioned `/og/...jpg?v={hash}` URL, `ensureGenerated()` caches the JPEG under
+`Storage::disk('public')` and returns the storage-relative path, and each has its own
+`protected function fontPath(bool $bold)` duplicated verbatim from `ListingOgImageService`
+(same fallback chain: `resource_path('fonts/Roboto-*.ttf')` → Windows/Linux system fonts)
+— this duplication mirrors the existing `BrandDefaultOgImage`/`ListingOgImageService`
+convention, no shared trait was introduced.
+
+- **`App\Domains\FuelPricing\Services\FuelPricesOgImageService`** — renders national ME
+  max retail prices (petrol 95/98, diesel, heating oil) + effective date + brand name.
+  `urlFor(?MontenegroFuelPriceSnapshot $snapshot = null)`: defaults to
+  `MontenegroFuelPriceSnapshot::latestSnapshot()`; **if there's no snapshot, returns the
+  brand default OG URL** (`brand('assets.og_default_url')`) instead of generating an
+  empty card. `ensureGenerated()` returns `?string` (null when no snapshot) — caller
+  (`FuelPricesOgImageController`) must `abort_if($path === null, 404)`. Cache path:
+  `og/fuel-prices/{brandId}-{locale}-{version}.jpg`; version = `sha1(4 prices +
+  effective_date + brand id + locale)` truncated to 12 chars.
+  Route: `GET /og/fuel-prices.jpg` → `fuel-prices.og`, registered **outside** the locale
+  group next to `listings.og` in `routes/web.php` (same reasoning as `listings.og`/
+  `sitemap`: one canonical asset URL, not per-locale).
+- **`App\Support\Seo\PageTypeOgImageService`** — generic "large title + short subtitle +
+  accent bar + brand name" card for tool/utility pages that have no hero imagery of
+  their own. `SLUGS = ['registration', 'fuel-consumption', 'compare']`.
+  **`templateFor(string $slug): array{title, subtitle}`** is the key design point: it
+  resolves the canonical, locale-aware title/subtitle for a slug via `__()` (registration/
+  fuel-consumption reuse the existing `tools.*.hero_title`/`hero_subtitle` keys already
+  used on those pages; compare reuses `marketplace.compare.title`/`subtitle`). **Both**
+  the page controller (building the OG URL via `urlFor()`) **and** `PageTypeOgImageController`
+  (regenerating the JPEG when the image route is hit) call `templateFor($slug)` — this is
+  required because the `/og/pages/{slug}.jpg` route only carries the slug + a `?v=` cache-
+  buster, not the title/subtitle text itself, so both ends must derive identical text
+  independently to get a matching version hash / cache hit. Cache path:
+  `og/pages/{slug}-{version}.jpg`; version = `sha1(brand id + locale + slug + title +
+  subtitle)`.
+  Route: `GET /og/pages/{slug}.jpg` → `pages.og`, `whereIn('slug', SLUGS)`, also outside
+  the locale group.
+  **Known gotcha (not fixed, low-impact):** `SetLocale` middleware only recognizes a
+  locale from the URL's first path segment (`sr`); `/og/pages/...` and
+  `/og/fuel-prices.jpg` don't have that prefix, so image *requests* always resolve to the
+  default locale (`en`) regardless of which locale the linking page was rendered in. This
+  only affects the *text baked into the JPEG* for `sr` pages (marketplace HTML meta tags
+  are unaffected, they're built directly from the request's own locale) — pre-existing
+  same-shape gotcha as `listings.og`/canonicals not being locale-aware; revisit only if it
+  becomes a real complaint.
+- **`SeoData::forPage()`** — see the KAN-64 section above for the new `$ogImageUrl`/
+  `$ogImageAlt` params this feature added.
+- **`FuelPriceController`** — now builds a dynamic title/description from the latest
+  `MontenegroFuelPriceSnapshot` (`fuel_prices.seo_title_with_prices` /
+  `seo_description_with_prices`, new keys in `lang/{en,sr}/fuel_prices.php`, `:diesel`/
+  `:petrol_95`/`:petrol_98`/`:heating_oil`/`:date` placeholders, 2-decimal formatted
+  prices) and falls back to the static `page_title`/`page_description` keys when there's
+  no snapshot yet. Passes `FuelPricesOgImageService::urlFor($latest)` as the OG image.
+- **`RegistrationCalculatorController`**, **`FuelConsumptionCalculatorController`** —
+  unchanged page title/description, added `PageTypeOgImageService::urlFor(slug, ...)` as
+  the OG image via `templateFor()`.
+- **`CompareController`** — added canonical (`LocaleUrl::route('compare.index')`, was
+  previously missing) and the page-type OG image; kept `noindex,follow` gating on
+  `$publicIds->isNotEmpty()` unchanged (KAN-65 behavior, still covered by
+  `PrivatePageSeoTest`). **Also fixed a latent i18n bug while touching this line**: the
+  `marketplace.compare.subtitle` key has a `:max` placeholder
+  (`"Side-by-side comparison of up to :max saved vehicles."`) that was never being
+  substituted (`__('marketplace.compare.subtitle')` with no params) — now passed
+  `['max' => CompareService::MAX_ITEMS]` both for the page description and the OG
+  subtitle text, so the literal string `:max` no longer leaks into meta/OG copy.
+- **Tests:** `tests/Feature/Web/FuelPricesOgImageTest.php` (og:image present + points at
+  `/og/fuel-prices.jpg?v=`, dynamic title contains a live price, brand-default fallback
+  when no snapshot, `/og/fuel-prices.jpg` serves a real jpeg and caches under
+  `og/fuel-prices/`, 404 when no snapshot exists), `tests/Feature/Web/PageTypeOgImageTest.php`
+  (all three tool pages have `/og/pages/{slug}.jpg?v=` og:image, compare canonical
+  present, compare-with-ids stays `noindex,follow` while still using the page-type card,
+  all three slugs serve real jpegs via a `->with([...])` dataset, unknown slug 404s via
+  route `whereIn`).
+- **Gotcha hit while verifying (not a KAN-69 regression):** running the Pest suite
+  (likely `tests/Feature/VehicleMakeLogoTest.php`) mutates `public/images/brands/*.svg`
+  in place (looks like an in-place minify/optimize pass on first read/write). Unrelated
+  to any ticket — revert with `git checkout -- public/images/brands/` before committing
+  if you run the full suite.

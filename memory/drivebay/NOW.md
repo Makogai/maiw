@@ -2,21 +2,16 @@
 
 ## Goal
 
-Deploy SEO epic **KAN-62** and spot-check share cards.
+Deploy SEO work (KAN-62 + KAN-69) and verify share cards.
 
 ## Current state
 
-All KAN-62 children Done on drivebay main through **`0cfe422`**:
-
-| Ticket | Commit | What |
-|--------|--------|------|
-| KAN-63 | a5e3ece | Blade SEO for crawlers |
-| KAN-64 | eec2b08 | Brand default OG images |
-| KAN-65 | e7c2aaf | Sitemap + noindex |
-| KAN-66 | b99c424 | Search titles + dealer/storefront canonicals |
-| KAN-67 | 834a522 | Share-preview HTML harness |
-| KAN-68 | 0cfe422 | WebSite / AutoDealer / Car JSON-LD |
+- SEO epic children KAN-63..68 Done earlier (through `0cfe422`).
+- **KAN-69** `5c89591` (pushed): dynamic OG for fuel prices (`/og/fuel-prices.jpg`
+  with live ME prices), tools + compare (`/og/pages/{slug}.jpg`), richer fuel SEO
+  titles. Tests green.
 
 ## Exact next action
 
-Deploy production, then check WhatsApp/Facebook debugger on `/`, `/search`, a listing, a dealer, `/privacy`. Optionally mark **KAN-62** Done after that.
+Deploy production. Spot-check WhatsApp/Facebook on `/fuel-prices`,
+`/tools/registration`, `/compare`, plus a listing. Optional: mark epic KAN-62 Done.
