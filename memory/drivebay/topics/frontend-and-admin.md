@@ -23,6 +23,7 @@ call except where noted.
 | `Favorites/` | `Index.vue` | `FavoriteController.php:26` |
 | `FuelPrices/` | `Index.vue` | `FuelPriceController.php:22` |
 | `Home/` | `Index.vue` | `HomeController.php:90` |
+| `Legal/` | `Show.vue` | `LegalController.php` — `/privacy`, `/terms`, `/cookies`, `/account-deletion` (Play + web); copy in `lang/{en,sr}/legal.php` |
 | `Listings/` | `Show.vue` | `ListingController.php:113` |
 | `Messages/` | `Compose.vue`, `Index.vue`, `Show.vue` | `InternalMessageController.php:33`, `MessageController.php:159`/`173` |
 | `Notifications/` | `Index.vue` | `NotificationController.php:28` |

@@ -28,6 +28,10 @@
 
 ## Gotchas
 
+- Settings legal links use `Env.webBaseUrl` (derived from `API_BASE_URL` by stripping
+  `/api/v1`). Point builds at the host that serves `/privacy` etc., or links open a
+  wrong origin.
+
 - README's relative doc links assume a nested-inside-drivebay layout that doesn't match
   this wrapper's sibling `apps/` structure — see `topics/architecture.md` "High-risk
   change areas".

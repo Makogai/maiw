@@ -2,15 +2,25 @@
 
 ## Goal
 
-Confirm AutoKlik accents apply; pick next KAN item.
+Ship legal pages + Play Console privacy URL for internal/closed testing; commit app.
 
 ## Current state
 
-- App HEAD **`2ecd0e5`** (pushed): brand CSS vars locked with `!important` +
-  end-of-body `#brand-tokens` (Vite HMR was reinjecting orange `:root`).
-- Prior: BOM lang fix `d85e3c2`; Vite host `1afeb2f`; trust blue `b7df730`.
+- **Local (uncommitted)** legal publishing stack:
+  - Routes: `/privacy`, `/terms`, `/cookies`, `/account-deletion` (+ `/sr/…`)
+    via `LegalController` + `Legal/Show.vue`
+  - Copy: `lang/{en,sr}/legal.php` — DriveBay LLC, `:app` brandify, Montenegro law,
+    7-day account deletion grace; contacts privacy@ / support@drivebay.me
+  - Footer legal links in `AppLayout.vue`; shared Inertia `translations.legal`
+  - Doc checklist: `docs/operations/legal-and-play-console.md`
+  - Tests: `LegalPagesTest` — 5 passed
+- Last pushed app HEAD still **`2ecd0e5`** (brand CSS lock). Jira MCP unavailable
+  this session — ticket for legal/Play pages not created automatically.
 
 ## Exact next action
 
-Hard-refresh with `BRAND=autoklik` — buttons/links should be `#3b7dd8`. Redeploy
-prod. Then next KAN item.
+1. Deploy / expose production (or staging) URL so Play Console can fetch
+   `https://<host>/privacy` (and `/account-deletion`).
+2. Want commit+push of `apps/drivebay`? Then paste privacy URL into Play Console
+   and start internal/real testing track.
+3. Manually create KAN ticket for legal/Play when Atlassian MCP is back.
