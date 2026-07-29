@@ -6,11 +6,11 @@ Pick next KAN backlog item.
 
 ## Current state
 
-- App HEAD **`b7df730`** (pushed): brand accent CSS cascade fix (tokens after
-  Vite) + AutoKlik trust blue `#3b7dd8`.
-- Prior **`c29efaf`**: brand packs wiring.
-- Left untracked: `docs/og-preview-mock.html`
+- App HEAD **`1afeb2f`** (pushed): Vite HMR pinned to `127.0.0.1` (was
+  `[::1]:5173` → assets never loaded → Inertia hang + Filament raw JSON).
+- Prior: brand accent cascade + AutoKlik trust blue (`b7df730`).
+- Removed stale `public/hot` locally; restart `npm run dev` after pull.
 
 ## Exact next action
 
-Hard-refresh with `BRAND=autoklik` to confirm accents. Then pick next KAN item.
+Restart `npm run dev`, hard-refresh browser. Then pick next KAN item.
