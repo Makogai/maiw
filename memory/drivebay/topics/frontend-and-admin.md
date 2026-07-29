@@ -27,10 +27,13 @@ call except where noted.
 
 ### SEO / share previews (**Jira: KAN-62**)
 
-- Listings alone inject `$seo` into Blade via `withViewData` + custom OG JPEG — other
-  public pages rely on client `SeoHead.vue`, so WhatsApp/etc. show **plain links**.
-- Child workstreams: KAN-63 (Blade meta), KAN-64 (default OG images), KAN-65 (sitemap/
-  noindex), KAN-66 (search/dealer canonicals), KAN-67 (QA harness), KAN-68 (JSON-LD).
+- **KAN-63 Done (local pending commit):** `app.blade.php` falls back to
+  `$page['props']['seo']` so crawlers see title/OG/Twitter/hreflang/JSON-LD in
+  initial HTML for every page that passes a `seo` Inertia prop (not only listings
+  with `withViewData`). Brand `<title>` when seo missing. Tests:
+  `tests/Feature/SeoBladeMetaTest.php`.
+- Still open: KAN-64 (default OG images), KAN-65 (sitemap/noindex), KAN-66
+  (search/dealer canonicals), KAN-67 (QA harness), KAN-68 (JSON-LD).
 
 | `Listings/` | `Show.vue` | `ListingController.php:113` |
 | `Messages/` | `Compose.vue`, `Index.vue`, `Show.vue` | `InternalMessageController.php:33`, `MessageController.php:159`/`173` |

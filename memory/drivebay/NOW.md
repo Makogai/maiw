@@ -2,22 +2,18 @@
 
 ## Goal
 
-Start **KAN-62** SEO epic (plain share links → rich previews everywhere).
+Ship **KAN-63** (Blade SEO for crawlers), then **KAN-64** (default OG images).
 
 ## Current state
 
-- Legal pages shipped **`a315547`**: `/privacy`, `/terms`, `/cookies`,
-  `/account-deletion` + Play checklist.
-- **Jira: KAN-62** — Amazing SEO everywhere (High). Children:
-  - **KAN-63** Blade meta for all public pages (Highest — fixes plain shares)
-  - **KAN-64** default / page-type OG images
-  - **KAN-65** sitemap + robots/noindex
-  - **KAN-66** search/dealer/storefront canonicals
-  - **KAN-67** HTML-meta QA harness
-  - **KAN-68** JSON-LD expansion
-- Root cause: only listings use `withViewData(['seo'])`; crawlers don't run JS.
+- **KAN-63 Done (local, uncommitted):** `resources/views/app.blade.php` reads
+  Inertia `$page['props']['seo']` into Blade `$seo` so WhatsApp/Facebook/etc. get
+  title + OG meta without JS. Fallback brand `<title>`. Tests:
+  `SeoBladeMetaTest` (3 passed). Listing OG + legal tests still green.
+- Last pushed HEAD **`a315547`** (legal pages). Jira epic **KAN-62**.
+- Next open SEO slice: **KAN-64** (pages still won't show an *image* card until
+  default og:image exists — titles/descriptions will).
 
 ## Exact next action
 
-Pull/implement **KAN-63** first (server-render SEO into Blade), then **KAN-64**
-so homepage/search/legal get `og:image`. Use Facebook/WhatsApp debugger after deploy.
+Commit+push `apps/drivebay` for KAN-63, deploy, then implement **KAN-64**.
