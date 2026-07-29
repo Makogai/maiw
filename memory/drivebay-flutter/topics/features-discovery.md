@@ -45,6 +45,19 @@ calls `load()` — config update re-ran the future and `when(loading:)` wiped th
 stop watching config on the detail provider (screen still watches flags); use
 `skipLoadingOnReload` / `skipLoadingOnRefresh` on detail + similar `when`s.
 
+## Listing compare (KAN-70)
+
+Local bag + `GET /compare` — not a search-card mode.
+
+| Concern | Evidence |
+|---|---|
+| Gate | `AppFeatureFlags.listingCompare` from `/config/app` (`listing_compare`) |
+| Bag | `CompareBagNotifier` — max **2** publicIds, persisted via `AppPreferencesStorage` (`compare_bag_v1`) |
+| Detail entry | App-bar compare icon (Add/Remove) — not share menu (`listing_detail_screen.dart`) |
+| Strip | `CompareStripHost` in `app.dart` builder — shows when bag non-empty; Compare CTA at 2 |
+| Screen | `/compare` → `CompareScreen` fetches `CompareRepository.fetchCompare` |
+| Out of scope | Search-card checkboxes, favorites multi-select, server `ComparisonList` write |
+
 ## lib/features/search/ — search hub, filters, sort
 
 `SearchHubScreen` is a 2-page `PageView` (browse + fuel prices from `features/tools/`), synced

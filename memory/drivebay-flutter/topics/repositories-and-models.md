@@ -17,6 +17,7 @@ primary source, not a second-hand summary.
 | `auth_repository.dart` | `/auth/login`; `/auth/register`; `/auth/verify-email`; `/auth/verification/resend`; `/auth/forgot-password`; `/auth/reset-password`; `/auth/me`; `/auth/logout` | POST×6; GET; POST | Yes — full `auth.php` register/login/password reset (**Jira: KAN-56**) | `lib/repositories/auth_repository.dart` |
 | `autodiler_import_repository.dart` | `/seller/import/autodiler/preview`; `/seller/import/autodiler`; `/seller/import/autodiler/status` | POST; POST; GET | Yes — all 3 `AutodilerImportApiController` routes in `seller.php` | `lib/repositories/autodiler_import_repository.dart:17,40,63` |
 | `billing_repository.dart` | `/payments/{id}/checkout`; `/payments/{id}/confirm` | GET; POST | Yes — `engagement.php` `PaymentApiController` | `lib/repositories/billing_repository.dart:13,27` |
+| `compare_repository.dart` | `/compare?public_ids=` | GET | Yes — `CompareApiController` (`catalog.php`) — mobile cap 2 locally (**Jira: KAN-70**) | `lib/repositories/compare_repository.dart` |
 | `device_token_repository.dart` | `/auth/device-tokens` | POST; DELETE | Yes — `auth.php` | `lib/repositories/device_token_repository.dart:13,27` |
 | `engagement_campaign_repository.dart` | `/engagement-campaigns/active`; `/engagement-campaigns/{uuid}/interactions` | GET; POST | Yes — `campaigns.php` | `lib/repositories/engagement_campaign_repository.dart:13,41` |
 | `experiment_repository.dart` | `/experiments` | GET | Yes — `catalog.php:21` (`sanctum.optional`) | `lib/repositories/experiment_repository.dart:11` |
@@ -168,7 +169,7 @@ web/dashboard-only):
 | `GET /listings` | `ListingApiController::index` | `catalog.php:34` | Plain browse/index feed — mobile always uses `GET /search` instead, even with empty filters (`search_repository.dart:306`). Likely intentional, not a gap in practice. |
 | `GET /model-groups` | `TaxonomyApiController::modelGroups` | `catalog.php:32` | `taxonomy_repository.dart` never calls it; `VehicleModel.vehicleModelGroupId` (`lib/models/vehicle_model.dart:14`) is parsed but nothing fetches the group list itself. |
 | `GET /recommendations` | `RecommendationApiController::index` | `catalog.php:43` | Consumed (**Jira: KAN-31**) via `ListingRepository.getRecommendations` / For you rail. |
-| `GET /compare` | `CompareApiController::index` | `catalog.php:46` | No listing-comparison feature in mobile. |
+| `GET /compare` | `CompareApiController::index` | `catalog.php:46` | Consumed (**Jira: KAN-70**) via `CompareRepository` + local bag max 2 / compare screen. |
 | `GET /recent-listings` | `RecentlyViewedApiController::index` | `catalog.php:51` | No "recently viewed" screen in mobile. |
 | `POST /vehicles/decode-vin` | `VehicleApiController::decodeVin` | `catalog.php:52` | No VIN-scan/decode entry point in the create-listing flow. |
 | `GET/POST /saved-searches`, `PATCH/DELETE /saved-searches/{id}` | `SavedSearchApiController` | `engagement.php:19-22` | **(Jira: KAN-23)** No `saved_search_repository.dart` exists at all — the entire saved-search feature (create/list/edit/delete) is unimplemented in mobile, even though `lib/features/notifications/notification_type_image.dart:12,21` already has an icon mapping for `saved_search.match` notifications — i.e. mobile can *receive* a saved-search-match push but the user can never *create* a saved search from the app. |

@@ -2,15 +2,29 @@
 
 ## Goal
 
-Ship Play internal testing build against the host that serves legal pages.
+Catch up memory after shipping remaining local WIP on `8299084`.
 
 ## Current state
 
-- App HEAD **`f711035`** (pushed): Settings → LEGAL opens Privacy / Terms /
-  Cookies / Account deletion via `Env.webBaseUrl` + path.
-- Backend legal pages live on drivebay **`a315547`**.
+- App HEAD is **`8299084`** on `main` (pushed).
+- Recent commits:
+  - `770fd91` — **KAN-70** listing compare (Done)
+  - `1358d6f` — **KAN-61** edit profile name fields (Done)
+  - `ecc0637` — chat composer border + notification badge position
+  - `8299084` — branding run docs + default API `dev.drivebay.me`
+- Only leftover dirty: `macos/Flutter/GeneratedPluginRegistrant.swift` (line endings).
 
 ## Exact next action
 
-Build Play testing AAB with production `API_BASE_URL` so legal links resolve;
-complete Play Console privacy + account-deletion fields.
+1. Pick next ticket from KAN / backlog, or discard macos line-ending noise.
+2. Keep using `--flavor … --dart-define=BRAND=…` for runs.
+
+## Decisions made
+
+- Edit profile v1 = name fields only; contact prefs stay separate. `(**Jira: KAN-61**)`
+- Compare entry = app-bar icon; strip hidden on `/compare`. `(**Jira: KAN-70**)`
+
+## Verification
+
+- Pushed to `origin/main`
+- KAN-61 / KAN-70 → Done

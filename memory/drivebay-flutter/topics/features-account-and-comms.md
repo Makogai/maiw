@@ -95,8 +95,8 @@ config for the now-guest session — `auth_notifier.dart:183-192`.
 
 ## profile/ (`lib/features/profile/`)
 
-Two screens: `ProfileScreen` (hub — account summary + navigation cards) and
-`ContactSettingsScreen` (phone/WhatsApp/Viber/Instagram contact prefs).
+Screens: `ProfileScreen` (hub), `EditProfileScreen` (name fields — **Jira: KAN-61**),
+`ContactSettingsScreen` (phone/WhatsApp/Viber/Instagram), `ChangePasswordScreen`.
 
 - `ProfileScreen` reads `authNotifierProvider` for identity/selling-restriction and
   `accountProvider` (async) for warnings/selling-restrictions to feed
@@ -109,9 +109,11 @@ Two screens: `ProfileScreen` (hub — account summary + navigation cards) and
   session-level `sellingRestriction` set at login/bootstrap; if a restriction is applied
   *while the app is running*, the gate won't reflect it until `refreshSession()` runs
   (see moderation section).
-- `ContactSettingsScreen` round-trips through `accountRepositoryProvider.getAccount()`
-  / `.updateProfile()` (`PATCH /account/profile`) and invalidates `accountProvider` after
-  save — `contact_settings_screen.dart:45,75,83`. Fields: `phone`,
+- `EditProfileScreen` (`/account/edit-profile`) PATCHes `first_name` / `last_name` /
+  `display_name`, invalidates `accountProvider`, and `refreshSession()` so hub names
+  update without restart — `edit_profile_screen.dart`.
+- `ContactSettingsScreen` round-trips phone / Instagram / WhatsApp / Viber via the same
+  `updateProfile` (`contact_settings_screen.dart:45,75-83`). Fields: `phone`,
   `instagram_username`, `show_phone_publicly`, `contact_whatsapp_enabled`,
   `contact_viber_enabled` (`contact_settings_screen.dart:76-80`).
 
