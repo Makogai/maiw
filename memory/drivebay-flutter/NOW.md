@@ -15,13 +15,15 @@
 
 ## Exact next action
 
-1. Hot restart; open listing Contact on multi-phone dealer; open Dealer settings phone picker.
+1. Hot restart; confirm seller chips are 2-col grid; swipe from left edge to go back.
 2. Ask commit/push when QA ok.
 
 ## Decisions made
 
 - Mobile phone entry matches web Account `PhoneInput` (E.164 + flagcdn flags).
 - Contact sheet shows labeled rows, not a single Call button.
+- Seller feature pills = **2-column** grid; viewing options stay **stacked rows**.
+- Pushed routes use `CupertinoPage` so edge-swipe-right goes back (`app_router.dart`).
 
 ## Verification
 

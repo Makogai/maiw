@@ -11,7 +11,8 @@
   - `ContactChannelBuilder` / `ListingContactPresenter` emit `phones[]` + `emails[]`
     (legacy singular kept)
   - Web: `ListingContactButtons.vue` + `ListingSellerCard.vue` list every row
-  - Seller/viewing chips: column + lighter style
+- Seller/viewing chips: viewing = stacked rows; seller feature pills = **2-col grid**
+  (web + Flutter)
 - Prior WIP still dirty: KAN-92 essentials, KAN-87 schema, KAN-73, Filament, etc.
 - Skip `docs/og-preview-mock.html` on commit
 

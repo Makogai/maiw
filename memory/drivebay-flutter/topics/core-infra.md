@@ -354,7 +354,8 @@ tokenStorageProvider + authSessionEventsProvider + abSubjectServiceProvider
 3. `_initializeDeepLinks` (`:76-80`) constructs `DeepLinkService` from
    `ref.read(appRouterProvider)` — i.e. deep links are wired **after** the router exists,
    confirming `app_router.dart` (in `lib/features/shell/`) must be read for the full
-   route table if a task needs it (out of scope for this note).
+   route table if a task needs it (out of scope for this note). Pushed routes use
+   `CupertinoPage` so edge swipe-from-left goes back (iOS-style) on all platforms.
 4. `didChangeAppLifecycleState` (`:90-107`) forces a device-token re-sync on app resume if
    already authenticated — belt-and-suspenders against a stale FCM token after backgrounding.
 5. `build()` (`:145-170`) wraps `MaterialApp.router` with `EngagementHost` →
