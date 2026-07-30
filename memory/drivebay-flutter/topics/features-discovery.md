@@ -163,13 +163,18 @@ area). `seller_profile_screen.dart` with two named constructors:
 
 | Constructor | Body | Repository call |
 |---|---|---|
-| `SellerProfileScreen.dealer(slug)` | `_DealerProfileBody` → `_DealerStorefrontBody` | `SellerProfileRepository.getDealer` → `GET /dealers/{slug}` |
+| `SellerProfileScreen.dealer(slug, {fromQr})` | `_DealerProfileBody` (→ storefront body when KAN-81 present) | `SellerProfileRepository.getDealer` → `GET /dealers/{slug}` |
 | `SellerProfileScreen.private(sellerId)` | `_PrivateSellerProfileBody` → `_ProfileListings` | `SellerProfileRepository.getPrivateSeller` → `GET /sellers/{sellerId}` |
 
-**Dealer path (KAN-81):** parses full `publicPayload` into `DealerProfile` +
+**Dealer path (KAN-81):** when present, parses full `publicPayload` into `DealerProfile` +
 `DealerStorefrontSettings` (`lib/models/dealer_storefront.dart`). UI:
 `widgets/dealer_storefront_header.dart` (cover/theme/welcome/policies/contact/social/
 highlights/about) then inventory grid. Does **not** use `ListingSellerCard` for dealers.
+
+**QR rating (KAN-80):** router `/dealers/:slug` sets `fromQr` when `?src=qr`. Deep links
+preserve `src=qr` (`deep_link_service.dart`). Rate CTA + sheet →
+`POST /dealers/{slug}/reviews` with `source: qr` (`dealer_rate_sheet.dart`). Keep CTA on
+the dealer body when storefront replaces `_ProfileListings`.
 
 **Private path:** still `_ProfileListings` (seller card + 2-col grid).
 

@@ -51,12 +51,13 @@ controller spot-checked; no deviations found beyond the two documented exception
 Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest}`,
 `Requests/Api/V1/Account/UpdateAccountLocaleRequest`.
 
-**catalog.php** (`routes/api/v1/catalog.php`, 23 endpoints, mostly public GET) —
+**catalog.php** (`routes/api/v1/catalog.php`, mostly public GET) —
 `TaxonomyApiController`, `GeographyApiController`, `ListingApiController`,
 `SearchApiController`, `SearchFiltersApiController`, `RecommendationApiController`,
 `CompareApiController`, `PublicDealerApiController`, `PublicSellerApiController`,
 `ExperimentApiController`, `VehicleApiController`, `ListingReportApiController`,
-`RecentlyViewedApiController`, `ListingFormOptionsApiController`. Public/no-auth: health,
+`DealerReviewApiController`, `RecentlyViewedApiController`,
+`ListingFormOptionsApiController`. Public/no-auth: health,
 experiments, countries/regions/cities/city-districts, vehicle-types/makes/models/model-groups,
 listings/featured-listings, dealers/{dealer:slug}, sellers/{seller}, search/filters,
 compare, listing-form-options, `/recommendations` (guest trending). `sanctum.optional` on
@@ -64,7 +65,15 @@ compare, listing-form-options, `/recommendations` (guest trending). `sanctum.opt
 Bearer token personalizes via `recommendation_candidates`; empty → legacy fallback).
 `throttle:api-search` on `GET /search`. `auth:sanctum, verified`
 group: `/recent-listings`, `POST /vehicles/decode-vin`, `POST /listings/{publicId}/report`
-(`ListingReportApiController` reuses **Web** `StoreListingReportRequest`).
+(`ListingReportApiController` reuses **Web** `StoreListingReportRequest`),
+`POST /dealers/{dealer:slug}/reviews` + `throttle:api-write` (**Jira: KAN-80** —
+`StoreDealerReviewApiRequest`; body `rating` 1–5, optional `title`/`comment`,
+`source` must be `qr`; one review per user/dealer → 422; QR reviews auto-approved;
+`SellerReviewService` recomputes dealer `rating_average`/`rating_count` from
+`moderation_status=approved`). Matching **web** route (session auth+verified):
+`POST /dealers/{dealer:slug}/reviews` → `DealerReviewController@store`
+(`dealers.reviews.store`); Inertia dealer page shows rate panel when `?src=qr`
+(`fromQr` prop). Tests: `DealerQrReviewApiTest`, `DealerQrReviewWebTest`.
 
 **analytics.php** (4 endpoints, `ListingAnalyticsApiController`) — all under
 `sanctum.optional` + `throttle:api-analytics`: `POST /analytics/listing-impressions`,

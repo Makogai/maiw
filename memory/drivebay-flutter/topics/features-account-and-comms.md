@@ -100,22 +100,19 @@ Screens: `ProfileScreen` (hub), `EditProfileScreen` (name fields — **Jira: KAN
 
 - `ProfileScreen` reads `authNotifierProvider` for identity/selling-restriction and
   `accountProvider` (async) for warnings/selling-restrictions to feed
-  `AccountModerationSections` — `lib/features/profile/profile_screen.dart:18,71,77-79`.
-- Guest state shows a sign-in prompt but still exposes the Settings card
-  (`profile_screen.dart:20-65`) — Settings is reachable without auth.
-- "Create listing" is blocked client-side when `auth.sellingRestriction?.active`, showing
-  a snackbar with the restriction's `reason` (falls back to a generic string) instead of
-  navigating — `profile_screen.dart:258-271`. This mirrors — but does not re-fetch — the
-  session-level `sellingRestriction` set at login/bootstrap; if a restriction is applied
-  *while the app is running*, the gate won't reflect it until `refreshSession()` runs
-  (see moderation section).
+  `AccountModerationSections` — `lib/features/profile/profile_screen.dart`.
+- Dealer accounts see `DealerQrCard` (QR for `/dealers/{slug}?src=qr`, copy/share/
+  share-print) — slug from `account.profile.dealerStorefrontUrl` or
+  `GET /dealer/storefront` (**Jira: KAN-80**).
+- Guest state shows a sign-in prompt but still exposes the Settings card —
+  Settings is reachable without auth.
+- "Create listing" is blocked client-side when `auth.sellingRestriction?.active`.
 - `EditProfileScreen` (`/account/edit-profile`) PATCHes `first_name` / `last_name` /
-  `display_name`, invalidates `accountProvider`, and `refreshSession()` so hub names
-  update without restart — `edit_profile_screen.dart`.
-- `ContactSettingsScreen` round-trips phone / Instagram / WhatsApp / Viber via the same
-  `updateProfile` (`contact_settings_screen.dart:45,75-83`). Fields: `phone`,
-  `instagram_username`, `show_phone_publicly`, `contact_whatsapp_enabled`,
-  `contact_viber_enabled` (`contact_settings_screen.dart:76-80`).
+  `display_name`, invalidates `accountProvider`, and `refreshSession()`.
+- `ContactSettingsScreen` round-trips phone / Instagram / WhatsApp / Viber via
+  `updateProfile`.
+- `LoginScreen` accepts optional `redirectPath` (`/login?redirect=…`); after success
+  navigates there if it is a same-app absolute path (used by QR rate CTA).
 
 ## settings/ (`lib/features/settings/`)
 

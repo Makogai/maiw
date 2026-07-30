@@ -50,6 +50,21 @@ middleware — if host is a marketplace host, pass through in `MODE_MARKETPLACE`
 sanitizeSettings()` on every write, so partial payloads silently fall back to defaults —
 never assume a raw request payload round-trips unchanged.
 
+**QR dealer ratings (**Jira: KAN-80**)**: `SellerReview` (`Models/Domains/Moderation/
+Models/SellerReview.php`) maps `seller_reviews`. Write paths:
+`SellerReviewService::submitDealerReviewFromQr` via
+(1) `POST /api/v1/dealers/{slug}/reviews` (`DealerReviewApiController`, Sanctum+verified)
+and (2) web `POST /dealers/{dealer:slug}/reviews` (`DealerReviewController`,
+session auth+verified, name `dealers.reviews.store`). Request `source` must be
+`qr` (validated, not stored — no `source` column). QR submits set
+`moderation_status=approved` so aggregates update immediately;
+`recomputeDealerRatings()` averages only approved rows. Duplicate
+reviewer+dealer → 422. Public dealer page `DealerStorefrontController::show`
+passes `fromQr` when `?src=qr`; `Dealers/Show.vue` mounts `DealerQrReviewPanel`
+(guest → login; intended URL stored for guests). Auth storefront
+`GET /api/v1/dealer/storefront` already returns `slug` for QR URL
+`https://drivebay.me/dealers/{slug}?src=qr`.
+
 ## Billing
 
 **Purpose**: invoices/payments for listing promotions and dealer storefront upgrades, via a

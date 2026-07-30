@@ -2,23 +2,37 @@
 
 ## Goal
 
-Ship **KAN-73** (dealer logo as profile image + required test-drive /
-mechanic-visit policies) across web + Flutter.
+Ship **KAN-73** (dealer logo + viewing policies) + **KAN-80** QR dealer rating
+(API + web UI). Flutter client is in `apps/drivebay-flutter` WIP.
 
 ## Current state
 
-- **KAN-74/75/78/76** in `apps/drivebay` working tree (not committed), on top of
-  `cace2cb` (KAN-57).
-- **Backfill:** existing listings keep flags NULL; Store/Update require explicit
-  Yes/No. Dealer defaults nullable. Profile image = existing `logo_media_id`
-  (no new column). Private sellers: listing-level only; default avatar.
-- Schema/API/wizard/storefront/public chips + EN/SR + Pest
-  (`ViewingPolicyFlagsTest`, 7 green with body-style tests).
-- **KAN-77** implemented in `apps/drivebay-flutter` working tree (not committed):
-  listing detail chips + nullable JSON fields; logo already on seller card.
+- Working tree on top of **`cace2cb`** (not committed) includes:
+  - **KAN-80 API:** `POST /api/v1/dealers/{slug}/reviews` — `SellerReview`,
+    `SellerReviewService`, `DealerReviewApiController`,
+    `DealerQrReviewApiTest` (5 green).
+  - **KAN-80 web:** `?src=qr` → Inertia `fromQr` + `DealerQrReviewPanel`;
+    session `POST /dealers/{slug}/reviews` (`dealers.reviews.store`);
+    `DealerQrReviewWebTest` (3 green). Combined filter: 8 green.
+  - **KAN-74..78** viewing-policy flags / wizard / storefront chips (also WIP).
+- Flutter QR client (profile QR + deep link rate) implemented locally; needs
+  commit with backend.
 
 ## Exact next action
 
-1. Ask user: commit/push `apps/drivebay` and `apps/drivebay-flutter`?
-2. Deploy/migrate; QA create listing Yes/No + public chips + Flutter detail.
-3. Mark KAN-74..78 + epic KAN-73 Done after verify.
+1. Ask user: commit/push `apps/drivebay` (KAN-80 + policy WIP) and
+   `apps/drivebay-flutter`?
+2. Deploy/migrate; QA web `?src=qr` rate + Flutter QR flow.
+3. Mark **KAN-80** Done after verify; close epic **KAN-73** when Flutter+web
+   policy slices also Done.
+
+## Decisions made
+
+- QR URL: `/dealers/{slug}?src=qr`. Reviews require `source: qr`.
+- One review per user/dealer; QR reviews auto-approved; aggregates update
+  `rating_average` / `rating_count`.
+- Web uses session auth; API uses Sanctum+verified.
+
+## Verification
+
+- `php artisan test --filter=DealerQrReview` → 8 passed
