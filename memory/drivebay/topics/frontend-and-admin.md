@@ -41,6 +41,12 @@ call except where noted.
 | `Notifications/` | `Index.vue` | `NotificationController.php:28` |
 | `Search/` | `Index.vue` | `SearchController.php:34` |
 | `Seller/` (nested) | `Analytics/Index.vue`, `Analytics/Show.vue`, `Dealer/Domain.vue`, `Dealer/Storefront.vue`, `Import/Autodiler.vue`, `Listings/{Create,Edit,Index}.vue`, `Viewing/Settings.vue`, `Viewings/Index.vue` | `Seller/SellerAnalyticsController.php:23,41`, `Seller/DealerDomainSettingsController.php:41`, `Seller/DealerStorefrontSettingsController.php:50`, `Seller/AutodilerImportController.php:181`, `Seller/SellerListingController.php:57,71,179`, `Seller/SellerViewingSettingsController.php:23`, `Seller/SellerViewingAppointmentController.php:21` |
+
+**Dealer QR card (**Jira: KAN-91**):** `Components/Dealer/DealerQrCard.vue` (`qrcode`
+npm) encodes `{marketplaceUrl|appUrl}/dealers/{slug}?src=qr`. Mounted on
+`Account/Index` (dealer sidebar), `Seller/Dealer/Storefront`, and
+`Seller/Dealer/Domain`. Actions: copy / download PNG / print. Strings:
+`dealer.storefront.qr_*`.
 | `Sellers/` | `Show.vue` | `SellerListingsController.php:57` (public seller profile page — distinct from `Seller/` dashboard pages) |
 | `Storefront/` | `About.vue`, `Contact.vue`, `ListingShow.vue` | `Storefront/StorefrontPageController.php:36`/`62`, `Storefront/StorefrontListingController.php:88` |
 | `Tools/` | `FuelConsumption.vue`, `Registration.vue` | `FuelConsumptionCalculatorController.php:47`, `RegistrationCalculatorController.php:47` |

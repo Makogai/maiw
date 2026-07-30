@@ -2,31 +2,33 @@
 
 ## Goal
 
-Ship **KAN-87** multi-contact (phones/emails + country dialer). Keep **KAN-80**
-QR reviews Done on remote; finish remaining **KAN-73** / **KAN-79** WIP in the
-local tree.
+Ship **KAN-91** web dealer QR card + continue **KAN-87** multi-contact. **KAN-80**
+QR reviews already on remote (`0a9ed54`).
 
 ## Current state
 
-- App remote HEAD includes **KAN-80** QR dealer reviews (`0a9ed54` era).
-- Local **KAN-87** (uncommitted with other WIP):
-  - Migration `2026_07_30_183000_add_multi_contact_to_dealer_accounts` → JSON
-    `phones` / `emails` (+ backfill); applied locally (pgsql)
-  - `DealerContactNormalizer`; storefront dual-writes arrays + scalar mirrors
-  - Public payload exposes `phones` / `emails`
-  - Editor: PhoneInput with **flag + dial code**, multi emails; max 5 each
-  - Public storefront hero + Contact page list labeled contacts
+- App remote HEAD **`0a9ed54`** (KAN-80).
+- Local **KAN-91** (this session, uncommitted):
+  - `DealerQrCard.vue` (`qrcode` npm) → `{appUrl}/dealers/{slug}?src=qr`
+  - On `/account` (dealer sidebar), storefront editor, domain page
+  - Copy / download PNG / print; EN/SR `dealer.storefront.qr_*`; Vite build green
+- Local **KAN-87** (teammate WIP, may share tree):
+  - Migration multi-contact `phones` / `emails`; editor + public payload
   - Pest `DealerMultiContactTest` — 3 passed
-- Also dirty: KAN-73 viewing policies + KAN-79 Filament
+- Also possibly dirty: KAN-73 viewing policies + KAN-79 Filament
+- Flutter QR client at `d962551`.
 
 ## Exact next action
 
-1. QA storefront: add phones via country picker + emails; check public + Flutter
-2. Ask commit/push `apps/drivebay` (exclude `docs/og-preview-mock.html`)
-3. Mark KAN-87 children In Review after QA
+1. Ask commit/push `apps/drivebay` (KAN-91 QR; coordinate with KAN-87 dirty files).
+2. Browser QA: Account + storefront → QR; multi-contact if present.
+3. Mark **KAN-91** / **KAN-87** In Review after verify.
 
 ## Decisions made
 
-- JSON on `dealer_accounts`; `{ label, value }` E.164 phones; scalar mirrors BC
-- Reuse `PhoneInput` / `usePhoneCountries` (no new npm lib)
-- QR reviews (KAN-80): `?src=qr`, `source: qr`, one review per user/dealer
+- QR URL same as Flutter/KAN-80 (`src=qr`); use `marketplaceUrl || appUrl`.
+- Multi-contact: JSON `{ label, value }` on `dealer_accounts`; scalar mirrors BC.
+
+## Verification
+
+- `npm run build` succeeded (DealerQrCard chunk present)
