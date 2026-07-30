@@ -94,7 +94,8 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
 | `listing_form_options.dart` (+freezed/g) | `ListingFormOptions`, `PriceTypeOption`, `ConditionTypeOption` | dropdown options for the create/edit-listing form | `seller_listing_repository` |
 | `listing_gallery_item.dart` (+freezed/g) | `ListingGalleryItem` | read-only gallery photo (buyer-facing detail view) | `listing_detail.dart` |
 | `listing_media_item.dart` (+freezed) | `ListingMediaItem` | seller-editable photo (id, cover flag, sort order) | `seller_listing_repository` |
-| `listing_seller.dart` (+freezed/g) | `ListingSeller` | seller/dealer summary embedded in listing detail | `listing_detail.dart` |
+| `listing_seller.dart` (+freezed/g) | `ListingSeller` | seller/dealer summary; `logo_url` via `nullableMediaUrl` (**KAN-84**) | `listing_detail.dart` |
+| `dealer_storefront.dart` | `DealerStorefrontSettings` (+theme/content/social/pages) | parsed from dealer `publicPayload.storefront` (**KAN-83**) | `seller_profile_repository` `DealerProfile` |
 | `listing_staff.dart` | `ListingStaffNote` | moderation/admin action note on a listing | `listing_detail_meta.dart` |
 | `listing_vehicle_detail.dart` (+freezed/g) | `ListingVehicleDetail` | full vehicle spec block on listing detail | `listing_detail.dart` |
 | `listing_vehicle_summary.dart` (+freezed/g) | `ListingVehicleSummary` | condensed make/model/year/mileage for `ListingCard` | `listing_card.dart` |

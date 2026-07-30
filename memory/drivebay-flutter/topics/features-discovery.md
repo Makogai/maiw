@@ -159,24 +159,26 @@ No TODO/FIXME comments found under `lib/features/favorites/`.
 ## lib/features/sellers/ — public seller profile
 
 **Not** `lib/features/seller/` (singular — that's the seller's own dashboard, a different feature
-area). One file, `seller_profile_screen.dart`, with two named constructors selecting which body
-renders:
+area). `seller_profile_screen.dart` with two named constructors:
 
 | Constructor | Body | Repository call |
 |---|---|---|
-| `SellerProfileScreen.dealer(slug)` | `_DealerProfileBody` | `SellerProfileRepository.getDealer` → `GET /dealers/{slug}` (`seller_profile_repository.dart:95-107`) |
-| `SellerProfileScreen.private(sellerId)` | `_PrivateSellerProfileBody` | `SellerProfileRepository.getPrivateSeller` → `GET /sellers/{sellerId}` (`seller_profile_repository.dart:109-131`) |
+| `SellerProfileScreen.dealer(slug)` | `_DealerProfileBody` → `_DealerStorefrontBody` | `SellerProfileRepository.getDealer` → `GET /dealers/{slug}` |
+| `SellerProfileScreen.private(sellerId)` | `_PrivateSellerProfileBody` → `_ProfileListings` | `SellerProfileRepository.getPrivateSeller` → `GET /sellers/{sellerId}` |
 
-Both render the same `_ProfileListings` (seller card + 2-col grid of that seller's active
-listings via `ListingCardGridTile`, `seller_profile_screen.dart:136-183`).
+**Dealer path (KAN-81):** parses full `publicPayload` into `DealerProfile` +
+`DealerStorefrontSettings` (`lib/models/dealer_storefront.dart`). UI:
+`widgets/dealer_storefront_header.dart` (cover/theme/welcome/policies/contact/social/
+highlights/about) then inventory grid. Does **not** use `ListingSellerCard` for dealers.
+
+**Private path:** still `_ProfileListings` (seller card + 2-col grid).
 
 **Non-obvious redirect**: `GET /sellers/{sellerId}` can respond with `redirect: 'dealer'` +
-embedded dealer payload when a "private seller" turns out to actually be a dealer account
-(`seller_profile_repository.dart:116-119`, throws `DealerRedirectException`). The screen catches
-this **inside the `AsyncValue.error` branch**, not as routing — it sets a local `_redirectSlug`
-via `setState` in a post-frame callback and then rebuilds itself as the `.dealer()` variant in
-place (`seller_profile_screen.dart:103-112`); the URL/route itself never changes. A caller adding
-deep-linking or analytics keyed off the route would miss this transition.
+embedded dealer payload (`DealerRedirectException`). Screen catches in `AsyncValue.error`,
+sets `_redirectSlug`, rebuilds as `.dealer()` — route URL never changes.
+
+**Listing detail viewing policies (KAN-82):** dedicated Viewing options section on
+`listing_detail_screen` (Allowed/Not allowed). Leave `ListingSellerCard` alone.
 
 No TODO/FIXME comments found under `lib/features/sellers/`.
 

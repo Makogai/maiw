@@ -2,52 +2,39 @@
 
 ## Goal
 
-Finish **KAN-77** (Flutter seller card + viewing-policy badges) and keep Play
-beta pipeline green (**KAN-72**).
+Ship **KAN-81** (storefront-aware dealer profile + listing viewing policies on
+phone). Leave `ListingSellerCard` alone (friend rework / already on main).
 
 ## Current state
 
-- App remote HEAD **`6508d5b`** on `main` / `preprd` / `prod` (pushed).
-- Local uncommitted listing detail redesign:
-  - **Full-bleed hero**: no AppBar; edge-to-edge under status bar; circular
-    back / favorite / compare / share overlays
-  - Title + price + price type on image; photo `1/N` badge; taller ~56% height
-  - Equipment: two-column orange checklist (not chips)
-  - **Seller card** (KAN-77): flat muted (no gradient); name / location /
-    active listings; Verified seller only if verified; rating + reviews on
-    right; bottom chips for Highly rated + Allows test drive / mechanic
-    inspection when API fields present (nullable; depends on KAN-74)
-  - Bottom bar: Schedule viewing | Contact (separate 56px radius-16 buttons)
-- Play/beta: versionCode 3 / `d4693dd` notes; local pubspec `1.0.0+3` pending
-  if not yet on remote tip.
+- App remote HEAD **`0bc1b3a`** (friend’s listing hero + seller card redesign).
+- Local uncommitted **KAN-81** implementation:
+  - **KAN-82**: dedicated Viewing options section on listing detail (Allowed /
+    Not allowed); independent of seller block
+  - **KAN-84**: `nullableMediaUrl` on `ListingSeller.logoUrl`; dealer
+    logo/cover/page_background resolved in `DealerProfile.fromJson`
+  - **KAN-83/85/86**: `dealer_storefront.dart` models; `/dealers/:slug` uses
+    `DealerStorefrontHeader` (cover/theme/welcome/policies/contact/social/
+    highlights/about) + inventory grid — no seller-card edits
+- Stash still has older KAN-77 WIP + env (`stash@{0}`) — discard after QA if
+  unused
+- Backend viewing-policy flags still need drivebay migrate/ship (**KAN-73**)
 
 ## Exact next action
 
-1. Hot restart and QA seller card + hero; ask to commit/push `apps/drivebay-flutter`.
-2. After KAN-74 API ships, verify policy chips with flags set/null.
-3. Mark **KAN-77** Done after verify; close epic **KAN-73** if web also Done.
-4. Re-run Play Beta on `preprd` when version bump is pushed; mark **KAN-72** Done.
+1. Hot restart; QA listing Viewing options + dealer profile storefront on device
+2. Ask to commit/push `apps/drivebay-flutter`
+3. Mark KAN-82…86 In Review / Done after QA; close epic **KAN-81** when verified
+4. Ensure drivebay API flags + logo URLs available (migrate KAN-74)
 
 ## Decisions made
 
-- No listing AppBar — immersive full-bleed gallery with floating controls.
-- Price / title on hero only; favorite beside compare in overlays.
-- Specs = divider grid; equipment = check grid; seller = flat card + chips.
-- Prefer raw JSON for `PLAY_STORE_JSON_BASE64`. `(**Jira: KAN-72**)`
-- Each Play upload needs monotonically increasing Android `versionCode`.
-
-## Changed files (local)
-
-- `lib/features/listings/listing_detail_screen.dart`
-- `lib/features/listings/widgets/listing_gallery_carousel.dart`
-- `lib/features/listings/widgets/listing_key_specs.dart`
-- `lib/features/listings/widgets/listing_seller_card.dart`
-- `lib/models/listing_detail.dart` (+ freezed/g)
-- `lib/l10n/app_en.arb` / `app_sr.arb`
-- `pubspec.yaml` (`1.0.0+3` pending)
+- Do **not** edit `listing_seller_card.dart` (positive-only chips may remain
+  there from friend’s redesign; listing has its own Allowed/Not allowed section)
+- Resolve media hosts at parse layer so all consumers get LAN-safe URLs
+- Dealer profile replaces bare `ListingSellerCard` header with storefront shell
 
 ## Verification
 
-- `dart analyze` on touched listing files (pre-existing unused `_openReportListing` /
-  underscore infos only)
-- CI log: supply authenticated; failure only on duplicate versionCode 2.
+- `dart analyze` on touched storefront/seller files: clean (info only)
+- `flutter gen-l10n` + `build_runner` regenerated
