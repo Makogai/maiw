@@ -18,7 +18,9 @@ Ship **KAN-57** listing-wizard polish (web seller create/edit) + additive
 
 ## Exact next action
 
-1. Run migration locally: `php artisan migrate`.
-2. Manual QA create/edit wizard (body filter, sticky nav, validation focus).
+1. Hard-refresh create listing — body styles should be car-only after
+   `2026_07_30_084500_backfill_motorcycle_body_style_vehicle_types` (local migrated;
+   null bike categories were showing because filter treats null as all types).
+2. Manual QA create/edit (car vs motorcycle body filter, sticky nav, errors).
 3. Commit/push `apps/drivebay` when ready (ask user; do not auto-push).
-4. Transition **KAN-57** In Review / Done after verify.
+4. Transition **KAN-57** Done after verify.
