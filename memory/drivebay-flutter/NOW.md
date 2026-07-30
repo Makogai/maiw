@@ -2,27 +2,30 @@
 
 ## Goal
 
-Ship DriveBay Play closed-beta AAB with proper release signing.
+Clear Play Console photo/video permissions policy block for closed beta (**Jira: KAN-71**).
 
 ## Current state
 
-- App HEAD is still **`8299084`** on `main` (pushed). Local dirty: `android/app/build.gradle.kts` now loads release signing from `android/key.properties` + `android/upload-keystore.jks` (both gitignored).
-- Verified release AAB: `build/app/outputs/bundle/drivebayRelease/app-drivebay-release.aab` signed `CN=DriveBay` (not Android Debug).
-- SDK fix on this machine: installed `cmdline-tools/latest` under `%LOCALAPPDATA%\Android\Sdk`; `flutter doctor` clean.
+- App HEAD still **`8299084`** on `main`; **local uncommitted** fix for KAN-71 + prior release signing wiring.
+- Chat attach uses OS picker (`ImagePicker.pickMultipleMedia`); removed `photo_manager` / `permission_handler` custom gallery.
+- Manifest strips `READ_MEDIA_*` (+ `READ_EXTERNAL_STORAGE`) via `tools:node="remove"`.
+- Version **`1.0.0+2`**. Merged drivebayRelease manifest has **no** `READ_MEDIA_IMAGES`/`VIDEO`.
+- Signed AAB ready: `build/app/outputs/bundle/drivebayRelease/app-drivebay-release.aab`.
+- Release signing: `android/key.properties` + `upload-keystore.jks` (gitignored).
 
 ## Exact next action
 
-1. Back up offline: `android/upload-keystore.jks` + `android/key.properties` (lose = cannot update Play app with same upload key).
-2. Upload the new AAB to Play closed testing.
-3. Ask whether to commit/push the `build.gradle.kts` signing wiring (secrets stay untracked).
-4. After first Play upload, put the **upload** cert SHA-256 into server `assetlinks.json` for App Links (**KAN-27**).
+1. Commit/push `apps/drivebay-flutter` (ask user) — include signing gradle + KAN-71 media picker changes; **never** commit keystore/key.properties.
+2. Re-upload AAB (versionCode 2) to Play closed testing.
+3. Mark **KAN-71** Done after Play accepts.
 
 ## Decisions made
 
-- Play release builds use local upload keystore via Flutter’s `key.properties` pattern; debug fallback only if `key.properties` is missing.
-- Edit profile v1 = name fields only. `(**Jira: KAN-61**)`
-- Compare entry = app-bar icon. `(**Jira: KAN-70**)`
+- Play AABs use local upload keystore via `key.properties`.
+- Chat media attach = system picker only (no broad gallery permissions). `(**Jira: KAN-71**)`
 
 ## Verification
 
-- `flutter build appbundle --release --flavor drivebay --dart-define=BRAND=drivebay` → success; `keytool -printcert` on AAB `META-INF/UPLOAD.RSA` → Owner `CN=DriveBay,…`
+- `flutter analyze lib/features/messages` — clean
+- Merged release manifest — no READ_MEDIA_IMAGES/VIDEO
+- AAB built with flavor `drivebay`, BRAND=drivebay, versionCode 2

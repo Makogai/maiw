@@ -34,6 +34,10 @@
   (gitignored). `build.gradle.kts` uses the release config when `key.properties`
   exists; otherwise falls back to debug (Play rejects debug-signed AABs). Back up
   both files offline; never commit them.
+- Do **not** re-add `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` for gallery attach —
+  Play rejects them when targeting API 33+. Use `image_picker` system pickers
+  only (`**Jira: KAN-71**`). Manifest uses `tools:node="remove"` as a belt-and-suspenders
+  strip if a plugin merges those permissions.
 - Settings legal links use `Env.webBaseUrl` (derived from `API_BASE_URL` by stripping
   `/api/v1`). Point builds at the host that serves `/privacy` etc., or links open a
   wrong origin.
