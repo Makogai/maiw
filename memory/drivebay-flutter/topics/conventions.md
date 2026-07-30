@@ -9,6 +9,7 @@
 | Run (Windows desktop dev) | `flutter run -d windows --dart-define=API_BASE_URL=https://drivebay.test/api/v1` | `README.md` |
 | Run brand (Android) | `flutter run --flavor drivebay --dart-define=BRAND=drivebay` (or `.\tool\run_brand.ps1 drivebay`) | `docs/development/branding.md` |
 | Play release AAB (DriveBay) | `flutter build appbundle --release --flavor drivebay --dart-define=BRAND=drivebay` → `build/app/outputs/bundle/drivebayRelease/app-drivebay-release.aab` | `android/app/build.gradle.kts` |
+| Play beta upload (local) | `cd android && bundle install && bundle exec fastlane beta` | `docs/development/play-release.md` |
 | Run on device/emulator against LAN backend | `flutter run --dart-define=API_BASE_URL=https://<lan-ip>/api/v1 --dart-define=ALLOW_BAD_CERTIFICATES=true` | `README.md` |
 | Lint | `flutter analyze` (config: `analysis_options.yaml`, `package:flutter_lints/flutter.yaml`) | `analysis_options.yaml` |
 
@@ -34,6 +35,10 @@
   (gitignored). `build.gradle.kts` uses the release config when `key.properties`
   exists; otherwise falls back to debug (Play rejects debug-signed AABs). Back up
   both files offline; never commit them.
+- Fastlane local runs need Ruby + Bundler on the machine; this Windows box did not
+  have them installed during the KAN-72 setup, so only the GitHub Actions path was
+  directly executable here. Secrets/JSON stay out of git (`android/play-store.json`,
+  keystore, `key.properties`).
 - Do **not** re-add `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` for gallery attach —
   Play rejects them when targeting API 33+. Use `image_picker` system pickers
   only (`**Jira: KAN-71**`). Manifest uses `tools:node="remove"` as a belt-and-suspenders
