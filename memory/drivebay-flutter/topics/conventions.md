@@ -10,6 +10,7 @@
 | Run brand (Android) | `flutter run --flavor drivebay --dart-define=BRAND=drivebay` (or `.\tool\run_brand.ps1 drivebay`) | `docs/development/branding.md` |
 | Play release AAB (DriveBay) | `flutter build appbundle --release --flavor drivebay --dart-define=BRAND=drivebay` → `build/app/outputs/bundle/drivebayRelease/app-drivebay-release.aab` | `android/app/build.gradle.kts` |
 | Play beta upload (local) | `cd android && bundle install && bundle exec fastlane beta` | `docs/development/play-release.md` |
+| Play production draft (local) | `cd android && bundle install && bundle exec fastlane production` | `docs/development/play-release.md` |
 | Run on device/emulator against LAN backend | `flutter run --dart-define=API_BASE_URL=https://<lan-ip>/api/v1 --dart-define=ALLOW_BAD_CERTIFICATES=true` | `README.md` |
 | Lint | `flutter analyze` (config: `analysis_options.yaml`, `package:flutter_lints/flutter.yaml`) | `analysis_options.yaml` |
 
@@ -42,6 +43,10 @@
 - In CI, prefer decoding `PLAY_STORE_JSON_BASE64` with Python after stripping
   whitespace, or allow raw JSON directly. Plain `base64 --decode` can fail on
   pasted GitHub secret formatting (`base64: invalid input`). `(**Jira: KAN-72**)`
+- GitHub Actions branch flow:
+  - `preprd` branch pushes trigger `Play Beta`
+  - `prod` branch pushes trigger `Play Production Draft`
+  Both still support manual `workflow_dispatch`. `(**Jira: KAN-72**)`
 - Do **not** re-add `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` for gallery attach —
   Play rejects them when targeting API 33+. Use `image_picker` system pickers
   only (`**Jira: KAN-71**`). Manifest uses `tools:node="remove"` as a belt-and-suspenders
