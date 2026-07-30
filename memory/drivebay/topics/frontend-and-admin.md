@@ -136,14 +136,15 @@ most complex page in the app), `useListingAnalytics`.
 
 ### Seller listing wizard (**Jira: KAN-57**)
 
-- Sticky bottom nav: `Components/ListingWizardNav.vue` (z-40, under FloatingMessenger z-[60];
-  mobile `pr-14` so actions clear the messenger FAB). Create/Edit pad with `pb-24`.
-- `WizardSteps` is sticky under the header (`sticky top-0 z-20`).
+- Wizard nav stays the in-card Previous/Continue footer (sticky/floating bar tried and
+  removed — felt like a second footer / poor UX).
 - Field errors wired on create/edit specs+details; pickers accept `error` + `field`
   (`TaxonomyIconPicker`, `ColorSwatchPicker`). `Input` forwards `min`/`max`/`step` (+ attrs).
 - Body styles filtered client-side by `vehicle_type_id` (null = universal). Create clears
   incompatible body on `vehicle_type_code` change; Edit filters by
-  `listing.vehicle.vehicle_type_id` (edit payload includes type id/code).
+  `listing.vehicle.vehicle_type_id` (edit payload includes type id/code). Motorcycle
+  Mobile.de categories must be typed (backfill migration
+  `2026_07_30_084500_backfill_motorcycle_body_style_vehicle_types`) or they leak into car.
 - `TaxonomyIcon`: truthy `svgUrl` used; explicit `null` = server-missing → placeholder
   (no path invent); omitted/`undefined` still invents for legacy; load `@error` → placeholder.
 
