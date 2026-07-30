@@ -16,14 +16,15 @@ One screen: `listing_detail_screen.dart` (`ListingDetailScreen`, keyed by `publi
 | Repository | `ListingRepository.getDetail` → `GET /listings/{publicId}` returns one JSON body parsed twice into `ListingDetail` and `ListingDetailMeta` (`lib/repositories/listing_repository.dart:22-39`) |
 | Similar listings | `similarListingsProvider` family → `ListingRepository.getSimilar` → `GET /listings/{publicId}/similar?limit=6`, rendered as a 2-col grid at the bottom of the body (`lib/features/listings/listing_detail_screen.dart:526,696-737`). Backend-side this is `RecommendationService.similarListings()` (`ListingSimilarity` table, falls back to same-make/model query when empty — see `memory/drivebay/topics/domains-core.md` Recommendation section) |
 | Contact | Sheet lists all `phones[]` / `emails[]` from `contact_channels` (labeled rows); WhatsApp/Viber use primary. In-app chat when authenticated — `contact_seller_sheet.dart`, model `listing_contact_channels.dart` (**Jira: KAN-90** / **KAN-87**) |
+| Scroll chrome | `_ListingScrollHeader` — transparent over gallery; fades to solid elevated bar + title as you scroll past gallery (`listing_detail_screen.dart`) |
+| View tracking | `ListingRepository.recordView` → `POST /listings/{publicId}/analytics/view`, wrapped in its own try/catch that **swallows all errors** (`lib/repositories/listing_repository.dart:59-64`) — fire-and-forget, never surfaces failure to the UI. Only sent once per screen instance, only if `status == 'active'`, not the owner, and authenticated (`listing_detail_screen.dart:61-73`) |
+| Book viewing | Opens `widgets/book_viewing_sheet.dart` (see Viewings section below) — this widget lives under `listings/widgets/`, not under `features/viewings/` |
+| Report | `showReportSheet` → `ReportRepository.reportListing` (moderation feature, cross-referenced not duplicated) |
 
 **Dealer/seller inventory filters (**Jira: KAN-96**)**: client-side on
 `/dealers/:slug` + `/sellers/:id` via `inventory_filters.dart` +
 `widgets/inventory_filters_bar.dart` (make chips, sort, expandable more filters).
 Respects `storefront.content.show_inventory_filters` on dealers.
-| View tracking | `ListingRepository.recordView` → `POST /listings/{publicId}/analytics/view`, wrapped in its own try/catch that **swallows all errors** (`lib/repositories/listing_repository.dart:59-64`) — fire-and-forget, never surfaces failure to the UI. Only sent once per screen instance, only if `status == 'active'`, not the owner, and authenticated (`listing_detail_screen.dart:61-73`) |
-| Book viewing | Opens `widgets/book_viewing_sheet.dart` (see Viewings section below) — this widget lives under `listings/widgets/`, not under `features/viewings/` |
-| Report | `showReportSheet` → `ReportRepository.reportListing` (moderation feature, cross-referenced not duplicated) |
 
 **Favorite toggle is not optimistic.** `_toggleFavorite` (`listing_detail_screen.dart:91-127`)
 `await`s `FavoriteRepository.addFavorite`/`removeFavorite` **before** flipping local

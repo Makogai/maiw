@@ -13,10 +13,11 @@
   - Dealer respects `show_inventory_filters`; themed with storefront palette
   - `inventory_filters.dart` + `inventory_filters_bar.dart`; unit test green
 - Prior WIP: dealer settings, multi-contact contact sheet, Cupertino swipe-back, chips, PhoneInput
+- Listing detail: scroll-solid header fades in over gallery chrome (elevated bar + title)
 
 ## Exact next action
 
-1. Hot restart; open dealer with 2+ listings; filter by brand / more filters.
+1. Hot restart; open listing detail; scroll past gallery — solid header should appear.
 2. Ask commit/push when QA ok.
 
 ## Decisions made
