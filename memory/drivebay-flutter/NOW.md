@@ -2,33 +2,32 @@
 
 ## Goal
 
-Seller card matches product mock; storefront + multi-contact consume ready.
+Seller card matches mock + consistent storefront policies across ads.
 
 ## Current state
 
-- Local HEAD **`0bc1b3a`** (behind origin by 1 / QR may be on remote).
-- Uncommitted seller card = mock layout:
-  - Circular avatar · name · blue “Verified Seller” · “Member since {year}”
-  - Rating + “(N reviews)” + chevron on the right
-  - Soft grey Wrap pills: Highly rated / Responds fast / Offers test drive /
-    Offers mechanic visit (only when true)
-  - Model: `memberSinceYear`, `respondsFast`; l10n EN/SR regenerated
-- Also local: KAN-81 storefront header/widgets, viewing options, multi-contact
-  parse on dealer profile
-- When merging with QR (`d962551`+): keep `fromQr` rate CTA under dealer body
+- Local HEAD **`0bc1b3a`**.
+- Seller card fix (this session):
+  - Shows **active listings count** under member since
+  - Feature pills from **seller.allows_*** (storefront), not listing flags —
+    same dealer → same chips on every ad
+  - Pills stacked in a **column** (full-width soft rows)
+  - Model parses `allows_test_drive` / `allows_mechanic_visit` on seller
+  - Viewing options: listing flags, else seller storefront; also column layout
+- Also local: KAN-81 storefront widgets, multi-contact parse
 
 ## Exact next action
 
-1. Hot **restart** (not just reload) and QA listing seller card vs mock.
-2. Note: “Responds fast” won’t show until API sets `responds_fast: true`.
-3. Ask commit/push when QA ok.
+1. Hot **restart**; open two ads from the same dealer — chips + ads count
+   should match.
+2. Ask commit/push when QA ok.
 
 ## Decisions made
 
-- Soft Wrap pills (not stretched equal tiles) — matches mock
-- Highly rated = avg ≥ 4.5 and count ≥ 3
-- Contact rows list actual phone/email values
+- Seller card = storefront identity (offers test drive as dealer capability)
+- Viewing options = this vehicle (listing override, storefront fallback)
+- Soft column chips, not Wrap/row
 
 ## Verification
 
-- `flutter gen-l10n` + `build_runner` ran successfully this session
+- `build_runner` regenerated `listing_seller` with policy fields
