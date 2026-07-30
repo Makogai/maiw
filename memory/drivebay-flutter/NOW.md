@@ -13,7 +13,9 @@ Ship listing detail UX redesign (local) and unblock Play Beta uploads (**Jira: K
   - Title + price + price type overlaid on hero; photo `1/N` badge
   - No year/mileage strip between hero and **Vehicle details**
   - **Vehicle details** 3×2 divider grid
-  - Floating pill bottom bar: Schedule viewing | Contact only
+  - Floating bottom actions: separate Schedule + Contact buttons (56px, radius 16)
+    instead of fused half-pill
+  - Hero height ~56% of screen (taller full-bleed)
 - Play JSON secret is valid; Fastlane authenticated and reached upload.
 - Latest CI failure: `Version code 2 has already been used` on Play track `beta`.
 - Local (uncommitted) bump: `pubspec.yaml` → `1.0.0+3` (versionName 1.0.0, versionCode 3).
