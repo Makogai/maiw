@@ -6,7 +6,7 @@ Automate DriveBay Android open-beta Play releases with Fastlane + GitHub Actions
 
 ## Current state
 
-- App HEAD is **`09b1f3f`** on `main` (pushed).
+- App HEAD is **`c41e163`** on `main` (pushed).
 - KAN-71 is already landed: release signing via `android/key.properties`, chat attach uses system picker only, and Play media permissions are stripped from the release manifest.
 - New Play automation is committed on app `main`:
   - `android/fastlane/Appfile`
@@ -20,7 +20,7 @@ Automate DriveBay Android open-beta Play releases with Fastlane + GitHub Actions
   - `prod` branch -> Play `production` with `draft` release status by default
 - Workflows still build DriveBay only with `--flavor drivebay --dart-define=BRAND=drivebay`.
 - GitHub repo secrets are now configured.
-- Secret decoding is now whitespace-tolerant in CI for both the keystore and Play JSON, and Play JSON also accepts raw JSON secret text.
+- Secret decoding is now whitespace-tolerant in CI for both the keystore and Play JSON, Play JSON also accepts raw JSON secret text, and both workflows auto-pad missing trailing `=` in base64 secrets.
 
 ## Exact next action
 
@@ -44,3 +44,4 @@ Automate DriveBay Android open-beta Play releases with Fastlane + GitHub Actions
   - `45c503c` — Play signing + media picker policy fix
   - `d5b68f3` — Fastlane + GitHub Actions for Play beta releases
   - `09b1f3f` — branch-driven beta and production release flows
+  - `c41e163` — base64 padding fix for workflow secret decode

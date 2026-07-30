@@ -42,7 +42,8 @@
   keystore, `key.properties`).
 - In CI, prefer decoding `PLAY_STORE_JSON_BASE64` with Python after stripping
   whitespace, or allow raw JSON directly. Plain `base64 --decode` can fail on
-  pasted GitHub secret formatting (`base64: invalid input`). `(**Jira: KAN-72**)`
+  pasted GitHub secret formatting (`base64: invalid input`). Also auto-pad
+  missing trailing `=` before decode to avoid `Incorrect padding`. `(**Jira: KAN-72**)`
 - GitHub Actions branch flow:
   - `preprd` branch pushes trigger `Play Beta`
   - `prod` branch pushes trigger `Play Production Draft`
