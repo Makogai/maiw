@@ -14,9 +14,9 @@ domains, entitlement gating), linked to listings.
 | `DealerAccessService` | Resolves a user's primary `DealerAccount` (primary membership, then owner/manager fallback); `canManageStorefront()` gate — `Domains/Dealer/Services/DealerAccessService.php:11,31` |
 | `DealerDomainService` | Host normalization, marketplace-vs-storefront host detection, subdomain assignment, custom-domain DNS verification (TXT+CNAME) — `Domains/Dealer/Services/DealerDomainService.php:106,181,258,278` |
 | `DealerStandaloneEntitlementService` | Gates standalone-domain access behind `storefront_upgrade_mode` (`free`/`mock`/`contact`); `grantAccess()` flips `entitlement_active` — `Domains/Dealer/Services/DealerStandaloneEntitlementService.php:12,24,35` |
-| `DealerStorefrontService` | Default/sanitize/resolve/persist storefront settings (theme/content/social/domain/pages JSON-ish sub-tables), builds public payload + CSS vars — `Domains/Dealer/Services/DealerStorefrontService.php:17,101,268,364` |
+| `DealerStorefrontService` | Default/sanitize/resolve/persist storefront settings (theme/content/social/domain/pages JSON-ish sub-tables), builds public payload + CSS vars — `Domains/Dealer/Services/DealerStorefrontService.php:17,101,268,364`. **KAN-73:** also persists nullable dealer defaults `allows_test_drive` / `allows_mechanic_visit`; `publicPayload` exposes them. |
 | `DealerListingLinker` | Links a newly-created `Listing` to seller's primary dealer; builds storefront listings query (includes legacy rows with `dealer_account_id IS NULL`) — `Domains/Dealer/Services/DealerListingLinker.php:20,47` |
-| `DealerMediaService` | Uploads logo/cover/page_background as `MediaAsset`, writes `{role}_media_id` FK on dealer — `Domains/Dealer/Services/DealerMediaService.php:14` |
+| `DealerMediaService` | Uploads logo/cover/page_background as `MediaAsset`, writes `{role}_media_id` FK on dealer — `Domains/Dealer/Services/DealerMediaService.php:14`. **KAN-73:** logo = dealer profile/brand image (no separate profile column). |
 | `VerifyDealerDomainsCommand` (`dealer:verify-domains`) | Cron-able command re-checking pending custom-domain DNS — `Domains/Dealer/Console/VerifyDealerDomainsCommand.php:14` |
 
 **Models**: `DealerAccount` hasMany `members` (`DealerMember`), `branches`, `listings`,

@@ -2,23 +2,23 @@
 
 ## Goal
 
-Ship **KAN-57** listing-wizard polish (web seller create/edit) + additive
-`body_styles.vehicle_type_id`.
+Ship **KAN-73** (dealer logo as profile image + required test-drive /
+mechanic-visit policies) across web + Flutter.
 
 ## Current state
 
-- **KAN-57** implemented in working tree (not committed): wizard UI polish + schema.
-  - Owners `previous_owner_count` min=0 (Input forwards min/max; clamp + server min:0).
-  - Body styles filtered by vehicle type; null `vehicle_type_id` = all types; cleared on type change.
-  - TaxonomyIcon: explicit `null` svg_url → muted placeholder (no invent); invent only when prop omitted; `@error` probe fallback.
-  - Field `:error` / `data-field` / picker `field` + scroll-focus via `useListingWizard`.
-  - Wizard nav: in-card Previous/Continue footer (sticky/floating nav dropped — UX not right).
-  - Additive `body_styles.vehicle_type_id` (DBML + migration + motorcycle null backfill + model/seeder/snapshot/options/Filament + Store/Update rule).
-  - Tests: `ListingWizardBodyStyleTest` + extended `MobileDeMultiSegmentTaxonomyTest` — green.
-- SEO epic **KAN-62** / **KAN-69** still the last pushed commit (`5c89591`).
+- **KAN-74/75/78/76** in `apps/drivebay` working tree (not committed), on top of
+  `cace2cb` (KAN-57).
+- **Backfill:** existing listings keep flags NULL; Store/Update require explicit
+  Yes/No. Dealer defaults nullable. Profile image = existing `logo_media_id`
+  (no new column). Private sellers: listing-level only; default avatar.
+- Schema/API/wizard/storefront/public chips + EN/SR + Pest
+  (`ViewingPolicyFlagsTest`, 7 green with body-style tests).
+- **KAN-77** implemented in `apps/drivebay-flutter` working tree (not committed):
+  listing detail chips + nullable JSON fields; logo already on seller card.
 
 ## Exact next action
 
-1. Manual QA create/edit (car vs motorcycle body filter, field errors). Sticky nav out of scope for now.
-2. Commit/push `apps/drivebay` when ready (ask user; do not auto-push).
-3. Transition **KAN-57** Done after verify (AC sticky-nav item deferred/waived).
+1. Ask user: commit/push `apps/drivebay` and `apps/drivebay-flutter`?
+2. Deploy/migrate; QA create listing Yes/No + public chips + Flutter detail.
+3. Mark KAN-74..78 + epic KAN-73 Done after verify.
