@@ -2,25 +2,23 @@
 
 ## Goal
 
-**KAN-99** phone dial picker worldwide countries.
+**KAN-99** phone dial picker worldwide countries — shipped.
 
 ## Current state
 
-- Local uncommitted: `GeographyService::phoneCountries()` no longer filters
-  `is_active` — returns all rows with `phone_code` (~248). Marketplace
-  `activeCountries()` still ME-only via `is_active`.
-- Tests: `GeographySeederTest` + `ApiGeographyTest` green; local count 248 after cache clear.
+- Local/remote HEAD **`b1d3224`**.
+- **KAN-99** Done: `GeographyService::phoneCountries()` returns all rows with
+  `phone_code` (~248); marketplace `is_active` unchanged for location geography.
+- Left dirty locally: `package-lock.json` (unrelated), `docs/og-preview-mock.html` (do not commit).
 
 ## Exact next action
 
-1. Hot restart Flutter (reload `/config/app`) to pick up new `phone_countries`.
-2. Ask commit/push `apps/drivebay`; mark KAN-99 Done.
+Hot restart Flutter / clear app config cache if dial list still shows ME only.
 
 ## Decisions made
 
-- Dial codes ≠ marketplace geography. Keep `is_active` for listing locations.
+- Dial codes ≠ marketplace geography.
 
 ## Verification
 
-- `php artisan test --filter=GeographySeederTest` / `ApiGeographyTest` passed.
-- `phoneCountries()` count = 248 after `cache:clear`.
+- GeographySeederTest + ApiGeographyTest passed; local count 248 after cache clear.
