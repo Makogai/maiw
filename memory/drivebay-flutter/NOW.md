@@ -2,32 +2,30 @@
 
 ## Goal
 
-Polish **KAN-81** dealer storefront on phone to web parity (gradient, dots,
-surface cards), keep friend’s seller card alone, and land with **KAN-80** QR
-when that tree merges.
+Polish listing seller card + declutter dealer storefront; prep **KAN-87**
+multi-contact (phones/emails with labels).
 
 ## Current state
 
-- App remote HEAD **`0bc1b3a`**.
-- Local uncommitted **KAN-81** redesign:
-  - Full-bleed hero (no AppBar): gradient/solid/glass → cover @ overlay opacity
-    → dotted pattern (banner + `show_hero_pattern`) → logo tile / chips / social
-  - Floating back (listing-style)
-  - About / highlights / contact as themed surface cards
-  - Inventory section on storefront page bg
-  - Listing Viewing options section still on detail (KAN-82); MediaUrl parse
-    harden (KAN-84)
-- Memory mentions KAN-80 QR on another machine — not present in this working
-  tree; when merging, re-attach rate CTA under storefront body.
+- Local uncommitted (on top of KAN-81 storefront):
+  - **Seller card**: cleaner card + divider; feature tiles in a **side-by-side
+    Row** (test drive / mechanic / highly rated) — short labels
+  - **Dealer hero**: decluttered (logo, verified/count, title, tagline,
+    location·rating only). Policies + contacts moved below
+  - **Contact card**: tappable rows showing the **number/email** (not just
+    “Call”); parses future `phones[]`/`emails[]`, falls back to scalar
+  - Viewing options section on listing also side-by-side tiles
+- Jira: epic **KAN-87** + children **KAN-88** (schema/editor), **KAN-89**
+  (API), **KAN-90** (Flutter/web render)
 
 ## Exact next action
 
-1. Hot restart; QA dealer profile vs web storefront (pattern, cover, about).
-2. Ask commit/push `apps/drivebay-flutter` (+ drivebay KAN-73 if ready).
-3. Mark KAN-81 children In Review after QA.
+1. Hot restart; QA seller card chips side-by-side + cleaner dealer header
+2. User working multi-contact backend in parallel — align with KAN-88/89 shape
+3. Ask commit/push when QA ok
 
 ## Decisions made
 
-- Web layer order for hero; dots only when banner + show_hero_pattern.
-- Do not edit `listing_seller_card.dart`.
-- Cover uses opacity (not heavy dark scrim) so gradient shows through.
+- Feature tiles use equal `Expanded` width so two policies sit next to each other
+- Contact display = list the value; optional label above (Showroom / Mobile)
+- Proposed API: `{ label, value }` arrays + keep scalar phone/email
