@@ -7,11 +7,10 @@ Polish listing detail UX (key specs + bottom action bar) on app HEAD `6508d5b`.
 ## Current state
 
 - App HEAD is **`6508d5b`** on `main` / `preprd` / `prod` (pushed).
-- Local uncommitted listing detail polish:
-  - Key specs: single bordered panel, 2-col cells with icon + label/value
-  - Bottom buyer bar: price removed; compact favorite + contact (+ viewing)
-- Play automation still active (`preprd` → beta, `prod` → production draft).
-  Prefer raw JSON in `PLAY_STORE_JSON_BASE64` (KAN-72).
+- Local uncommitted listing detail polish (matching design refs):
+  - Key specs: **Vehicle details** heading + 3×2 divider grid (no cards)
+  - Floating pill bottom bar: schedule viewing + contact seller (+ heart)
+- Play automation still active; prefer raw JSON in `PLAY_STORE_JSON_BASE64`.
 
 ## Exact next action
 
