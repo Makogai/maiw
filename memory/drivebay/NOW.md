@@ -2,33 +2,30 @@
 
 ## Goal
 
-**KAN-92** dealer profile essentials on Account + API for mobile.
+**KAN-90** listing contact lists all dealer phones/emails; listing chips lighter.
 
 ## Current state
 
-- Local HEAD **`cace2cb`** (behind origin; large WIP).
-- **KAN-92 / KAN-94 / KAN-95** (this session):
-  - API: enriched `GET /dealer/storefront`; `PUT /dealer/storefront`
-    essentials; `POST /dealer/storefront/branding` (logo|cover)
-  - `updateStorefront` supports essentials-only (no theme wipe)
-  - Web Account: inline `DealerProfileEssentialsForm` + clearer sidebar
-    “Open →” action cards; Appearance stays Customize storefront
-  - Route `PUT seller.dealer.profile`
-  - Pest `DealerProfileEssentialsApiTest` green
-- Still dirty: KAN-87 multi-contact, KAN-73, seller card, Filament, etc.
+- Local HEAD **`cace2cb`** (large WIP still uncommitted).
+- **KAN-90** (this session, In Review):
+  - `ContactChannelBuilder` / `ListingContactPresenter` emit `phones[]` + `emails[]`
+    (legacy singular kept)
+  - Web: `ListingContactButtons.vue` + `ListingSellerCard.vue` list every row
+  - Seller/viewing chips: column + lighter style
+- Prior WIP still dirty: KAN-92 essentials, KAN-87 schema, KAN-73, Filament, etc.
 - Skip `docs/og-preview-mock.html` on commit
 
 ## Exact next action
 
-1. Browser QA `/account` dealer section + sidebar cards.
+1. Browser QA listing detail Contact with multi-phone dealer.
 2. Ask commit/push when QA ok.
-3. Mark **KAN-92** Done after Flutter QA too.
+3. Mark **KAN-90** Done after mobile QA too.
 
 ## Decisions made
 
-- Essentials on Account/phone; theme only in Customize storefront.
-- Essentials PUT omits `storefront_settings` → theme untouched.
+- Listing contact uses storefront multi-contact lists; WhatsApp/Viber stay on primary phone.
+- Chips stay stacked columns; lighter fill, no heavy borders.
 
 ## Verification
 
-- `php artisan test --filter=DealerProfileEssentialsApiTest` passed
+- `php artisan test --filter=ListingContactChannelsTest` passed (4)

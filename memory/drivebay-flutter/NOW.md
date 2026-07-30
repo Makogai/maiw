@@ -2,28 +2,27 @@
 
 ## Goal
 
-**KAN-92 / KAN-93** dealer settings editable on phone from Profile.
+**KAN-90** listing Contact lists all dealer phones/emails; flag dial phone picker on dealer settings.
 
 ## Current state
 
-- Local HEAD **`0bc1b3a`**.
-- **Dealer settings** (this session):
-  - Profile hub card (dealers only) → `/account/dealer-settings`
-  - Edit identity, phones/emails, viewing defaults, logo/cover
-  - Uses `GET/PUT /dealer/storefront` + branding POST
-  - Repo: `DealerSettingsRepository`; model `ManagedDealerProfile`
-- Also local: seller card mock, storefront header, multi-contact parse
+- Local HEAD **`0bc1b3a`** (WIP uncommitted).
+- **KAN-90** (this session):
+  - `ListingContactChannels` parses `phones[]` / `emails[]`; contact sheet lists all
+  - Viewing + seller pills: column + lighter
+  - `PhoneInputField` (flag + dial) on Dealer settings phone rows
+- Prior: dealer settings screen, seller card, storefront header still local
 
 ## Exact next action
 
-1. Hot restart; as dealer open Profile → Dealer settings; save + upload.
+1. Hot restart; open listing Contact on multi-phone dealer; open Dealer settings phone picker.
 2. Ask commit/push when QA ok.
 
 ## Decisions made
 
-- Mobile = essentials only (no theme/domain editor).
-- Phones expect E.164 (`+…`).
+- Mobile phone entry matches web Account `PhoneInput` (E.164 + flagcdn flags).
+- Contact sheet shows labeled rows, not a single Call button.
 
 ## Verification
 
-- `flutter gen-l10n` + `dart analyze` (dealer settings files) clean of errors
+- `flutter test test/listing_contact_channels_test.dart` passed

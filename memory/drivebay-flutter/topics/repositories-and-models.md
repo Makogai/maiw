@@ -88,7 +88,7 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
 | `fuel_price_alerts.dart` | `FuelPriceAlertPreferences` | push-alert subscription prefs per fuel type | `fuel_price_repository` |
 | `fuel_prices.dart` | `FuelPricesResponse`, `FuelPriceFuel` | fuel price history/latest snapshot | `fuel_price_repository` |
 | `listing_card.dart` (+freezed/g) | `ListingCard` | denormalized listing summary for grids/carousels | `search_repository`, `favorite_repository`, `promotion_repository`, `listing_repository` (similar), `seller_listing_repository` (my listings), `seller_profile_repository` (dealer/seller listings list) |
-| `listing_contact_channels.dart` | `ListingContactChannels` | seller contact methods (phone/whatsapp/viber/email) shown on listing detail | `listing_detail.dart` |
+| `listing_contact_channels.dart` | `ListingContactChannels` (+ `phones[]` / `emails[]`) | seller contact methods on listing detail; sheet lists all (**Jira: KAN-90**) | `listing_detail.dart` |
 | `listing_detail.dart` (+freezed/g) | `ListingDetail` | full listing detail payload | `listing_repository`, `seller_listing_repository` |
 | `listing_detail_meta.dart` | `ListingDetailMeta`, `ListingViewingInfo`, `ListingCapabilities`, `ListingDetailBundle` | side-channel meta accompanying listing detail (viewing availability, permission flags) | `listing_repository` |
 | `listing_form_options.dart` (+freezed/g) | `ListingFormOptions`, `PriceTypeOption`, `ConditionTypeOption` | dropdown options for the create/edit-listing form | `seller_listing_repository` |

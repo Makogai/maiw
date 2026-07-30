@@ -129,6 +129,10 @@ All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO
 | `useMessengerApi.js:22` | Thread/message fetch+send API glue for the floating messenger |
 | `useNotificationTypeImage.js:42` | Maps a notification type to a themed image asset |
 | `usePhoneCountries.js:63` | Phone number country list + E.164 parsing/formatting for `PhoneInput.vue` |
+
+**Listing contact multi-row (**Jira: KAN-90**)**: `ListingContactButtons.vue` +
+`ListingSellerCard.vue` render `contact_channels.phones[]` / `emails[]` (fallback to
+legacy singular). API built by `ListingContactPresenter` / `ContactChannelBuilder`.
 | `useTaxonomySvg.js:5` | Resolves taxonomy (body style/color/etc.) SVG icon paths by category/code/version |
 | `useTheme.js:15` | Light/dark theme toggle + `initThemeBeforePaint()` (called pre-mount to avoid flash) |
 | `useTranslations.js:3` | `t()` translation helper reading from Inertia shared props |
