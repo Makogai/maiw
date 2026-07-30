@@ -2,31 +2,29 @@
 
 ## Goal
 
-**KAN-90** listing Contact lists all dealer phones/emails; flag dial phone picker on dealer settings.
+**KAN-96** inventory filters on dealer/seller profile.
 
 ## Current state
 
-- Local HEAD **`0bc1b3a`** (WIP uncommitted).
-- **KAN-90** (this session):
-  - `ListingContactChannels` parses `phones[]` / `emails[]`; contact sheet lists all
-  - Viewing + seller pills: column + lighter
-  - `PhoneInputField` (flag + dial) on Dealer settings phone rows
-- Prior: dealer settings screen, seller card, storefront header still local
+- Local HEAD **`0bc1b3a`** (large WIP uncommitted).
+- **KAN-96** (this session):
+  - Client-side inventory filters on `/dealers/:slug` + `/sellers/:id`
+  - Make chips, sort, expandable more filters (model/fuel/trans/condition/price/year/mileage)
+  - Dealer respects `show_inventory_filters`; themed with storefront palette
+  - `inventory_filters.dart` + `inventory_filters_bar.dart`; unit test green
+- Prior WIP: dealer settings, multi-contact contact sheet, Cupertino swipe-back, chips, PhoneInput
 
 ## Exact next action
 
-1. Hot restart; confirm seller chips are 2-col grid; swipe from left edge to go back.
+1. Hot restart; open dealer with 2+ listings; filter by brand / more filters.
 2. Ask commit/push when QA ok.
 
 ## Decisions made
 
-- Mobile phone entry matches web Account `PhoneInput` (E.164 + flagcdn flags).
-- Contact sheet shows labeled rows, not a single Call button.
-- Seller feature pills = **2-column** grid; viewing options stay **stacked rows**.
-- Pushed routes use `CupertinoPage` (+ Material/page color wrap) for edge swipe-back;
-  shell tabs (`/search`, `/messages`, `/account`) stay Material so backgrounds stay correct.
-- Seller chip labels: 11px, single line + ellipsis (no wrap).
+- Client-side over loaded listings (web parity), not new API query params.
+- Filters hidden when &lt;2 listings or no useful facets.
 
 ## Verification
 
-- `flutter test test/listing_contact_channels_test.dart` passed
+- `flutter test test/inventory_filters_test.dart` passed
+- `flutter gen-l10n` + analyze clean of errors
