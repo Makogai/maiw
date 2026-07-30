@@ -40,10 +40,10 @@
   have them installed during the KAN-72 setup, so only the GitHub Actions path was
   directly executable here. Secrets/JSON stay out of git (`android/play-store.json`,
   keystore, `key.properties`).
-- In CI, prefer decoding `PLAY_STORE_JSON_BASE64` with Python after stripping
-  whitespace, or allow raw JSON directly. Plain `base64 --decode` can fail on
-  pasted GitHub secret formatting (`base64: invalid input`). Also auto-pad
-  missing trailing `=` before decode to avoid `Incorrect padding`. `(**Jira: KAN-72**)`
+- In CI, prefer pasting **raw** Play service-account JSON into
+  `PLAY_STORE_JSON_BASE64` (starts with `{`). Base64 also works if complete;
+  workflows strip whitespace, auto-pad `=`, and validate JSON before Fastlane.
+  Truncated base64 produces “doesn't seem to be a JSON file”. `(**Jira: KAN-72**)`
 - GitHub Actions branch flow:
   - `preprd` branch pushes trigger `Play Beta`
   - `prod` branch pushes trigger `Play Production Draft`
