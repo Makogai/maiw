@@ -166,10 +166,10 @@ area). `seller_profile_screen.dart` with two named constructors:
 | `SellerProfileScreen.dealer(slug, {fromQr})` | `_DealerProfileBody` (→ storefront body when KAN-81 present) | `SellerProfileRepository.getDealer` → `GET /dealers/{slug}` |
 | `SellerProfileScreen.private(sellerId)` | `_PrivateSellerProfileBody` → `_ProfileListings` | `SellerProfileRepository.getPrivateSeller` → `GET /sellers/{sellerId}` |
 
-**Dealer path (KAN-81):** when present, parses full `publicPayload` into `DealerProfile` +
-`DealerStorefrontSettings` (`lib/models/dealer_storefront.dart`). UI:
-`widgets/dealer_storefront_header.dart` (cover/theme/welcome/policies/contact/social/
-highlights/about) then inventory grid. Does **not** use `ListingSellerCard` for dealers.
+**Dealer path (KAN-81):** full-bleed hero (gradient/solid/glass → cover @ overlay
+opacity → dotted pattern when banner + `show_hero_pattern` → content), floating
+back, themed surface cards for about/highlights/contact, inventory grid.
+`widgets/dealer_storefront_header.dart`. No `ListingSellerCard` for dealers.
 
 **QR rating (KAN-80):** router `/dealers/:slug` sets `fromQr` when `?src=qr`. Deep links
 preserve `src=qr` (`deep_link_service.dart`). Rate CTA + sheet →
