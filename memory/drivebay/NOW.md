@@ -2,31 +2,31 @@
 
 ## Goal
 
-**KAN-90** listing contact lists all dealer phones/emails; listing chips lighter.
+Session shipped to `main`; Jira + Confluence synced.
 
 ## Current state
 
-- Local HEAD **`cace2cb`** (large WIP still uncommitted).
-- **KAN-90** (this session, In Review):
-  - `ContactChannelBuilder` / `ListingContactPresenter` emit `phones[]` + `emails[]`
-    (legacy singular kept)
-  - Web: `ListingContactButtons.vue` + `ListingSellerCard.vue` list every row
-- Seller/viewing chips: viewing = stacked rows; seller feature pills = **2-col grid**
-  (web + Flutter)
-- Prior WIP still dirty: KAN-92 essentials, KAN-87 schema, KAN-73, Filament, etc.
-- Skip `docs/og-preview-mock.html` on commit
+- Local/remote HEAD **`5c23464`** (rebased onto QR `c14bce5` / `0a9ed54`).
+- Shipped this batch (Done):
+  - **KAN-90** multi-contact listing UI (API + web)
+  - **KAN-94** dealer essentials API + branding
+  - **KAN-95** Account Dealer profile essentials (coexists with KAN-91 QR card)
+  - Viewing policy migrations + Filament/admin touch-ups
+- Confluence: [Multi-contact & dealer essentials](https://drivebayme.atlassian.net/wiki/spaces/DW/pages/5472259/Multi-contact+dealer+essentials+Jul+2026)
+- Still untracked locally: `docs/og-preview-mock.html` (do not commit)
 
 ## Exact next action
 
-1. Browser QA listing detail Contact with multi-phone dealer.
-2. Ask commit/push when QA ok.
-3. Mark **KAN-90** Done after mobile QA too.
+1. Run migrations on environments that need them (`2026_07_30_160000_*`, `2026_07_30_183000_*`).
+2. Browser smoke: Account essentials + listing multi-contact + QR card still present.
+3. Optionally close parent epics **KAN-87** / **KAN-92** when remaining children are clear.
 
 ## Decisions made
 
 - Listing contact uses storefront multi-contact lists; WhatsApp/Viber stay on primary phone.
-- Chips stay stacked columns; lighter fill, no heavy borders.
+- Theme/appearance stays in Customize storefront; essentials on Account/API.
 
 ## Verification
 
-- `php artisan test --filter=ListingContactChannelsTest` passed (4)
+- Rebase conflict in `Account/Index.vue` resolved (QR + essentials imports).
+- Prior Pest filters for contact channels / essentials / viewing policies were included in the commit.
