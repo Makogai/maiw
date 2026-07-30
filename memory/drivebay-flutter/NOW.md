@@ -23,7 +23,9 @@
 - Mobile phone entry matches web Account `PhoneInput` (E.164 + flagcdn flags).
 - Contact sheet shows labeled rows, not a single Call button.
 - Seller feature pills = **2-column** grid; viewing options stay **stacked rows**.
-- Pushed routes use `CupertinoPage` so edge-swipe-right goes back (`app_router.dart`).
+- Pushed routes use `CupertinoPage` (+ Material/page color wrap) for edge swipe-back;
+  shell tabs (`/search`, `/messages`, `/account`) stay Material so backgrounds stay correct.
+- Seller chip labels: 11px, single line + ellipsis (no wrap).
 
 ## Verification
 
