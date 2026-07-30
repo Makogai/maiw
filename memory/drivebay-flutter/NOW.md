@@ -2,26 +2,34 @@
 
 ## Goal
 
-Automate DriveBay Android open-beta Play releases with Fastlane + GitHub Actions (**Jira: KAN-72**).
+Polish listing detail UX (key specs + bottom action bar) on app HEAD `6508d5b`.
 
 ## Current state
 
 - App HEAD is **`6508d5b`** on `main` / `preprd` / `prod` (pushed).
-- Branch flow: `preprd` → Play `beta`, `prod` → Play `production` draft.
-- Latest CI failure: Fastlane reported `play-store.json` is not valid JSON — GitHub secret `PLAY_STORE_JSON_BASE64` was almost certainly truncated/mangled when pasted as base64.
-- Workflows now validate decoded Play JSON before Fastlane and accept **raw JSON** paste into `PLAY_STORE_JSON_BASE64`.
+- Local uncommitted listing detail polish:
+  - Key specs: single bordered panel, 2-col cells with icon + label/value
+  - Bottom buyer bar: price removed; compact favorite + contact (+ viewing)
+- Play automation still active (`preprd` → beta, `prod` → production draft).
+  Prefer raw JSON in `PLAY_STORE_JSON_BASE64` (KAN-72).
 
 ## Exact next action
 
-1. Update GitHub secret `PLAY_STORE_JSON_BASE64` with the **raw contents** of `D:\code\secrets\drivebay-d54b67d205b5.json` (starts with `{`).
-2. Re-run `Play Beta` on `preprd`.
-3. Mark **KAN-72** Done after first successful open-beta upload.
+1. Hot restart and QA listing detail specs + bottom bar; commit when asked.
+2. Re-run Play Beta on `preprd` after confirming Play JSON secret; mark KAN-72
+   Done after first successful upload.
 
 ## Decisions made
 
-- Prefer raw JSON for `PLAY_STORE_JSON_BASE64` over base64 when pasting into GitHub Secrets — avoids truncation/padding issues. `(**Jira: KAN-72**)`
+- Price stays in the body (hero) only — not duplicated in the sticky bar.
+- Specs = one card with dividers instead of six heavy tiles.
+- Prefer raw JSON for `PLAY_STORE_JSON_BASE64`. `(**Jira: KAN-72**)`
+
+## Changed files (local)
+
+- `lib/features/listings/widgets/listing_key_specs.dart`
+- `lib/features/listings/listing_detail_screen.dart`
 
 ## Verification
 
-- Local service-account JSON roundtrips cleanly (2350 chars, valid JSON).
-- App commits include `6508d5b` Play JSON validation + docs preference for raw JSON paste.
+- `dart analyze` on touched listing files (pre-existing detail infos only)
