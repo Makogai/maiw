@@ -199,7 +199,7 @@ the dbml was kept in sync with it).
 | 1 Geography | countries, regions, cities, city_districts, languages, currencies, exchange_rates |
 | 2 Users | users, user_profiles, user_devices, auth_sessions, password_resets (+ Spatie Permission) |
 | 3 Dealer orgs | dealer_accounts, dealer_members, dealer_branches, dealer_storefront_domains |
-| 4 Vehicle taxonomy | vehicle_types/makes/models/generations/trims/engines, body_styles, fuel_types, transmissions, drivetrains, vehicle_features |
+| 4 Vehicle taxonomy | vehicle_types/makes/models/generations/trims/engines, body_styles (+ nullable `vehicle_type_id`, **Jira: KAN-57**), fuel_types, transmissions, drivetrains, vehicle_features |
 | 5 Vehicles | vehicles, vehicle_feature_vehicle |
 | 6 Listings | listings, listing_versions, listing_status_history, listing_prices, listing_features, listing_attributes, listing_search_documents |
 | 7 Media | media_assets, listing_media |
@@ -273,6 +273,10 @@ accurate against these migrations for the 5 tables this task targeted).
   `scope_mobile_de_make_uniqueness_by_vehicle_type`,
   `add_logo_path_to_vehicle_makes_table`, `add_is_featured_to_vehicle_makes_table` — the
   mobile.de import model was refined incrementally after the initial taxonomy tables landed.
+  **KAN-57** (2026-07-29): additive nullable `body_styles.vehicle_type_id` FK
+  (`nullOnDelete`); null = all types. Car seeder codes backfilled; MobileDe category
+  upsert stamps snapshot vehicle type. `ListingFormOptionsService` bodyStyles include
+  `vehicle_type_id` (search + create; additive, non-breaking).
 - `backfill_message_thread_unread_counts` (2026-06-04) is a data-only migration (no
   schema change), confirming unread counts are a denormalized/cached column somewhere on
   `message_threads`, not computed live.

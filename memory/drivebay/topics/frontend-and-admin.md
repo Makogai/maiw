@@ -118,7 +118,7 @@ All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO
 | `useListingAnalytics.js:107` | Impression/click tracking for listing cards (`queueListingImpression`, `recordListingClick`, `useListingEngagement`) — used in `Pages/Listings/Show.vue:4` |
 | `useListingPrice.js:7` | Derives display price/price-type badge logic for a listing |
 | `useListingSpecs.js` | Builds spec-row and highlight lists for a vehicle (`vehicleSpecRows`, `vehicleHighlights`) |
-| `useListingWizard.js:37` | Multi-step create/edit listing wizard state machine; `LISTING_WIZARD_FIELDS_BY_STEP` maps fields→steps — backs `Pages/Seller/Listings/Create.vue` and `Edit.vue` |
+| `useListingWizard.js` | Multi-step create/edit listing wizard; `LISTING_WIZARD_FIELDS_BY_STEP` + `focusFirstValidationError` (step jump → `nextTick` → `[data-field]` / `aria-invalid` scroll+focus). Shared by `Create.vue` / `Edit.vue`. (**Jira: KAN-57**) |
 | `useLocalizedUrl.js:3` | Prefixes URLs with the active locale (`localized()`) — used in nearly every page for `<Link>`/form-post targets |
 | `useMessengerApi.js:22` | Thread/message fetch+send API glue for the floating messenger |
 | `useNotificationTypeImage.js:42` | Maps a notification type to a themed image asset |
@@ -133,6 +133,19 @@ All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO
 Most reusable/important for future frontend work: `useLocalizedUrl` (used everywhere),
 `useTranslations`, `useFormat`, `useListingWizard` (the create/edit listing flow is the
 most complex page in the app), `useListingAnalytics`.
+
+### Seller listing wizard (**Jira: KAN-57**)
+
+- Sticky bottom nav: `Components/ListingWizardNav.vue` (z-40, under FloatingMessenger z-[60];
+  mobile `pr-14` so actions clear the messenger FAB). Create/Edit pad with `pb-24`.
+- `WizardSteps` is sticky under the header (`sticky top-0 z-20`).
+- Field errors wired on create/edit specs+details; pickers accept `error` + `field`
+  (`TaxonomyIconPicker`, `ColorSwatchPicker`). `Input` forwards `min`/`max`/`step` (+ attrs).
+- Body styles filtered client-side by `vehicle_type_id` (null = universal). Create clears
+  incompatible body on `vehicle_type_code` change; Edit filters by
+  `listing.vehicle.vehicle_type_id` (edit payload includes type id/code).
+- `TaxonomyIcon`: truthy `svgUrl` used; explicit `null` = server-missing → placeholder
+  (no path invent); omitted/`undefined` still invents for legacy; load `@error` → placeholder.
 
 ### Conventions confirmed against real code
 
