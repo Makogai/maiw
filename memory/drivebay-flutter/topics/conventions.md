@@ -48,6 +48,8 @@
   - `preprd` branch pushes trigger `Play Beta`
   - `prod` branch pushes trigger `Play Production Draft`
   Both still support manual `workflow_dispatch`. `(**Jira: KAN-72**)`
+- Play rejects reused Android `versionCode`. Bump the `+N` in `pubspec.yaml`
+  (`1.0.0+N`) before each upload that should land on Play. `(**Jira: KAN-72**)`
 - Do **not** re-add `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` for gallery attach —
   Play rejects them when targeting API 33+. Use `image_picker` system pickers
   only (`**Jira: KAN-71**`). Manifest uses `tools:node="remove"` as a belt-and-suspenders
