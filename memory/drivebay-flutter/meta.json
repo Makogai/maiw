@@ -3,8 +3,8 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "0bc1b3a",
+  "sourceCommit": "d962551",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-07-30T15:45:00.000Z"
+  "lastSynchronizedAt": "2026-07-30T16:30:00.000Z"
 }
