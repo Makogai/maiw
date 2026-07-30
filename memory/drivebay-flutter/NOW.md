@@ -6,7 +6,7 @@
 
 ## Current state
 
-- Local/remote HEAD after push (this session).
+- Local/remote HEAD **`9325bbf`**.
 - **KAN-98** Done: `pushOrPopTo` in `lib/utils/go_router_nav.dart`;
   `ListingSellerCard` pops to existing `/dealers/:slug` or `/sellers/:id` by
   match-list index (GoRouter `uri` ignores pushed routes).
