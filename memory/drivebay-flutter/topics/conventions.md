@@ -39,6 +39,9 @@
   have them installed during the KAN-72 setup, so only the GitHub Actions path was
   directly executable here. Secrets/JSON stay out of git (`android/play-store.json`,
   keystore, `key.properties`).
+- In CI, prefer decoding `PLAY_STORE_JSON_BASE64` with Python after stripping
+  whitespace, or allow raw JSON directly. Plain `base64 --decode` can fail on
+  pasted GitHub secret formatting (`base64: invalid input`). `(**Jira: KAN-72**)`
 - Do **not** re-add `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` for gallery attach —
   Play rejects them when targeting API 33+. Use `image_picker` system pickers
   only (`**Jira: KAN-71**`). Manifest uses `tools:node="remove"` as a belt-and-suspenders
