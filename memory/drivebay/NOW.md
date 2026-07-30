@@ -2,34 +2,31 @@
 
 ## Goal
 
-Finish **KAN-73** viewing-policy / dealer logo slices. **KAN-80** QR dealer
-rating API + web UI is on `main`.
+Ship **KAN-87** multi-contact (phones/emails + country dialer). Keep **KAN-80**
+QR reviews Done on remote; finish remaining **KAN-73** / **KAN-79** WIP in the
+local tree.
 
 ## Current state
 
-- App remote HEAD **`0a9ed54`** — `KAN-80: add QR-gated dealer review API and
-  web rate panel.`
-  - API: `POST /api/v1/dealers/{slug}/reviews` (Sanctum + verified, `source: qr`)
-  - Web: `?src=qr` → `DealerQrReviewPanel`; session `POST /dealers/{slug}/reviews`
-  - Pest `DealerQrReview*` — 8 green at ship time
-- Flutter QR client shipped as `d962551` in `apps/drivebay-flutter`.
-- **KAN-74..78** viewing-policy flags may still be WIP or on another tree —
-  confirm before closing epic **KAN-73**.
+- App remote HEAD includes **KAN-80** QR dealer reviews (`0a9ed54` era).
+- Local **KAN-87** (uncommitted with other WIP):
+  - Migration `2026_07_30_183000_add_multi_contact_to_dealer_accounts` → JSON
+    `phones` / `emails` (+ backfill); applied locally (pgsql)
+  - `DealerContactNormalizer`; storefront dual-writes arrays + scalar mirrors
+  - Public payload exposes `phones` / `emails`
+  - Editor: PhoneInput with **flag + dial code**, multi emails; max 5 each
+  - Public storefront hero + Contact page list labeled contacts
+  - Pest `DealerMultiContactTest` — 3 passed
+- Also dirty: KAN-73 viewing policies + KAN-79 Filament
 
 ## Exact next action
 
-1. Deploy/migrate; QA web `?src=qr` + Flutter QR rate flow on device.
-2. Mark **KAN-80** Done after verify.
-3. Land remaining KAN-73 policy/logo work; close epic when Flutter+web Done.
+1. QA storefront: add phones via country picker + emails; check public + Flutter
+2. Ask commit/push `apps/drivebay` (exclude `docs/og-preview-mock.html`)
+3. Mark KAN-87 children In Review after QA
 
 ## Decisions made
 
-- QR URL: `/dealers/{slug}?src=qr`. Reviews require `source: qr`.
-- One review per user/dealer; QR reviews auto-approved; aggregates update
-  `rating_average` / `rating_count`.
-- Web uses session auth; API uses Sanctum+verified.
-
-## Verification
-
-- `php artisan test --filter=DealerQrReview` → 8 passed (pre-commit)
-- Pushed `0a9ed54` to `origin/main`
+- JSON on `dealer_accounts`; `{ label, value }` E.164 phones; scalar mirrors BC
+- Reuse `PhoneInput` / `usePhoneCountries` (no new npm lib)
+- QR reviews (KAN-80): `?src=qr`, `source: qr`, one review per user/dealer
