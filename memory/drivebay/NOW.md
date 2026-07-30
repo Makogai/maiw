@@ -2,31 +2,33 @@
 
 ## Goal
 
-Seller card mock parity + storefront-consistent policies; finish **KAN-87**.
+**KAN-92** dealer profile essentials on Account + API for mobile.
 
 ## Current state
 
-- Local HEAD **`cace2cb`** (behind origin).
-- Seller card fix (this session):
-  - API `ListingDetailResource` now returns **full** seller presenter
-    (`member_since_year`, `responds_fast`, storefront `allows_*`, ads count)
-  - Web `ListingSellerCard` prefers **seller/storefront** policies (not
-    per-listing), shows ads count, stacked column chips
-  - Pest: seller payload keeps dealer policies even when listing flags differ
-- Still dirty: KAN-87 multi-contact, KAN-73, KAN-79 Filament
+- Local HEAD **`cace2cb`** (behind origin; large WIP).
+- **KAN-92 / KAN-94 / KAN-95** (this session):
+  - API: enriched `GET /dealer/storefront`; `PUT /dealer/storefront`
+    essentials; `POST /dealer/storefront/branding` (logo|cover)
+  - `updateStorefront` supports essentials-only (no theme wipe)
+  - Web Account: inline `DealerProfileEssentialsForm` + clearer sidebar
+    “Open →” action cards; Appearance stays Customize storefront
+  - Route `PUT seller.dealer.profile`
+  - Pest `DealerProfileEssentialsApiTest` green
+- Still dirty: KAN-87 multi-contact, KAN-73, seller card, Filament, etc.
 - Skip `docs/og-preview-mock.html` on commit
 
 ## Exact next action
 
-1. Hot reload / browser QA seller card (ads count + same chips on every ad).
+1. Browser QA `/account` dealer section + sidebar cards.
 2. Ask commit/push when QA ok.
+3. Mark **KAN-92** Done after Flutter QA too.
 
 ## Decisions made
 
-- Seller card chips = dealer storefront settings (same for every ad).
-- Viewing options section = listing flags, fallback to storefront when null.
-- Feature chips stacked in a column (full-width soft rows).
+- Essentials on Account/phone; theme only in Customize storefront.
+- Essentials PUT omits `storefront_settings` → theme untouched.
 
 ## Verification
 
-- `php artisan test --filter="exposes dealer storefront policies"` passed
+- `php artisan test --filter=DealerProfileEssentialsApiTest` passed
