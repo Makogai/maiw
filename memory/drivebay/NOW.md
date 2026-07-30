@@ -2,30 +2,32 @@
 
 ## Goal
 
-Continue **KAN-87** multi-contact / remaining **KAN-73** WIP. **KAN-91** web
-dealer QR card is on `main`.
+Ship seller-card mock parity on web + finish **KAN-87** multi-contact.
+**KAN-91** QR is on remote.
 
 ## Current state
 
-- App remote HEAD **`c14bce5`** — `KAN-91: add dealer QR card on account and
-  storefront pages.`
-  - `DealerQrCard.vue` (`qrcode`) → `{appUrl}/dealers/{slug}?src=qr`
-  - Mounted on `/account`, storefront editor, domain page
-  - Copy / download PNG / print; EN/SR `dealer.storefront.qr_*`
-- **KAN-80** reviews API + web rate panel earlier at `0a9ed54`.
-- Flutter QR at `d962551`.
-- Teammate may still have local **KAN-87** multi-contact WIP.
+- Local HEAD **`cace2cb`** (behind `origin/main` by 1 — likely KAN-91).
+- Uncommitted seller-card redesign (matches Flutter mock):
+  - `ListingSellerCard.vue` — circular avatar, blue verified row, member since,
+    rating+reviews right, soft Wrap pills (highly rated / responds fast /
+    offers test drive / mechanic)
+  - Presenter already sends `member_since_year`, `responds_fast` (stub false)
+  - EN/SR `listing.verified_seller`, `member_since_year`, chip strings
+- Still dirty: KAN-87 multi-contact, KAN-73 viewing policies, KAN-79 Filament
+- Do **not** commit `docs/og-preview-mock.html`
 
 ## Exact next action
 
-1. Browser QA QR as dealer; mark **KAN-91** Done.
-2. Land KAN-87 / KAN-73 remainder when ready.
+1. Hot reload / browser QA listing seller card vs mock.
+2. Ask commit/push when QA ok (exclude og-preview-mock).
+3. Continue KAN-87 QA (storefront editor → public → Flutter contacts).
 
 ## Decisions made
 
-- Same QR URL as Flutter (`src=qr`); `marketplaceUrl || appUrl` base.
+- Soft horizontal pills (not equal Expanded tiles); only show chips when true.
+- `responds_fast` stays false until a real metric exists.
 
 ## Verification
 
-- Pushed `c14bce5` to `origin/main`
-- Vite build green pre-commit
+- Local multi-contact Pest previously green; seller card UI pending visual QA
