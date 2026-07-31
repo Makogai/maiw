@@ -198,6 +198,13 @@ active, Edit price/title/description → `showModerationEditFieldSheet`). Reposi
 exposes `getDetail` / `unpublish` / `updateListing` (PATCH partial body).
 `listingDetailProvider` retries staff `GET /moderation/listings/{id}` on public 404 when
 mode is on. After any detail action: invalidate detail + pending count, reload queue.
+Every non-reject action collects an optional **moderator note** for the audit trail:
+approve/unpublish confirms use the shared `showModerationConfirmNoteDialog`
+(`widgets/moderation_confirm_note_dialog.dart`, used by detail sheet, queue swipe
+confirm, and review screen), edit sheets have a second optional note field; sent as
+body `note` only when non-empty (`approve`/`unpublish`/`updateListing`). Reject keeps
+its required `reason`. Queue meta is Laravel paginator shape (`current_page` etc.) —
+`getQueue` maps it manually, never via `SearchMeta.fromJson`.
 
 **Report submission repository**: `ReportRepository.reportListing()` (`POST
 /listings/{publicId}/report`) and `.reportThread()` (`POST

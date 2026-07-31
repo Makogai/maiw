@@ -4,11 +4,22 @@
 
 **KAN-101** Mobile moderation tools v2 — **committed and pushed** as `319ee90` on
 `feature/kan-100-moderation-mode` (on top of KAN-100 `2b981ba`; includes the host
-dialog root-navigator fix). On-device QA in progress; one fix since (uncommitted):
-`ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
-the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
-the search envelope's `page`; missing key threw and surfaced as "ApiException: null".
-Keys now mapped manually with fallbacks.
+dialog root-navigator fix). On-device QA in progress; QA fixes since (uncommitted):
+
+1. `ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
+   the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
+   the search envelope's `page`; missing key threw and surfaced as "ApiException: null".
+   Keys now mapped manually with fallbacks.
+2. Optional **moderator note** (audit trail) added to every non-reject moderation
+   action: new shared `showModerationConfirmNoteDialog`
+   (`widgets/moderation_confirm_note_dialog.dart`) replaces the plain confirm
+   dialogs for approve (detail sheet, queue swipe, review screen) and unpublish;
+   edit-field sheets gained a second optional multiline note field. Wire-through:
+   `ModerationRepository.approve`/`updateListing` take `note` (sent only when
+   non-empty; `unpublish` already had it), `ModerationQueueNotifier.approve` passes
+   it, queue screen stashes it in `_pendingApproveNotes` (confirmDismiss →
+   onDismissed, same pattern as reject reasons). Reject keeps its required reason,
+   unchanged. New l10n keys `moderationNoteLabel`/`moderationNoteHint` (EN+SR).
 
 ## Current state
 
@@ -50,9 +61,9 @@ Keys now mapped manually with fallbacks.
 
 ## Verification
 
-- `flutter analyze` on touched files: only 2 pre-existing infos/warnings in
-  `listing_detail_screen.dart` (`_openReportListing` unused, unnecessary underscores).
-  No new issues from KAN-101.
+- `flutter analyze` on touched files (re-run after the moderator-note pass): only
+  2 pre-existing infos/warnings in `listing_detail_screen.dart`
+  (`_openReportListing` unused, unnecessary underscores). No new issues.
 - `flutter test`: `user_capabilities_test`, `listing_detail_test`, `listing_card_test`,
   `listing_contact_channels_test`, `user_profile_test` — all green (11).
   Pre-existing `media_url_test` failures (LAN `API_BASE_URL` dart-define) unchanged.
