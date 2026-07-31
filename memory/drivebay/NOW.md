@@ -2,14 +2,14 @@
 
 ## Goal
 
-**KAN-100** mobile moderation mode. Backend API slice is **implemented, uncommitted** on
-branch `feature/kan-100-moderation-api` (based on `fd36c97`). Flutter UI slice still to do
-in drivebay-flutter.
+**KAN-100** mobile moderation mode. Backend API slice **committed and pushed** as
+`44f2fd9` on branch `feature/kan-100-moderation-api` (based on `fd36c97`). Flutter slice
+is done in parallel (drivebay-flutter `feature/kan-100-moderation-mode`, `2b981ba`).
 
 ## Current state
 
-- Branch `feature/kan-100-moderation-api`, all changes **uncommitted** (awaiting user
-  approval to commit/push). New staff-only API module under `/api/v1/moderation`:
+- Branch `feature/kan-100-moderation-api` @ `44f2fd9`, pushed to origin (PR to main
+  still to open). New staff-only API module under `/api/v1/moderation`:
   - `GET /moderation/listings` — paginated queue, default `status=pending_review`,
     oldest-first; optional `status` filter (six-value allowlist) + `per_page` (1–50, default 20).
     Items are `ListingCardResource` (same card as catalog/search); envelope
@@ -35,10 +35,9 @@ in drivebay-flutter.
 
 ## Exact next action
 
-1. User to approve commit+push of `apps/drivebay` feature branch, then PR to main.
-2. Build Flutter moderation mode in drivebay-flutter (login popup + queue screen);
-   reuse existing ListingCard Dart model — queue items are identical card JSON.
-3. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
+1. Open PR `feature/kan-100-moderation-api` → main; QA end-to-end with the Flutter
+   branch, then move KAN-100 to In Review/Done.
+2. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
    then `php artisan staff:backfill-roles` (dry-run first).
 
 ## Decisions made

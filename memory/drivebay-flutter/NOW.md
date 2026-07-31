@@ -2,13 +2,13 @@
 
 ## Goal
 
-**KAN-100** Mobile moderation mode — implemented, **uncommitted** on branch
+**KAN-100** Mobile moderation mode — **committed and pushed** as `2b981ba` on branch
 `feature/kan-100-moderation-mode` (base `9325bbf`).
 
 ## Current state
 
-- Working tree has the full KAN-100 mobile slice, NOT committed/pushed. Backend
-  side is being built in parallel; mobile codes against the agreed contract:
+- Full KAN-100 mobile slice on the pushed feature branch. Backend counterpart is
+  pushed too (drivebay `feature/kan-100-moderation-api`, `44f2fd9`); contract:
   `/auth/me` user JSON gains optional `capabilities: {staff_role, permissions[]}`
   (absent for non-staff), `GET /moderation/listings?page=N` (ListingCard envelope),
   `POST /moderation/listings/{public_id}/approve|reject` (reject body `{reason}`),
@@ -29,9 +29,10 @@
 
 ## Exact next action
 
-1. Ask user whether to commit/push `apps/drivebay-flutter` (feature branch).
-2. When backend lands, QA against real endpoints (esp. login response including
-   `capabilities` — see Decisions) and update Jira KAN-100.
+1. QA against the real backend branch endpoints, then PR to main and move KAN-100
+   to In Review/Done.
+2. Login-response question is RESOLVED: backend login uses the same `UserResource`
+   as `/auth/me`, so `capabilities` is present at login — prompt fires immediately.
 
 ## Decisions made
 
