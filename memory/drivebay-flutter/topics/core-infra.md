@@ -225,8 +225,9 @@ in the interceptor chain, not in application code.
   the name, this is **`flutter_secure_storage`**, the same backing store as
   `TokenStorage`, just a different provider instance (`:6-7`). Keys: theme preference,
   locale preference, search-results layout, AB subject ID, muted message-thread IDs (JSON
-  array), onboarding-completed flag, and per-user moderation keys
-  (`moderation_mode_enabled_<userId>`, `moderation_prompt_seen_<userId>`, KAN-100).
+  array), onboarding-completed flag, and the per-user moderation key
+  (`moderation_mode_enabled_<userId>`, KAN-100; the old `moderation_prompt_seen_`
+  key was removed in the KAN-101 QA pass — the prompt now fires on every login).
   Muted thread IDs are the one structured value —
   encoded as a JSON array string via `jsonEncode`/`jsonDecode`
   (`app_preferences_storage.dart:40-67`); everything else is a plain string.

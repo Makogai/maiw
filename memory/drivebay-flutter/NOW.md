@@ -10,16 +10,31 @@ dialog root-navigator fix). On-device QA in progress; QA fixes since (uncommitte
    the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
    the search envelope's `page`; missing key threw and surfaced as "ApiException: null".
    Keys now mapped manually with fallbacks.
-2. Optional **moderator note** (audit trail) added to every non-reject moderation
-   action: new shared `showModerationConfirmNoteDialog`
+2. **Moderator note** (audit trail) added to every non-reject moderation
+   action — and made **REQUIRED** (backend returns 422 without it, matching the
+   admin panel): shared `showModerationConfirmNoteDialog`
    (`widgets/moderation_confirm_note_dialog.dart`) replaces the plain confirm
    dialogs for approve (detail sheet, queue swipe, review screen) and unpublish;
-   edit-field sheets gained a second optional multiline note field. Wire-through:
-   `ModerationRepository.approve`/`updateListing` take `note` (sent only when
+   edit-field sheets gained a second required multiline note field (inline
+   "A note is required." on empty submit; 422 `note` field errors map onto it).
+   `ModerationNoteConfirmation.note` is non-null. Wire-through:
+   `ModerationRepository.approve`/`updateListing` take `note` (sent when
    non-empty; `unpublish` already had it), `ModerationQueueNotifier.approve` passes
    it, queue screen stashes it in `_pendingApproveNotes` (confirmDismiss →
    onDismissed, same pattern as reject reasons). Reject keeps its required reason,
-   unchanged. New l10n keys `moderationNoteLabel`/`moderationNoteHint` (EN+SR).
+   unchanged. L10n keys `moderationNoteLabel`/`moderationNoteHint`/
+   `moderationNoteRequired` (EN+SR).
+3. **Moderation prompt now fires on EVERY staff login/session restore** —
+   `prompt_seen` persistence removed entirely (storage methods deleted from
+   `AppPreferencesStorage`; only ever consumed by the prompt host). Two variants in
+   `ModerationModePromptHost`, chosen by the *stored* per-user mode flag (read
+   directly — the provider restores async): mode OFF → existing "Enable moderation
+   mode?" (Enable / Not now); mode ON → awareness dialog "Moderation mode is
+   active." (Keep on = default/dismiss, Turn off → `setEnabled(false)`).
+   Double-show guard: `_promptedUserId` set before showing (initState post-frame +
+   auth listener can both fire on cold start), reset on any transition to
+   unauthenticated so the next login prompts again. Root-navigator context kept.
+   New l10n `moderationActiveTitle/Body/KeepOn/TurnOff` (EN+SR).
 
 ## Current state
 
@@ -61,8 +76,8 @@ dialog root-navigator fix). On-device QA in progress; QA fixes since (uncommitte
 
 ## Verification
 
-- `flutter analyze` on touched files (re-run after the moderator-note pass): only
-  2 pre-existing infos/warnings in `listing_detail_screen.dart`
+- `flutter analyze` on touched files (re-run after the required-note + prompt pass):
+  only 2 pre-existing infos/warnings in `listing_detail_screen.dart`
   (`_openReportListing` unused, unnecessary underscores). No new issues.
 - `flutter test`: `user_capabilities_test`, `listing_detail_test`, `listing_card_test`,
   `listing_contact_channels_test`, `user_profile_test` — all green (11).

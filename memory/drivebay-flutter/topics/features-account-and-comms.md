@@ -182,9 +182,10 @@ gates everything via `user_extensions.dart` `canModerateListings`
 (`listings.moderate` permission). `moderationModeProvider`
 (`moderation_mode_notifier.dart`) is a per-user local toggle persisted in
 `AppPreferencesStorage` (`moderation_mode_enabled_<userId>`); `ModerationModePromptHost`
-(in `app.dart` host chain) shows the one-time enable dialog on login/session restore
-(`moderation_prompt_seen_<userId>`). Host dialogs use `rootAppNavigatorKey.currentContext`
-(hosts sit above the router Navigator). Queue: `ModerationRepository`
+(in `app.dart` host chain) shows a dialog on EVERY staff login/session restore (no
+`prompt_seen` persistence — removed in KAN-101 QA): mode off → enable prompt, mode on →
+awareness dialog with Keep on (default) / Turn off. Host dialogs use
+`rootAppNavigatorKey.currentContext` (hosts sit above the router Navigator). Queue: `ModerationRepository`
 (`lib/repositories/moderation_repository.dart`, `/moderation/*` endpoints) +
 `moderationQueueProvider` (optimistic approve/reject with restore-on-failure) +
 `ModerationQueueScreen` (`/account/moderation`, Dismissible swipe actions, infinite
@@ -198,13 +199,14 @@ active, Edit price/title/description → `showModerationEditFieldSheet`). Reposi
 exposes `getDetail` / `unpublish` / `updateListing` (PATCH partial body).
 `listingDetailProvider` retries staff `GET /moderation/listings/{id}` on public 404 when
 mode is on. After any detail action: invalidate detail + pending count, reload queue.
-Every non-reject action collects an optional **moderator note** for the audit trail:
-approve/unpublish confirms use the shared `showModerationConfirmNoteDialog`
-(`widgets/moderation_confirm_note_dialog.dart`, used by detail sheet, queue swipe
-confirm, and review screen), edit sheets have a second optional note field; sent as
-body `note` only when non-empty (`approve`/`unpublish`/`updateListing`). Reject keeps
-its required `reason`. Queue meta is Laravel paginator shape (`current_page` etc.) —
-`getQueue` maps it manually, never via `SearchMeta.fromJson`.
+Every non-reject action collects a **required moderator note** for the audit trail
+(backend 422s without it, same as the admin panel): approve/unpublish confirms use the
+shared `showModerationConfirmNoteDialog` (`widgets/moderation_confirm_note_dialog.dart`,
+used by detail sheet, queue swipe confirm, and review screen), edit sheets have a second
+required note field; both validate non-empty inline before submit and the edit sheet also
+maps 422 `note` field errors. Sent as body `note` (`approve`/`unpublish`/`updateListing`).
+Reject keeps its required `reason`. Queue meta is Laravel paginator shape
+(`current_page` etc.) — `getQueue` maps it manually, never via `SearchMeta.fromJson`.
 
 **Report submission repository**: `ReportRepository.reportListing()` (`POST
 /listings/{publicId}/report`) and `.reportThread()` (`POST
