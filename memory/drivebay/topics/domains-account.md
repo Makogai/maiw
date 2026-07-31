@@ -195,31 +195,34 @@ on the same model. Relations: `profile` (hasOne `UserProfile`), `dealerMembershi
 `listings`, `messageThreadsAsBuyer`/`AsSeller`, `viewingSetting`, `devices`
 (`UserDevice`/push tokens), `authSessions` — `User.php:131-208`.
 
-**Permissions/roles (Spatie)**:
+**Permissions/roles (Spatie)** — **Jira: KAN-58** (RBAC enforced):
 - Config: `config/permission.php` — standard Spatie models/tables, guard `web`.
 - Seeded roles/permissions: `database/seeders/RolesAndPermissionsSeeder.php` — permissions
   `listings.{view,moderate,manage}`, `users.{view,manage}`, `dealers.{view,manage}`,
-  `moderation.manage`, `taxonomy.import`, `billing.view`, `system.settings`; roles `admin`
-  (all perms), `moderator` (view+moderate subset), `super_admin` (all perms via
-  `Permission::all()`).
-- **Staff authorization (**Jira: KAN-10** fixed)**: `User::canAccessPanel()` delegates to
-  `StaffAccessService::isStaff()` (`User.php` + `StaffAccessService.php`) — type
-  `admin`/`moderator` OR Spatie `admin`/`super_admin`/`moderator`. `AdminUserSeeder`
-  already sets both `type = 'admin'` and `super_admin` role.
-- Policies use `$user->can('permission.name')` (Spatie's `can` macro via
-  `register_permission_check_method`), e.g. `ListingPolicy` —
-  `Domains/Listing/Policies/ListingPolicy.php:31,50,55,60`.
-- Horizon/Telescope gates also hard-check roles directly:
-  `Gate::define('viewHorizon', ... $user?->hasRole('super_admin') || $user?->hasRole('admin'))`
-  — `app/Providers/HorizonServiceProvider.php:30-35`.
+  `moderation.manage`, `taxonomy.import`, `billing.view`, `marketing.manage`,
+  `system.settings`; roles `admin` (all perms), `moderator` (view+moderate subset),
+  `super_admin` (all perms via `Permission::all()`). Re-run the seeder after deploy to
+  pick up `marketing.manage`.
+- Panel gate (**KAN-10**): `User::canAccessPanel()` → `StaffAccessService::isStaff()` —
+  type `admin`/`moderator` OR Spatie `admin`/`super_admin`/`moderator`.
+- **Filament RBAC (**KAN-58**)**: every Resource uses `HasStaffPermissions` (view vs
+  manage permission); pages use `RequiresStaffPermission` or `super_admin` role
+  (`ArtisanCommands`, `DeveloperTools`). Spatie roles UI + `syncRoles` are
+  **super_admin-only**; ban/suspend/delete/verify need `users.manage`; warnings /
+  selling restrictions stay on `moderation.manage`. Horizon + Telescope:
+  **super_admin-only** (local Horizon still open).
+- `StaffRoleSyncService` keeps `users.type` in sync with staff roles. Deploy:
+  `php artisan staff:backfill-roles` for type-only staff so they get Spatie roles.
+  Type-only moderator no longer passes `canModerateListings()` without the role/perm.
+- Policies still use `$user->can('permission.name')` (e.g. `ListingPolicy`).
+- Role assignment UI: `UserForm` Roles section (super_admin only) — not seeder-only anymore.
+- Mobile foundation: `GET /api/v1/auth/me` returns additive `capabilities`
+  `{ staff_role, permissions[] }` for staff only (**KAN-100** is the Flutter UI follow-up).
 
 **Auth/Sanctum config**: `config/auth.php` — default guard `web`
 (`env('AUTH_GUARD','web')`), `users` provider model is `App\Models\Domains\User\Models\User`
 (`env('AUTH_MODEL', ...)`) — `config/auth.php:17,69`. `config/sanctum.php` — `guard => ['web']`,
-`expiration => null` (tokens don't expire by default) — `config/sanctum.php:37,50`. No
-Filament Role/Permission admin resource exists (`app/Filament/Admin/Resources/Users/`
-manages `User` rows only, with `UserWarnings` and `UserSellingRestrictions` relation
-managers — no role editor in the admin UI); role assignment is seeder/code-only today.
+`expiration => null` (tokens don't expire by default) — `config/sanctum.php:37,50`.
 
 **Password reset / change (**Jira: KAN-56**)**: custom `PasswordResetService` on
 `password_resets` (SHA-256 token hash, expiry, single-use) — not Laravel's `Password`

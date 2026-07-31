@@ -298,8 +298,13 @@ only; catalog in `app/Support/Admin/ArtisanCommandAllowlist.php`).
   `SocialPublishing` domain, used from `ListingSocialPosts`/`Listings` resources.
 - `app/Filament/Admin/Support/`: reusable action classes
   (`{Issue,Lift}UserWarningAction.php`, `{Issue,Lift}SellingRestrictionAction.php`,
-  `ToggleVehicleMakeFeaturedAction.php`, `VehicleTaxonomyDeleteActions.php`), plus
-  `StatusBadge.php`, `AdminNavigationBadge.php` (badge counts in the nav sidebar),
+  `ToggleVehicleMakeFeaturedAction.php`, `VehicleTaxonomyDeleteActions.php`,
+  `AdminUserAccountActions.php`), plus `StatusBadge.php`, `AdminNavigationBadge.php`,
   `TaxonomyAdmin.php`, `RecordActions.php`, `UserWarningListingOptions.php`.
+  **KAN-58 RBAC**: `HasStaffPermissions` (resource trait — view vs manage permission)
+  and `RequiresStaffPermission` (page trait). Every Resource declares
+  `$staffViewPermission` / `$staffManagePermission`; `ArtisanCommands` /
+  `DeveloperTools` are `super_admin`-only; settings/import pages use
+  `system.settings` or `taxonomy.import`.
 - `app/Filament/Admin/Concerns/SavesTaxonomySvgUpload.php` — shared trait for
   taxonomy resources that accept an SVG icon upload (body styles, colors, etc.).

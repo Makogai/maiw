@@ -40,7 +40,7 @@ controller spot-checked; no deviations found beyond the two documented exception
 | POST | `/auth/forgot-password` | Auth@forgotPassword | `throttle:api-auth` (**Jira: KAN-56**) |
 | POST | `/auth/reset-password` | Auth@resetPassword | `throttle:api-auth` (**Jira: KAN-56**) |
 | GET/PUT | `/account/locale` | Account@show\|updateLocale | `auth:sanctum` only (no `verified`) |
-| GET | `/auth/me` | Auth@me | `auth:sanctum, verified` |
+| GET | `/auth/me` | Auth@me | `auth:sanctum, verified`; staff users get additive `capabilities.{staff_role,permissions[]}` (**Jira: KAN-58**) |
 | POST | `/auth/logout` | Auth@logout | `auth:sanctum, verified` |
 | POST/DELETE | `/auth/device-tokens` | Auth@storeDeviceToken\|destroyDeviceToken | `auth:sanctum, verified` |
 | GET | `/account` | Account@show | `auth:sanctum, verified` |
