@@ -2,24 +2,60 @@
 
 ## Goal
 
-**KAN-98** seller ↔ listing nav loop — shipped.
+**KAN-100** Mobile moderation mode — implemented, **uncommitted** on branch
+`feature/kan-100-moderation-mode` (base `9325bbf`).
 
 ## Current state
 
-- Local/remote HEAD **`9325bbf`**.
-- **KAN-98** Done: `pushOrPopTo` in `lib/utils/go_router_nav.dart`;
-  `ListingSellerCard` pops to existing `/dealers/:slug` or `/sellers/:id` by
-  match-list index (GoRouter `uri` ignores pushed routes).
+- Working tree has the full KAN-100 mobile slice, NOT committed/pushed. Backend
+  side is being built in parallel; mobile codes against the agreed contract:
+  `/auth/me` user JSON gains optional `capabilities: {staff_role, permissions[]}`
+  (absent for non-staff), `GET /moderation/listings?page=N` (ListingCard envelope),
+  `POST /moderation/listings/{public_id}/approve|reject` (reject body `{reason}`),
+  `GET /moderation/stats` → `{data: {pending_count}}`, all 403 for non-staff.
+- New: `lib/models/user_capabilities.dart` (+ `User.capabilities`, regenerated),
+  `lib/repositories/moderation_repository.dart`, feature files under
+  `lib/features/moderation/` (`moderation_mode_notifier.dart`,
+  `moderation_mode_prompt_host.dart`, `moderation_queue_notifier.dart`,
+  `moderation_queue_screen.dart`, `moderation_review_screen.dart`,
+  `widgets/moderation_reject_sheet.dart`), `test/user_capabilities_test.dart`.
+- Modified: `app.dart` (host chain + `ModerationModePromptHost`), `app_router.dart`
+  (`/account/moderation` + `/account/moderation/review/:publicId`),
+  `profile_screen.dart` (staff Moderation entry + pending badge),
+  `settings_screen.dart` (staff-only mode toggle), `listing_card_tile.dart`
+  (optional `onTap` override), `app_preferences_storage.dart` (per-user keys
+  `moderation_mode_enabled_<id>` / `moderation_prompt_seen_<id>`), providers,
+  EN+SR ARBs + regenerated l10n.
 
 ## Exact next action
 
-None for KAN-98. Smoke other dealer flows if needed.
+1. Ask user whether to commit/push `apps/drivebay-flutter` (feature branch).
+2. When backend lands, QA against real endpoints (esp. login response including
+   `capabilities` — see Decisions) and update Jira KAN-100.
 
 ## Decisions made
 
-- Pop-by-match-index over hiding seller chevron or using `uri.path`.
+- Moderation mode is per-user local state (`flutter_secure_storage` via
+  `AppPreferencesStorage`), only readable/settable when session user has
+  `listings.moderate`; `moderationModeProvider` hard-returns false otherwise.
+- One-time prompt host mirrors `ModerationHost` (auth-transition listener +
+  initState post-frame check); answered-or-dismissed writes `prompt_seen` so it
+  never nags again; choice flippable in Settings.
+- Prompt on *login* assumes the login response's `user` object also carries
+  `capabilities` (both paths parse through `User.fromJson`). If backend only puts
+  it on `/auth/me`, the prompt appears on next session restore instead — flagged
+  to backend.
+- Queue swipes: Dismissible confirmDismiss gathers confirm/reason, onDismissed
+  calls queue notifier which removes optimistically *synchronously* (required by
+  Dismissible) and restores the item at its index on API failure.
+- 403 from moderation endpoints → `accessDenied` state + friendly screen (401 is
+  already global teardown via AuthInterceptor).
 
 ## Verification
 
-- User QA: listing → dealer → listing → seller card returns to same dealer.
-- `dart analyze` clean on touched files.
+- `flutter analyze`: no issues in any touched/new file (35 pre-existing
+  infos/warnings elsewhere, unchanged).
+- `flutter test`: new `user_capabilities_test.dart` (4 tests) passes; full suite
+  green except 2 pre-existing env-dependent failures in `media_url_test.dart`
+  (expect a LAN `API_BASE_URL` dart-define; unrelated).
+- NOT verified: runtime against real backend (endpoints don't exist yet).

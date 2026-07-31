@@ -14,8 +14,9 @@ and ~15 migrations across phases.
 ### Versioning
 
 - Single version today: `routes/api.php:5` wraps everything in `Route::prefix('v1')`,
-  requiring 9 files under `routes/api/v1/` (`routes/api.php:6-15`; `analytics.php` is a
-  10th, required at `routes/api.php:8` but not named in the original module list).
+  requiring the files under `routes/api/v1/` (`routes/api.php:6-16`; 11 files as of
+  KAN-100 — `moderation.php` is the newest, `analytics.php` was a 10th not named in the
+  original module list).
   No `v2` exists anywhere (no `routes/api/v2/`, no version negotiation middleware). A
   new version would presumably be added as a sibling `Route::prefix('v2')` block plus a
   new `routes/api/v2/` dir and `App\Http\Controllers\Api\V2\*` — inferred from the v1
@@ -134,6 +135,18 @@ defined at `app/Providers/AppServiceProvider.php:93` (not yet cross-checked agai
 middleware — route file itself has no explicit throttle on `ai-estimate`; worth
 confirming if this route is expected to be throttled).
 
+**moderation.php** (4 endpoints, `ModerationApiController`, **Jira: KAN-100** — added on
+branch `feature/kan-100-moderation-api`, uncommitted as of 2026-07-31) — all under
+`auth:sanctum, verified, staff` + `prefix('moderation')`; actions additionally
+`authorize('moderate', $listing)` (same chain as web `ListingModerationController`):
+`GET /moderation/listings` (paginated queue, default `status=pending_review` oldest-first,
+optional `status` allowlist filter + `per_page` ≤50, `ListingCardResource` items,
+`ApiResponse::collection` meta), `POST /moderation/listings/{publicId}/approve` (optional
+`note`), `POST .../reject` (`RejectListingApiRequest`: `reason` required max:1000, optional
+`note`) — both delegate to `ListingModerationService` and return the updated card —
+and `GET /moderation/stats` (`{data:{pending_count}}`, counts `status=pending_review`).
+Tests: `tests/Feature/Api/V1/ApiModerationTest.php`; doc `docs/api/modules/moderation.md`.
+
 **storefront.php** (dealer custom-domain web pages, not `/api/v1`) — `storefront.host`
 middleware (`EnsureStorefrontHost`); `StorefrontPageController@{about,contact}`,
 `StorefrontListingController@show`. Web/Inertia contract space, not part of the JSON API.
@@ -175,7 +188,9 @@ knowing before assuming any `Api/V1` controller has a matching `Requests/Api/V1`
 
 Regenerated `docs/api/v1/openapi.json` via `composer run api:docs` (`composer.json:93`).
 Prior gap (16 missing operations + phantom `PUT /seller/listings/{publicId}/viewing`) is
-closed. Module docs filled for endpoints that were code-only: account locale, featured
+closed. Regenerated again on `feature/kan-100-moderation-api` (2026-07-31, uncommitted) —
+picked up moderation endpoints plus post-KAN-13 drift (password reset, viewing reschedule,
+dealer reviews/storefront, messaging typing/report, compare). Module docs filled for endpoints that were code-only: account locale, featured
 listings, experiments, notification unread helpers, messaging typing/report, seller show +
 request-photo-review.
 

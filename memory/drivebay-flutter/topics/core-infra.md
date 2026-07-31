@@ -225,7 +225,9 @@ in the interceptor chain, not in application code.
   the name, this is **`flutter_secure_storage`**, the same backing store as
   `TokenStorage`, just a different provider instance (`:6-7`). Keys: theme preference,
   locale preference, search-results layout, AB subject ID, muted message-thread IDs (JSON
-  array), onboarding-completed flag. Muted thread IDs are the one structured value —
+  array), onboarding-completed flag, and per-user moderation keys
+  (`moderation_mode_enabled_<userId>`, `moderation_prompt_seen_<userId>`, KAN-100).
+  Muted thread IDs are the one structured value —
   encoded as a JSON array string via `jsonEncode`/`jsonDecode`
   (`app_preferences_storage.dart:40-67`); everything else is a plain string.
 - No dependency on `core/auth/` — a separate `AppPreferencesStorage()` instance is
@@ -358,9 +360,10 @@ tokenStorageProvider + authSessionEventsProvider + abSubjectServiceProvider
    `CupertinoPage` so edge swipe-from-left goes back (iOS-style) on all platforms.
 4. `didChangeAppLifecycleState` (`:90-107`) forces a device-token re-sync on app resume if
    already authenticated — belt-and-suspenders against a stale FCM token after backgrounding.
-5. `build()` (`:145-170`) wraps `MaterialApp.router` with `EngagementHost` →
-   `InAppNotificationHost` → `ModerationHost` (`:161-167`) — any new app-wide overlay/host
-   widget should slot into this chain in the same place.
+5. `build()` wraps `MaterialApp.router` with `EngagementHost` →
+   `InAppNotificationHost` → `ModerationHost` → `ModerationModePromptHost` (KAN-100) →
+   `CompareStripHost` — any new app-wide overlay/host widget should slot into this
+   chain in the same place.
 
 ## lib/theme/ (brief)
 

@@ -175,6 +175,23 @@ the app.
 (`acknowledged != true`), `_shownWarningUuid` is reset so it will be shown again on the
 next trigger (auth state change or next `ModerationHost` mount) — `moderation_host.dart:82-84`.
 
+**Staff moderation mode (KAN-100, uncommitted on `feature/kan-100-moderation-mode`)**:
+separate from the warnings/restrictions surface above — this is the *staff-facing* side.
+`User.capabilities` (`lib/models/user_capabilities.dart`, nullable — absent = not staff)
+gates everything via `user_extensions.dart` `canModerateListings`
+(`listings.moderate` permission). `moderationModeProvider`
+(`moderation_mode_notifier.dart`) is a per-user local toggle persisted in
+`AppPreferencesStorage` (`moderation_mode_enabled_<userId>`); `ModerationModePromptHost`
+(in `app.dart` host chain) shows the one-time enable dialog on login/session restore
+(`moderation_prompt_seen_<userId>`). Queue: `ModerationRepository`
+(`lib/repositories/moderation_repository.dart`, `/moderation/*` endpoints) +
+`moderationQueueProvider` (optimistic approve/reject with restore-on-failure) +
+`ModerationQueueScreen` (`/account/moderation`, Dismissible swipe actions, infinite
+scroll) + `ModerationReviewScreen` (`/account/moderation/review/:publicId`, wraps
+`ListingDetailScreen` with an Approve/Reject bottom bar). Profile hub shows a
+Moderation entry + pending-count badge (`moderationPendingCountProvider` ←
+`/moderation/stats`) when mode is on; Settings has the staff-only on/off switch.
+
 **Report submission repository**: `ReportRepository.reportListing()` (`POST
 /listings/{publicId}/report`) and `.reportThread()` (`POST
 /messages/threads/{threadId}/report`) — `lib/repositories/report_repository.dart:9-31`.
