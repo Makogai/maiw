@@ -2,57 +2,69 @@
 
 ## Goal
 
-**KAN-100** mobile moderation mode. Backend API slice **committed and pushed** as
-`44f2fd9` on branch `feature/kan-100-moderation-api` (based on `fd36c97`). Flutter slice
-is done in parallel (drivebay-flutter `feature/kan-100-moderation-mode`, `2b981ba`).
+**KAN-101** "Mobile moderation tools v2" backend slice — implemented on top of the
+KAN-100 moderation API. KAN-100 is committed/pushed as `44f2fd9` on
+`feature/kan-100-moderation-api`; the **KAN-101 changes are UNCOMMITTED** on that same
+branch (parent agent to ask user before committing/pushing the app repo).
 
 ## Current state
 
-- Branch `feature/kan-100-moderation-api` @ `44f2fd9`, pushed to origin (PR to main
-  still to open). New staff-only API module under `/api/v1/moderation`:
-  - `GET /moderation/listings` — paginated queue, default `status=pending_review`,
-    oldest-first; optional `status` filter (six-value allowlist) + `per_page` (1–50, default 20).
-    Items are `ListingCardResource` (same card as catalog/search); envelope
-    `{data, meta:{current_page,per_page,total,last_page}}` via `ApiResponse::collection`.
-  - `POST /moderation/listings/{publicId}/approve` (optional `note`) and
-    `.../reject` (`reason` required, max 1000; optional `note`) — both delegate to
-    `ListingModerationService::approve/reject` (zero duplicated status logic) and return
-    the updated card. `GET /moderation/stats` → `{data:{pending_count}}`.
-  - Gate: route middleware `auth:sanctum, verified, staff` (`EnsureStaff` →
-    `StaffAccessService::canModerateListings`) + `authorize('moderate', $listing)` on
-    actions, mirroring the web `ListingModerationController`.
-  - Files: `app/Http/Controllers/Api/V1/ModerationApiController.php`,
-    `app/Http/Requests/Api/V1/Moderation/RejectListingApiRequest.php`,
-    `routes/api/v1/moderation.php` (mounted in `routes/api.php`),
-    `tests/Feature/Api/V1/ApiModerationTest.php`, `docs/api/modules/moderation.md`,
-    rows in `docs/api/INDEX.md` + `docs/flutter/mobile-api-changelog.md`.
-  - `composer run api:docs` regenerated `docs/api/v1/openapi.json` — also catches up
-    endpoints shipped since KAN-13 (password reset, viewing reschedule, dealer
-    reviews/storefront, messaging typing/report, compare); expected drift, not a bug.
-- KAN-58 RBAC (`fd36c97` on main) is the foundation; deploy steps in "next action" below
-  still pending on the server.
-- Left dirty locally (do not commit): `package-lock.json`, `docs/og-preview-mock.html`.
+- Branch `feature/kan-100-moderation-api` @ `44f2fd9` + uncommitted KAN-101 working tree.
+- Three new staff endpoints in `routes/api/v1/moderation.php` (same
+  `auth:sanctum, verified, staff` + `authorize('moderate', $listing)` gate):
+  - `GET /moderation/listings/{publicId}` — full detail, **any status**; returns the same
+    `ListingDetailResource` as public `GET /listings/{publicId}` so mobile reuses its
+    ListingDetail model. `ListingDetailResource` changed so staff (canModerate) get the
+    owner-view media set (unapproved photos visible) — affects public detail for staff too.
+  - `PATCH /moderation/listings/{publicId}` — partial edit, body subset of `price`
+    (→ `price_amount`), `title` (max 255), `description`, optional `note`; empty body 422.
+    New `UpdateModerationListingApiRequest`. Delegates to new
+    `ListingModerationService::quickEdit` which reuses `ListingService::update`
+    (listing_prices history row, slug regen, price-drop notify, search resync) and then
+    records `listing_staff_edit` admin action + audit log + seller notification.
+  - `POST /moderation/listings/{publicId}/unpublish` (optional `note`) — delegates to the
+    **pre-existing** `ListingModerationService::unpublish` (same as web moderation):
+    status → `pending_review` (NOT `draft`), moderation_status → `pending`, search doc
+    unsearchable, `listing_unpublished` admin action, staff pending-review notification.
+  - All three return `{data: ListingCard}` (PATCH/unpublish) or `{data: ListingDetail}` (GET).
+- Files touched: `ModerationApiController` (+show/update/unpublish),
+  `ListingModerationService` (+quickEdit), `ListingDetailResource` (staff media),
+  `UpdateModerationListingApiRequest` (new), `routes/api/v1/moderation.php`,
+  `ApiModerationTest` (+9 tests), `docs/api/modules/moderation.md`,
+  `docs/flutter/mobile-api-changelog.md`, regenerated `docs/api/v1/openapi.json`.
+- Still dirty locally (do not commit): `package-lock.json`, `docs/og-preview-mock.html`.
 
 ## Exact next action
 
-1. Open PR `feature/kan-100-moderation-api` → main; QA end-to-end with the Flutter
-   branch, then move KAN-100 to In Review/Done.
-2. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
+1. User to approve commit+push of `apps/drivebay` KAN-101 changes on
+   `feature/kan-100-moderation-api`; then open PR → main covering KAN-100+101.
+2. Flutter side (drivebay-flutter) consumes the new endpoints — see
+   `docs/flutter/mobile-api-changelog.md` 2026-07-31 KAN-101 entry for the contract.
+3. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
    then `php artisan staff:backfill-roles` (dry-run first).
 
 ## Decisions made
 
-- Moderation API reuses the `staff` middleware + `ListingPolicy@moderate` — no parallel gate.
-- Queue "pending" = `listings.status = 'pending_review'` (same as Filament attention
-  widget/stats); queue ordered oldest-created first (FIFO).
-- Approve/reject responses return the updated `ListingCardResource` (not `{message}`)
-  so mobile can update its list in place.
-- No extra throttle on moderation endpoints (matches web moderation actions).
+- Unpublish maps to the existing service transition `pending_review` (what web/Filament
+  moderation uses), not `draft` — mobile queue default shows unpublished listings again.
+- PATCH price goes through `ListingService::update` (seller pipeline) via new
+  `ListingModerationService::quickEdit`, NOT `applyChanges`, so price history rows are
+  written; the older web quick-edit still uses `applyChanges` (no price history) — known
+  asymmetry, candidate follow-up ticket.
+- PATCH field is `price` (per KAN-101 spec), mapped to `price_amount` server-side.
+- Staff now see unapproved photos in `ListingDetailResource` (gallery/media) on any detail
+  endpoint — needed so pending listings are reviewable from mobile.
 
 ## Verification
 
-- `ApiModerationTest` 10 passed / 53 assertions (queue, status filter, invalid filter 422,
-  approve, reject + reason required, admin access, non-staff 403, guest 401, stats).
-- Related suites re-run green: StaffRbacTest, StaffAccessTest, ListingPolicyTest,
-  ListingModerationPipelineTest, ApiListingsTest — 26 passed / 99 assertions.
-- Pint clean. Not verified: manual end-to-end against a real device/Meilisearch.
+- `ApiModerationTest` 19 passed / 108 assertions (10 KAN-100 + 9 new: pending/draft detail,
+  public-vs-moderation 404/403 parity, unpublish transition + admin action, PATCH price →
+  listing_prices row + SyncListingSearchDocumentJob pushed + listing_staff_edit action,
+  title/description persist + slug regen, partial patch isolation, 422s, non-staff 403).
+- Regression green: ApiListingsTest, StaffRbacTest, StaffAccessTest, ListingPolicyTest,
+  ListingModerationPipelineTest (26 passed / 99 assertions), ListingMediaPresenterTest.
+- Pre-existing failure (NOT from this change): `ListingDetailPriceRatingConfigTest` fails
+  in `beforeEach` — taxonomy snapshot's first VehicleMake has no VehicleModel rows
+  (ModelNotFound at test line 28, before any request). Worth a separate look/ticket.
+- Pint clean; OpenAPI regenerated (new paths present). Not verified: manual end-to-end
+  against a real device/Meilisearch.

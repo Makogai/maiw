@@ -3,8 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "fd36c97",
+  "sourceCommit": "44f2fd9",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-07-31T10:35:00.000Z"
+  "lastSynchronizedAt": "2026-07-31T11:55:00.000Z",
+  "note": "KAN-101 backend slice is UNCOMMITTED working-tree state on feature/kan-100-moderation-api (base 44f2fd9); memory describes code ahead of sourceCommit"
 }

@@ -8,7 +8,7 @@ verified against code or wasn't already written down.
 
 | Need | Read | Freshness |
 |---|---|---|
-| Resume current work | `NOW.md` | current session handoff (2026-07-31, KAN-58) |
+| Resume current work | `NOW.md` | current session handoff (2026-07-31, KAN-101 uncommitted) |
 | Architecture/boundaries | `topics/architecture.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Business behavior | `topics/domain.md`, then `apps/drivebay/CLAUDE.md` | partial |
 | Local coding/testing patterns | `topics/conventions.md`, then `apps/drivebay/AGENTS.md` | partial |

@@ -135,16 +135,23 @@ defined at `app/Providers/AppServiceProvider.php:93` (not yet cross-checked agai
 middleware — route file itself has no explicit throttle on `ai-estimate`; worth
 confirming if this route is expected to be throttled).
 
-**moderation.php** (4 endpoints, `ModerationApiController`, **Jira: KAN-100** — added on
-branch `feature/kan-100-moderation-api`, uncommitted as of 2026-07-31) — all under
-`auth:sanctum, verified, staff` + `prefix('moderation')`; actions additionally
-`authorize('moderate', $listing)` (same chain as web `ListingModerationController`):
+**moderation.php** (7 endpoints, `ModerationApiController`, **Jira: KAN-100** committed
+`44f2fd9`; KAN-101 additions uncommitted on `feature/kan-100-moderation-api` as of
+2026-07-31) — all under `auth:sanctum, verified, staff` + `prefix('moderation')`; actions
+additionally `authorize('moderate', $listing)` (same chain as web `ListingModerationController`):
 `GET /moderation/listings` (paginated queue, default `status=pending_review` oldest-first,
 optional `status` allowlist filter + `per_page` ≤50, `ListingCardResource` items,
 `ApiResponse::collection` meta), `POST /moderation/listings/{publicId}/approve` (optional
 `note`), `POST .../reject` (`RejectListingApiRequest`: `reason` required max:1000, optional
 `note`) — both delegate to `ListingModerationService` and return the updated card —
 and `GET /moderation/stats` (`{data:{pending_count}}`, counts `status=pending_review`).
+KAN-101 (uncommitted): `GET /moderation/listings/{publicId}` (any-status detail, same
+`ListingDetailResource` as public detail; staff see owner-view media),
+`PATCH /moderation/listings/{publicId}` (`UpdateModerationListingApiRequest`: subset of
+`price`/`title`/`description` + optional `note`, empty body 422; delegates to new
+`ListingModerationService::quickEdit` → `ListingService::update` for price history/
+search resync + `recordStaffChange`), and `POST .../unpublish` (optional `note`, delegates
+to existing `ListingModerationService::unpublish` → status `pending_review`, not `draft`).
 Tests: `tests/Feature/Api/V1/ApiModerationTest.php`; doc `docs/api/modules/moderation.md`.
 
 **storefront.php** (dealer custom-domain web pages, not `/api/v1`) — `storefront.host`

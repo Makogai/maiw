@@ -26,6 +26,7 @@ primary source, not a second-hand summary.
 | `geography_repository.dart` | `/countries`; `/regions`; `/cities`; `/city-districts` | GET×4 | Yes — full `GeographyApiController` in `catalog.php` | `lib/repositories/geography_repository.dart:15,28,47,64` |
 | `listing_repository.dart` | `/listings/{id}`; `/listings/{id}/contact`; `/listings/{id}/analytics/view|click|engagement`; `/analytics/listing-impressions`; `/listings/{id}/similar`; `/recommendations` | GET; POST; POST×3; POST; GET; GET | Yes — show (`sanctum.optional`), contact, analytics, similar, recommendations (`sanctum.optional`, **Jira: KAN-31**, **Jira: KAN-24**) | `lib/repositories/listing_repository.dart` |
 | `message_repository.dart` | `/messages/threads`; `/messages/threads/{id}`; `/messages/threads/{id}/reply`; `/messages/threads/{id}/typing`; `/messages/threads/{id}/mute` | GET; GET; POST; POST; POST | Yes — mute route is `Route::match(['put','post'], ...)`, mobile uses the POST variant | `lib/repositories/message_repository.dart:27,55,137,153,195,223` |
+| `moderation_repository.dart` | `/moderation/listings`; `/moderation/listings/{id}`; `/moderation/listings/{id}/approve\|reject\|unpublish`; `/moderation/listings/{id}` (PATCH); `/moderation/stats` | GET; GET; POST×3; PATCH; GET | Yes when Laravel KAN-100/101 branch is deployed (staff-only, 403 otherwise) | `lib/repositories/moderation_repository.dart` (**Jira: KAN-100**, **KAN-101**) |
 | `notification_repository.dart` | `/notifications`; `/notifications/unread-count`; `/notifications/latest-unread`; `/notifications/{id}/read`; `/notifications/read-all` | GET×3; POST×2 | Yes — full `NotificationApiController` (5/5) | `lib/repositories/notification_repository.dart:12,26,42,61,74` |
 | `platform_config_repository.dart` | `/config/app` (called twice, decoded into two different model shapes) | GET | Yes — `campaigns.php:7`, single-action controller | `lib/repositories/platform_config_repository.dart:13,26` |
 | `promotion_repository.dart` | `/promotion-types`; `/featured-listings`; `/listings/{id}/promote` | GET; GET; POST | Yes | `lib/repositories/promotion_repository.dart:15,29,47` |
@@ -52,6 +53,7 @@ One-line purpose per repository:
 - **geography** — countries/regions/cities/city-districts pickers.
 - **listing** — listing detail, contact-seller, view-tracking, similar-listings recommendations.
 - **message** — buyer/seller messaging threads: list, show, reply (text/media), typing, mute.
+- **moderation** — staff queue/stats/approve/reject + KAN-101 detail/unpublish/PATCH fields.
 - **notification** — notification inbox, unread count, latest-unread banner, mark read/read-all.
 - **platform_config** — app-wide feature flags/UI config bootstrap (`GET /config/app`).
 - **promotion** — promotion type catalog, featured-listings carousel, promotion checkout.
@@ -178,7 +180,7 @@ web/dashboard-only):
 | `GET /dealer/storefront`, `GET /dealer/domain`, `POST /dealer/domain/verify` | `DealerApiController` | `dealer.php` | No seller-side storefront/custom-domain management screen. Distinct from the buyer-facing `GET /dealers/{slug}` public profile page that `seller_profile_repository.dart:98` *does* call — easy to conflate the two "dealer" surfaces. |
 | `POST /analytics/listing-impressions`, `POST /listings/{id}/analytics/engagement`, `POST /listings/{id}/analytics/click` | `ListingAnalyticsApiController` | `analytics.php:7,9,10` | Partial gap closed: mobile already sends search/detail impressions, detail-view engagement, search-card clicks, and now detail CTA clicks (`contact`, `share`) via `ListingAnalytics`; remaining gap is broader seller-analytics/dashboard consumption rather than raw event emission. `(**Jira: KAN-24**)` |
 
-Repository/model note: the 23 repositories map to exactly the endpoints listed in the table above;
+Repository/model note: the 24 repositories map to exactly the endpoints listed in the table above;
 no repository was found calling a path absent from the actual route files (the backend memory
 doc's own findings about `docs/api/v1/openapi.json` being stale — see
 `memory/drivebay/topics/api-and-database.md` — do **not** apply to any mobile-called endpoint,

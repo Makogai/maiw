@@ -149,7 +149,14 @@ routing.
 **Cross-domain connections**
 - Moderation → Listing → Search: every `ListingModerationService` mutator re-syncs
   `ListingSearchDocument` (dispatches `SyncListingSearchDocumentJob` if now `active`, otherwise
-  `unsearchable()`) — same rule as `ListingService` itself (`ListingModerationService.php:186-190,272-276`).
+  `unsearchable()`) — same rule as `ListingService` itself (`ListingModerationService.php:183-188,302-307`).
+- `quickEdit()` (KAN-101, uncommitted on `feature/kan-100-moderation-api`) is the staff
+  partial-edit path used by `PATCH /api/v1/moderation/listings/{publicId}`: it delegates to
+  `ListingService::update` (so price edits get a `listing_prices` history row, slug regen,
+  price-drop notifications, search resync) then records `listing_staff_edit` via
+  `recordStaffChange` + notifies the seller (`ListingModerationService.php:203-222`). Note the
+  older web quick-edit (`ListingModerationController@apply` `update` action) still uses
+  `applyChanges` directly and therefore does NOT write price history — known asymmetry.
 - Moderation → Media: `ListingModerationPipelineService` (Listing domain) directly injects
   `Media\Services\ListingMediaModerationService` to bulk-approve Autodiler placeholders
   (see Listing section above).
