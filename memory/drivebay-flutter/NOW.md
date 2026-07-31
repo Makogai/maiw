@@ -2,9 +2,9 @@
 
 ## Goal
 
-**KAN-101** Mobile moderation tools v2 — **committed and pushed** as `319ee90` on
-`feature/kan-100-moderation-mode` (on top of KAN-100 `2b981ba`; includes the host
-dialog root-navigator fix). On-device QA in progress; QA fixes since (uncommitted):
+**KAN-101** Mobile moderation tools v2 — committed and pushed on
+`feature/kan-100-moderation-mode`: `319ee90` (tools) + `98ed65e` (QA fixes, incl. host
+dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
 
 1. `ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
    the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
@@ -51,8 +51,8 @@ dialog root-navigator fix). On-device QA in progress; QA fixes since (uncommitte
     mode is on (pending/draft open from queue review).
   - After actions: invalidate detail + pending-count, reload queue; success snackbar.
   - EN+SR strings regenerated.
-- Also uncommitted (keep): `moderation_mode_prompt_host.dart` + `moderation_host.dart`
-  use `rootAppNavigatorKey.currentContext` for dialogs (hosts sit above the router
+- Gotcha (fixed in `98ed65e`): `moderation_mode_prompt_host.dart` + `moderation_host.dart`
+  must use `rootAppNavigatorKey.currentContext` for dialogs (hosts sit above the router
   Navigator).
 
 ## Exact next action

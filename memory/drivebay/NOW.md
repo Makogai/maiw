@@ -3,14 +3,13 @@
 ## Goal
 
 **KAN-101** "Mobile moderation tools v2" backend slice — implemented on top of the
-KAN-100 moderation API. Committed and pushed: KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`,
-on `feature/kan-100-moderation-api`. **QA follow-up (required `note`) is UNCOMMITTED**
-on top of `ef4a464` — parent to ask user before committing/pushing the app repo.
+KAN-100 moderation API. All committed and pushed on `feature/kan-100-moderation-api`:
+KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, required-note QA follow-up = `f81243c`.
 
 ## Current state
 
-- Branch `feature/kan-100-moderation-api` @ `ef4a464` (pushed) + uncommitted QA follow-up.
-- **QA follow-up (2026-07-31 PM, uncommitted):** moderator `note` is now REQUIRED
+- Branch `feature/kan-100-moderation-api` @ `f81243c` (pushed).
+- **QA follow-up (`f81243c`):** moderator `note` is now REQUIRED
   (`required|string|min:3|max:5000`, mirroring web `ApplyListingModerationRequest`) on
   `POST .../approve`, `POST .../unpublish`, and `PATCH /moderation/listings/{publicId}`;
   reject unchanged (`reason` required, `note` optional). Files: `ModerationApiController`
@@ -45,9 +44,8 @@ on top of `ef4a464` — parent to ask user before committing/pushing the app rep
 
 ## Exact next action
 
-1. User to approve commit+push of the uncommitted required-note follow-up in
-   `apps/drivebay` on `feature/kan-100-moderation-api`; then open PR → main covering
-   KAN-100+101.
+1. Open PR `feature/kan-100-moderation-api` → main covering KAN-100+101 once
+   on-device QA finishes.
 2. Flutter side (drivebay-flutter) consumes the new endpoints — see
    `docs/flutter/mobile-api-changelog.md` 2026-07-31 KAN-101 entry for the contract.
 3. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
