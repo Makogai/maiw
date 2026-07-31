@@ -4,7 +4,11 @@
 
 **KAN-101** Mobile moderation tools v2 — **committed and pushed** as `319ee90` on
 `feature/kan-100-moderation-mode` (on top of KAN-100 `2b981ba`; includes the host
-dialog root-navigator fix). Next: on-device QA, PR to main.
+dialog root-navigator fix). On-device QA in progress; one fix since (uncommitted):
+`ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
+the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
+the search envelope's `page`; missing key threw and surfaced as "ApiException: null".
+Keys now mapped manually with fallbacks.
 
 ## Current state
 
