@@ -2,15 +2,17 @@
 
 ## Goal
 
-**KAN-101** Mobile moderation tools v2 — **uncommitted** on branch
-`feature/kan-100-moderation-mode` (HEAD `2b981ba` = KAN-100; working tree has KAN-101
-+ host dialog context fix). Do not switch branches.
+**KAN-101** Mobile moderation tools v2 — **committed and pushed** as `319ee90` on
+`feature/kan-100-moderation-mode` (on top of KAN-100 `2b981ba`; includes the host
+dialog root-navigator fix). Next: on-device QA, PR to main.
 
 ## Current state
 
-- KAN-100 (pushed as `2b981ba`) is intact: capabilities, mode prompt, queue, review bar,
-  stats badge, settings toggle.
-- KAN-101 mobile slice (uncommitted) extends that so staff can moderate **any** listing
+- KAN-100 (`2b981ba`): capabilities, mode prompt, queue, review bar, stats badge,
+  settings toggle. Gotcha fixed in `319ee90`: hosts in `MaterialApp.builder` sit above
+  the router's Navigator — dialogs there MUST use `rootAppNavigatorKey.currentContext`
+  (prompt host + `ModerationHost` both fixed; was silently swallowing the error).
+- KAN-101 (`319ee90`) extends that so staff can moderate **any** listing
   while moderation mode is on:
   - Shield icon on listing detail scroll header → action sheet (Approve / Reject /
     Unpublish / Edit price|title|description).

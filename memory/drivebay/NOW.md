@@ -3,13 +3,12 @@
 ## Goal
 
 **KAN-101** "Mobile moderation tools v2" backend slice — implemented on top of the
-KAN-100 moderation API. KAN-100 is committed/pushed as `44f2fd9` on
-`feature/kan-100-moderation-api`; the **KAN-101 changes are UNCOMMITTED** on that same
-branch (parent agent to ask user before committing/pushing the app repo).
+KAN-100 moderation API. Both **committed and pushed**: KAN-100 = `44f2fd9`, KAN-101 =
+`ef4a464`, on `feature/kan-100-moderation-api`. Next: on-device QA, PR to main.
 
 ## Current state
 
-- Branch `feature/kan-100-moderation-api` @ `44f2fd9` + uncommitted KAN-101 working tree.
+- Branch `feature/kan-100-moderation-api` @ `ef4a464` (pushed).
 - Three new staff endpoints in `routes/api/v1/moderation.php` (same
   `auth:sanctum, verified, staff` + `authorize('moderate', $listing)` gate):
   - `GET /moderation/listings/{publicId}` — full detail, **any status**; returns the same
