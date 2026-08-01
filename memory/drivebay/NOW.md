@@ -2,13 +2,13 @@
 
 ## Goal
 
-Latest (2026-08-01): **KAN-103** API locale fix — UNCOMMITTED on `main` @ `fd36c97`,
-awaiting user approval to commit/push. Prior slice: **KAN-101** moderation backend on
+Latest (2026-08-01): **KAN-103** API locale fix — pushed to `main` @ `4c4d8df`.
+Prior slice: **KAN-101** moderation backend on
 `feature/kan-100-moderation-api` (KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, QA = `f81243c`).
 
 ## Current state
 
-- **KAN-103 (In Review, uncommitted on `main`)**: `api` middleware group had NO locale
+- **KAN-103 (In Review, `4c4d8df` on `main`)**: `api` middleware group had NO locale
   middleware — `SetLocale` is web-only and skips `api/*`, so ALL localized API strings
   (moderation warning titles/severity labels via `UserWarningStatusService`, validation
   messages) always rendered `en` regardless of the Flutter app's `Accept-Language`.
@@ -55,8 +55,9 @@ awaiting user approval to commit/push. Prior slice: **KAN-101** moderation backe
 
 ## Exact next action
 
-1. Commit/push `apps/drivebay` main (KAN-103 middleware + test + SR key) after user
-   approval; then mark KAN-103 Done after mobile QA in Serbian.
+1. **Deploy/restart the backend the mobile app points at** (KAN-103 is server-side; the
+   user's device still saw English because the API it hit didn't run the fix), then QA
+   the warning card in Serbian and mark KAN-103 Done.
 2. Open PR `feature/kan-100-moderation-api` → main covering KAN-100+101 once
    on-device QA finishes.
 3. Flutter side (drivebay-flutter) consumes the new endpoints — see

@@ -2,11 +2,11 @@
 
 ## Goal
 
-Latest (2026-08-01): **EN/SR translation audit** — UNCOMMITTED on `main` @ `9325bbf`,
-awaiting user approval to commit/push. Prior: **KAN-101** mobile moderation tools v2 on
+Latest (2026-08-01): **EN/SR translation audit** — pushed to `main` @ `7a85f48`.
+Prior: **KAN-101** mobile moderation tools v2 on
 `feature/kan-100-moderation-mode` (`319ee90` + `98ed65e`), on-device QA in progress.
 
-## Translation audit (2026-08-01, uncommitted on main)
+## Translation audit (2026-08-01, `7a85f48` on main)
 
 - Root cause of "warning dialog titles in English": server-side — API ignored
   `Accept-Language`; fixed in drivebay **KAN-103** (`SetApiLocale` middleware). Client
@@ -22,8 +22,14 @@ awaiting user approval to commit/push. Prior: **KAN-101** mobile moderation tool
   (`fuelDiesel` + `onboardingChipAutomatic`).
 - SR arb fixes: `equipmentFeatureChildLock` -> `Brava za djecu`,
   `equipmentFeatureCdChanger` -> `CD mjenjač`. Arb key parity EN/SR: 0 issues.
+- Locale race hardened: `LocaleNotifier.ensureRestored()` awaited in
+  `bootstrap_screen._bootstrap()` before `/auth/me`, so first authenticated calls carry
+  the saved `Accept-Language` (was: `ApiLocale` defaulted to `en` until async restore).
 - Verified: `flutter gen-l10n`, `flutter analyze` (no new issues), `flutter test`
   (only pre-existing `media_url_test` fails, LAN dart-define).
+- User-reported "Friendly reminder"/"Low" still English on profile card after the fix:
+  expected — those strings come from `/api/v1/account`; the backend the app points at
+  must run drivebay `4c4d8df` (KAN-103) before they localize.
 
 KAN-101 QA fixes in `98ed65e`:
 
@@ -78,7 +84,8 @@ KAN-101 QA fixes in `98ed65e`:
 
 ## Exact next action
 
-1. Commit/push `apps/drivebay-flutter` main (translation audit) after user approval.
+1. Rebuild the app against a backend running drivebay `4c4d8df`+ and QA the warning
+   card / dialog in Serbian (KAN-103).
 2. QA against Laravel `feature/kan-100-moderation-mode` (or same-named branch) once
    backend KAN-101 endpoints exist: detail / unpublish / PATCH.
 3. PR covering KAN-100 + KAN-101 when both sides ready; move tickets to In Review.
