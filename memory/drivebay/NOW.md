@@ -2,11 +2,22 @@
 
 ## Goal
 
-**KAN-101** "Mobile moderation tools v2" backend slice — implemented on top of the
-KAN-100 moderation API. All committed and pushed on `feature/kan-100-moderation-api`:
-KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, required-note QA follow-up = `f81243c`.
+Latest (2026-08-01): **KAN-103** API locale fix — UNCOMMITTED on `main` @ `fd36c97`,
+awaiting user approval to commit/push. Prior slice: **KAN-101** moderation backend on
+`feature/kan-100-moderation-api` (KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, QA = `f81243c`).
 
 ## Current state
+
+- **KAN-103 (In Review, uncommitted on `main`)**: `api` middleware group had NO locale
+  middleware — `SetLocale` is web-only and skips `api/*`, so ALL localized API strings
+  (moderation warning titles/severity labels via `UserWarningStatusService`, validation
+  messages) always rendered `en` regardless of the Flutter app's `Accept-Language`.
+  Fix: new `app/Http/Middleware/SetApiLocale.php` appended via
+  `$middleware->api(append: ...)` in `bootstrap/app.php` (normalizes header through
+  `LocaleUrl::normalize`, only sets supported locales). New test
+  `tests/Feature/Api/V1/ApiLocaleHeaderTest.php` (3 green). Also added missing SR key
+  `marketplace.listing.report_user` = `Prijavi korisnika` (only EN/SR parity gap found
+  across all `lang/{en,sr}/*.php`).
 
 - Branch `feature/kan-100-moderation-api` @ `f81243c` (pushed).
 - **QA follow-up (`f81243c`):** moderator `note` is now REQUIRED
@@ -44,11 +55,13 @@ KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, required-note QA follow-up = `f81243c`
 
 ## Exact next action
 
-1. Open PR `feature/kan-100-moderation-api` → main covering KAN-100+101 once
+1. Commit/push `apps/drivebay` main (KAN-103 middleware + test + SR key) after user
+   approval; then mark KAN-103 Done after mobile QA in Serbian.
+2. Open PR `feature/kan-100-moderation-api` → main covering KAN-100+101 once
    on-device QA finishes.
-2. Flutter side (drivebay-flutter) consumes the new endpoints — see
+3. Flutter side (drivebay-flutter) consumes the new endpoints — see
    `docs/flutter/mobile-api-changelog.md` 2026-07-31 KAN-101 entry for the contract.
-3. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
+4. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
    then `php artisan staff:backfill-roles` (dry-run first).
 
 ## Decisions made

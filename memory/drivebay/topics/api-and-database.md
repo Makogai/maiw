@@ -52,6 +52,12 @@ controller spot-checked; no deviations found beyond the two documented exception
 Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest}`,
 `Requests/Api/V1/Account/UpdateAccountLocaleRequest`.
 
+**API locale (KAN-103)**: `app/Http/Middleware/SetApiLocale.php` is appended to the `api`
+middleware group (`bootstrap/app.php`) and sets the app locale from `Accept-Language`
+(via `LocaleUrl::normalize`, supported locales only). Before this, API responses always
+localized as `en` — web `SetLocale` skips `api/*`. Test:
+`tests/Feature/Api/V1/ApiLocaleHeaderTest.php`.
+
 **catalog.php** (`routes/api/v1/catalog.php`, mostly public GET) —
 `TaxonomyApiController`, `GeographyApiController`, `ListingApiController`,
 `SearchApiController`, `SearchFiltersApiController`, `RecommendationApiController`,

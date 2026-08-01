@@ -3,8 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "98ed65e",
+  "sourceCommit": "9325bbf",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-07-31T12:32:00.000Z"
+  "lastSynchronizedAt": "2026-08-01T11:54:51.000Z",
+  "note": "EN/SR translation audit (regCalc*, phone hint, seller badges, onboarding chip, SR equipment fixes) is UNCOMMITTED on main @ 9325bbf; KAN-101 QA memory is historical (feature/kan-100-moderation-mode)"
 }

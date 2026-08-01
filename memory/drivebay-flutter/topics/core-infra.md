@@ -49,7 +49,9 @@ reversed (`onError` handlers are chained via sequential `.catchError`, so the fi
 interceptor's `onError` runs first). Concretely, for any failed request:
 
 1. `LocaleInterceptor.onRequest` sets `Accept-Language` from `ApiLocale.languageCode`
-   (`interceptors/locale_interceptor.dart:7-9`).
+   (`interceptors/locale_interceptor.dart:7-9`). Backend honors it via `SetApiLocale`
+   on the `api` middleware group (**Jira: KAN-103**) — before that, API payloads always
+   localized as `en`.
 2. `AbSubjectInterceptor.onRequest` sets `X-AB-Subject` and `X-Visitor-Id` to the same
    per-device UUID (`interceptors/ab_subject_interceptor.dart:12-20`).
 3. `AuthInterceptor.onRequest` reads the bearer token and sets `Authorization: Bearer …`

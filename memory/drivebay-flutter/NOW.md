@@ -2,9 +2,30 @@
 
 ## Goal
 
-**KAN-101** Mobile moderation tools v2 — committed and pushed on
-`feature/kan-100-moderation-mode`: `319ee90` (tools) + `98ed65e` (QA fixes, incl. host
-dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
+Latest (2026-08-01): **EN/SR translation audit** — UNCOMMITTED on `main` @ `9325bbf`,
+awaiting user approval to commit/push. Prior: **KAN-101** mobile moderation tools v2 on
+`feature/kan-100-moderation-mode` (`319ee90` + `98ed65e`), on-device QA in progress.
+
+## Translation audit (2026-08-01, uncommitted on main)
+
+- Root cause of "warning dialog titles in English": server-side — API ignored
+  `Accept-Language`; fixed in drivebay **KAN-103** (`SetApiLocale` middleware). Client
+  already sends the header (`LocaleInterceptor`/`ApiLocale`, synced by `LocaleNotifier`).
+- Completed **KAN-53** (was Done in Jira but the screen fix never landed on main):
+  `registration_calculator_screen.dart` fully wired to l10n — new `regCalc*` keys
+  (EN+SR ijekavica) + reused `vehicleDetails`/`registration*` keys; line-item labels now
+  key-based via `_lineItemLabel()` (model labels in `RegistrationEstimate.lineItems()`
+  stay as English fallbacks only).
+- Other hardcoded strings localized: `phone_input_field.dart` search hint
+  (`phoneCountrySearchHint`), `seller_listing_card.dart` moderation badges
+  (`sellerPhotosPendingBadge`/`sellerPhotoRejectedBadge`), onboarding preview chips
+  (`fuelDiesel` + `onboardingChipAutomatic`).
+- SR arb fixes: `equipmentFeatureChildLock` -> `Brava za djecu`,
+  `equipmentFeatureCdChanger` -> `CD mjenjač`. Arb key parity EN/SR: 0 issues.
+- Verified: `flutter gen-l10n`, `flutter analyze` (no new issues), `flutter test`
+  (only pre-existing `media_url_test` fails, LAN dart-define).
+
+KAN-101 QA fixes in `98ed65e`:
 
 1. `ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
    the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
@@ -20,7 +41,7 @@ dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
    `ModerationNoteConfirmation.note` is non-null. Wire-through:
    `ModerationRepository.approve`/`updateListing` take `note` (sent when
    non-empty; `unpublish` already had it), `ModerationQueueNotifier.approve` passes
-   it, queue screen stashes it in `_pendingApproveNotes` (confirmDismiss →
+   it, queue screen stashes it in `_pendingApproveNotes` (confirmDismiss ->
    onDismissed, same pattern as reject reasons). Reject keeps its required reason,
    unchanged. L10n keys `moderationNoteLabel`/`moderationNoteHint`/
    `moderationNoteRequired` (EN+SR).
@@ -28,9 +49,9 @@ dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
    `prompt_seen` persistence removed entirely (storage methods deleted from
    `AppPreferencesStorage`; only ever consumed by the prompt host). Two variants in
    `ModerationModePromptHost`, chosen by the *stored* per-user mode flag (read
-   directly — the provider restores async): mode OFF → existing "Enable moderation
-   mode?" (Enable / Not now); mode ON → awareness dialog "Moderation mode is
-   active." (Keep on = default/dismiss, Turn off → `setEnabled(false)`).
+   directly — the provider restores async): mode OFF -> existing "Enable moderation
+   mode?" (Enable / Not now); mode ON -> awareness dialog "Moderation mode is
+   active." (Keep on = default/dismiss, Turn off -> `setEnabled(false)`).
    Double-show guard: `_promptedUserId` set before showing (initState post-frame +
    auth listener can both fire on cold start), reset on any transition to
    unauthenticated so the next login prompts again. Root-navigator context kept.
@@ -44,7 +65,7 @@ dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
   (prompt host + `ModerationHost` both fixed; was silently swallowing the error).
 - KAN-101 (`319ee90`) extends that so staff can moderate **any** listing
   while moderation mode is on:
-  - Shield icon on listing detail scroll header → action sheet (Approve / Reject /
+  - Shield icon on listing detail scroll header -> action sheet (Approve / Reject /
     Unpublish / Edit price|title|description).
   - `ModerationRepository` gains `getDetail`, `unpublish`, `updateListing` (PATCH partial).
   - `listingDetailProvider` retries via `GET /moderation/listings/{id}` on public 404 when
@@ -57,10 +78,9 @@ dialog root-navigator fix). On-device QA in progress. QA fixes in `98ed65e`:
 
 ## Exact next action
 
-1. QA against Laravel `feature/kan-100-moderation-mode` (or same-named branch) once
+1. Commit/push `apps/drivebay-flutter` main (translation audit) after user approval.
+2. QA against Laravel `feature/kan-100-moderation-mode` (or same-named branch) once
    backend KAN-101 endpoints exist: detail / unpublish / PATCH.
-2. Ask user before committing/pushing `apps/drivebay-flutter`; parent auto-pushes
-   wrapper memory only after approval workflow for app.
 3. PR covering KAN-100 + KAN-101 when both sides ready; move tickets to In Review.
 
 ## Decisions made

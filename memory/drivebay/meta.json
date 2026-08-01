@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "f81243c",
+  "sourceCommit": "fd36c97",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-07-31T12:30:00.000Z",
-  "note": "Required-note QA follow-up (approve/unpublish/PATCH) is UNCOMMITTED working-tree state on feature/kan-100-moderation-api (base ef4a464); memory describes code ahead of sourceCommit"
+  "lastSynchronizedAt": "2026-08-01T11:54:51.000Z",
+  "note": "KAN-103 SetApiLocale + SR report_user key are UNCOMMITTED on main @ fd36c97; KAN-101 moderation branch memory is historical (feature/kan-100-moderation-api)"
 }
