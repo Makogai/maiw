@@ -2,19 +2,23 @@
 
 ## Goal
 
-Latest (2026-08-03): **KAN-106** follow-up shipped — `viewing.my_appointment` on
-listing detail (`6351ad1`). Prior deep-link: `5563367`.
+Latest (2026-08-03): **KAN-108** day-before viewing reminders at morning
+seller-local time (**local, uncommitted**). Prior: `6351ad1` my_appointment.
 
 ## Current state
 
-- `ViewingAppointmentService::upcomingForBuyerOnListing` (light query; reuses listing)
-- `ListingDetailResource.viewing.my_appointment` for authenticated non-owner buyers
-- Docs + ApiViewingTest coverage
+- `config/viewing.php` — `reminder_local_hour` default 9 (`VIEWING_REMINDER_LOCAL_HOUR`)
+- `ViewingAppointmentLifecycleService::shouldSendDayBeforeReminder` — day-before
+  **and** local hour >= config (no overnight 02:00 sends)
+- Pest: morning send + 02:00 no-send; docs note in `docs/api/modules/viewing.md`
+- (**Jira: KAN-108**)
 
 ## Exact next action
 
-- Confirm mobile against deployed API; no open coding slice
+1. Ask user to commit/push `apps/drivebay`
+2. After push: set memory `sourceCommit` to new SHA; transition KAN-108
 
 ## Verification
 
-- ApiViewingTest (session); pushed `6351ad1`
+- `php artisan test --filter="day-before reminders"` (3 passed)
+- reschedule reminder test passed
