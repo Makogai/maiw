@@ -2,9 +2,10 @@
 
 ## Goal
 
-Latest (2026-08-03): **Social login** (Google / Facebook / Apple) implemented on
-branch `feature/social-login` (based on `main` @ `4c4d8df`). **Uncommitted** in
-`apps/drivebay` — do not treat as shipped until committed/pushed.
+Latest (2026-08-03): **Social login** (Google / Facebook / Apple) — [**KAN-105**](https://drivebayme.atlassian.net/browse/KAN-105)
+on branch `feature/social-login` (based on `main` @ `4c4d8df`). **Uncommitted** in
+`apps/drivebay` — do not treat as shipped until committed/pushed. UI polish: branded
+`SocialAuthButtons.vue` (Google multicolor SVG, Facebook blue, Apple black).
 
 Prior on `main`: **KAN-103** API locale fix @ `4c4d8df`.
 
@@ -20,7 +21,8 @@ Prior on `main`: **KAN-103** API locale fix @ `4c4d8df`.
   `api-auth`. Body: `access_token` and/or `id_token`, optional `device_name` /
   `full_name` (Apple).
 - Web: guest `GET auth/{provider}/redirect`, `GET|POST auth/{provider}/callback`
-  (Apple form_post; CSRF excepted). Buttons on `Login.vue` / `Register.vue`.
+  (Apple form_post; CSRF excepted). Branded buttons via `SocialAuthButtons.vue`
+  on `Login.vue` / `Register.vue`.
 - Password login returns `auth.login.social_only` when `password_hash` is null.
 - Docs: `docs/auth/social-login-setup.md`, `docs/api/modules/auth.md`,
   `docs/flutter/mobile-api-changelog.md`, OpenAPI regenerated (includes

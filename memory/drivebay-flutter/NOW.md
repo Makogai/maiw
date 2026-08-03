@@ -2,9 +2,10 @@
 
 ## Goal
 
-Latest (2026-08-03): **Social login UI + client flow** on `feature/social-login`
-(uncommitted, based on `main` @ `7a85f48`). Matches drivebay
-`POST /api/v1/auth/social/{provider}` (`google`|`facebook`|`apple`).
+Latest (2026-08-03): **Social login UI + client flow** — [**KAN-105**](https://drivebayme.atlassian.net/browse/KAN-105)
+on `feature/social-login` (uncommitted, based on `main` @ `7a85f48`). Matches drivebay
+`POST /api/v1/auth/social/{provider}` (`google`|`facebook`|`apple`). UI polish: branded
+buttons (`SocialBrandIcon` + Google white / Facebook `#1877F2` / Apple black).
 
 Prior: **EN/SR translation audit** on `main` @ `7a85f48`; **KAN-101** moderation
 tools v2 on `feature/kan-100-moderation-mode`.
@@ -19,8 +20,9 @@ tools v2 on `feature/kan-100-moderation-mode`.
   Sanctum token like password login.
 - `AuthNotifier.loginWithSocial` → `_completeSignIn` (favorites, locale, FCM,
   experiments/platform config).
-- UI: `SocialLoginButtons` on `LoginScreen` (above email) and register step 0;
-  Apple always on iOS, else `SignInWithApple.isAvailable()`.
+- UI: branded `SocialLoginButtons` on `LoginScreen` (above email) and register step 0;
+  Apple always on iOS, else `SignInWithApple.isAvailable()`. Icons in
+  `lib/features/auth/widgets/social_brand_icons.dart`.
 - Optional `--dart-define=GOOGLE_SERVER_CLIENT_ID` for Google `id_token`.
 - Platform stubs (placeholders only): Android Facebook strings/manifest; iOS
   Info.plist URL schemes + Facebook keys; Sign in with Apple entitlement.
