@@ -2,38 +2,31 @@
 
 ## Goal
 
-Latest (2026-08-03): **KAN-104** multi make/model search filters pushed to `main`
-@ `d0c6571`. Migration `2026_08_01_160000_add_multi_make_model_to_saved_searches`
-runs on deploy. Prior on `main`: moderation API merge `c34cc41`, **KAN-103** locale
-@ `4c4d8df`.
+Latest (2026-08-03): **KAN-106** viewing notification → listing appointment focus
+pushed @ `5563367`. Prior: social login on `main` (`f241851`), **KAN-104** @
+`d0c6571`.
 
 ## Current state
 
-- **KAN-104 (shipped `d0c6571`)**: search accepts multiple makes and models.
-  - API: `SearchQueryDTO::$makeIds`/`$modelIds`; `make_ids[]`/`model_ids[]` + legacy
-    singular; `SearchService` DB `whereIn` + Meilisearch `IN […]`
-  - Saved searches: migration `filter_make_ids`/`filter_model_ids` JSON + backfill;
-    `SearchFilterColumns` read/write arrays
-  - Web: `useVehicleSearchForm` arrays; `BrandSelect multiple`; model checkboxes
-  - Docs: `docs/api/modules/search.md` + mobile changelog; Pest ApiSearchTest 11 green
-  - Flutter counterpart: drivebay-flutter `d8fdae0`
+- **KAN-106 (shipped `5563367`)**:
+  - `SellerNotificationPresenter::mobileRoute` for `viewing.booked|reminder|rescheduled`
+    → `/listings/{id}?src=viewing&appointment={uuid}`
+  - Presents `appointment_uuid` on inbox items; `viewing.rescheduled` in match arms
+  - Flutter counterpart: `74a90f6`
 
-- **KAN-100/101** moderation API on `main` via `c34cc41`.
-- **KAN-103** `SetApiLocale` on `main` @ `4c4d8df`.
+- **KAN-105** social login on `main` via `f241851`
+- **KAN-104** multi make/model @ `d0c6571`
 
 ## Exact next action
 
-1. Confirm deploy of `d0c6571` (auto-migrate) on the API the app hits
-   (`dev.drivebay.me` / prod).
-2. Phone QA: multi make/model apply on default API URL (no LAN dart-define).
-3. Move KAN-104 to In Review / Done after QA.
+1. Confirm API deploy of `5563367`, then phone QA with Flutter `74a90f6`
+2. Move KAN-106 to Done after QA
 
 ## Decisions made
 
-- Prefer `make_ids[]` / `model_ids[]`; keep singular params for older clients.
-- OR within make list and within model list; other filters unchanged.
+- Cancelled viewing notifications still open plain listing (buyer can book again)
+- Focus query only for booked/reminder/rescheduled
 
 ## Verification
 
-- `php artisan test --filter=ApiSearchTest`: 11 passed (includes multi make/model +
-  saved-search persistence).
+- Presenter viewing booked route test passed

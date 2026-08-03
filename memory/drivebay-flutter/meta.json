@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "d8fdae0",
+  "sourceCommit": "74a90f6",
   "status": "synced",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-03T10:20:00.000Z",
-  "note": "KAN-104 multi make/model on main d8fdae0; Dio multiCompatible + default API URL"
+  "lastSynchronizedAt": "2026-08-03T10:40:00.000Z",
+  "note": "KAN-106 Your viewing listing UI on main 74a90f6"
 }
