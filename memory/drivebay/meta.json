@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "5563367",
+  "sourceCommit": "6351ad1",
   "status": "synced",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-03T10:40:00.000Z",
-  "note": "KAN-106 viewing notification deep-link on main 5563367"
+  "lastSynchronizedAt": "2026-08-03T12:28:00.000Z",
+  "note": "KAN-106 listing my_appointment on main 6351ad1"
 }
