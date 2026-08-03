@@ -97,6 +97,20 @@ platform-config reload).
 `POST /auth/logout`, clears favorites and local state, and reloads experiments/platform
 config for the now-guest session.
 
+**KAN-107 finish-profile gate (uncommitted, on top of shipped `74a90f6`)**: `User
+.profileCompletionRequired` (`profile_completion_required` in every `User` JSON —
+top-level `/auth/me`/login/social and nested `AccountPayload.user`) drives a one-time,
+non-skippable `CompleteProfileScreen` (`/complete-profile`, required phone + optional
+first/last/display name → `AccountRepository.completeProfile()` →
+`POST /account/complete-profile`, response same shape as `GET /account`). Gate helper
+`requiresProfileCompletion(AuthState)` (`auth_notifier.dart`) is checked after every path
+that can start a fresh session — `LoginScreen._goAfterAuth`, `RegisterScreen`'s
+account-step social success, `VerifyEmailScreen._submit` — and in
+`BootstrapScreen._bootstrap` **before** the onboarding-completed check (phone capture
+prioritized). No GoRouter-level redirect/refreshListenable exists in `app_router.dart`
+for this — relies entirely on those call sites. See `memory/drivebay-flutter/NOW.md` for
+the known onboarding-skip gap and full file list.
+
 ## profile/ (`lib/features/profile/`)
 
 Screens: `ProfileScreen` (hub), `EditProfileScreen` (name fields — **Jira: KAN-61**),

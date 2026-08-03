@@ -58,9 +58,10 @@ verified against code or wasn't already written down.
 - `topics/api-and-database.md` — deep reference for `routes/api/v1/*.php` (endpoint
   tables: method/path/controller/auth per route file) and the DB schema (migration
   phases, schema-evolution history). OpenAPI regenerated (**Jira: KAN-13** `cd53e3e`); 8
-  API controllers still intentionally reuse `Requests/Web/*` Form Requests. Read this before
-  adding/changing an API endpoint or touching migrations instead of re-deriving the
-  route/schema map from scratch.
+  API controllers still intentionally reuse `Requests/Web/*` Form Requests. Includes the
+  KAN-107 finish-profile gate (`profile_completed_at`, `/account/complete-profile`,
+  uncommitted as of 2026-08-03 — see `NOW.md`). Read this before adding/changing an API
+  endpoint or touching migrations instead of re-deriving the route/schema map from scratch.
 - `topics/seo.md` — deep reference for the SEO epic (**Jira: KAN-62**, sub-tasks KAN-63/64/65
   done): `SeoData::forPage()`/`forPrivatePage()`, which controllers are `noindex`, the dynamic
   `sitemap.xml` design (`SitemapGenerator`, dealer/listing filtering gotchas), and a test gotcha

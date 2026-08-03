@@ -47,6 +47,7 @@ controller spot-checked; no deviations found beyond the two documented exception
 | POST/DELETE | `/auth/device-tokens` | Auth@storeDeviceToken\|destroyDeviceToken | `auth:sanctum, verified` |
 | GET | `/account` | Account@show | `auth:sanctum, verified` |
 | PATCH | `/account/profile` | Account@updateProfile | `auth:sanctum, verified`; `UpdateAccountProfileRequest` (**Web** namespace, reused — see finding below) |
+| POST | `/account/complete-profile` | Account@completeProfile | `auth:sanctum, verified`; `CompleteProfileRequest` (**Web** namespace); phone required, idempotent (**Jira: KAN-107**) |
 | PUT | `/account/password` | Account@updatePassword | `auth:sanctum, verified`; current password required (**Jira: KAN-56**) |
 | POST | `/account/warnings/{warning}/acknowledge` | Account@acknowledgeWarning | `auth:sanctum, verified` |
 
@@ -56,6 +57,25 @@ Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRe
 **Social login**: body `access_token` and/or `id_token`, optional `device_name` /
 `full_name`. Response same as login `{token,user}`. See `docs/api/modules/auth.md`
 and `docs/auth/social-login-setup.md`. Tests: `ApiSocialAuthTest`, `WebSocialAuthTest`.
+
+**Finish-profile gate (KAN-107)**: `users.profile_completed_at` nullable timestamp,
+backfilled to `created_at` for pre-existing users by migration
+`2026_08_03_100200_add_profile_completed_at_to_users_table`. `UserRegistrationService`
+sets it to `now()` on password registration; `SocialAuthService::createUserFromProvider`
+leaves it `null` (auto-link to an existing account never touches it). `UserResource`
+exposes `profile_completion_required` (`profile_completed_at === null`). New endpoint
+`POST /account/complete-profile` (`AccountApiController::completeProfile`) takes
+`phone` (required), optional `phone_country`/`first_name`/`last_name`/`display_name`,
+saves via `UserProfileService`, sets `profile_completed_at = now()` if still null, and
+returns the same shape as `GET /account`; safe to call again once already complete
+(idempotent). Web: `CompleteProfileController` + Inertia page
+`resources/js/Pages/Account/CompleteProfile.vue` at `/complete-profile`;
+`SocialAuthController` redirects there post-callback when incomplete; global
+`profile.complete` middleware (`EnsureProfileIsComplete`, `bootstrap/app.php`) redirects
+any authenticated incomplete user hitting other pages, excluding `complete-profile*`
+and `logout` routes. `UserFactory` defaults to a completed profile — use
+`->unfinishedProfile()` to opt into the gate in tests. Tests: `ApiSocialAuthTest`,
+`WebSocialAuthTest`, `RegistrationTest`.
 
 **API locale (KAN-103)**: `app/Http/Middleware/SetApiLocale.php` is appended to the `api`
 middleware group (`bootstrap/app.php`) and sets the app locale from `Accept-Language`
