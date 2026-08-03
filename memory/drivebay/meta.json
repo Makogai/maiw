@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "6351ad1",
-  "status": "dirty",
+  "sourceCommit": "fff8056",
+  "status": "synced",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-03T12:45:00.000Z",
-  "note": "KAN-108 morning viewing reminder gate local uncommitted; HEAD still 6351ad1"
+  "lastSynchronizedAt": "2026-08-03T12:48:00.000Z",
+  "note": "KAN-108 morning viewing reminder gate on main fff8056"
 }
