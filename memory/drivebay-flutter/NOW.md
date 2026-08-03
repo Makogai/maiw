@@ -2,54 +2,31 @@
 
 ## Goal
 
-Latest (2026-08-03): **Social login UI + client flow** — [**KAN-105**](https://drivebayme.atlassian.net/browse/KAN-105)
-on `feature/social-login` (uncommitted, based on `main` @ `7a85f48`). Matches drivebay
-`POST /api/v1/auth/social/{provider}` (`google`|`facebook`|`apple`). UI polish: branded
-buttons (`SocialBrandIcon` + Google white / Facebook `#1877F2` / Apple black).
+Latest (2026-08-03): **KAN-104** multi make/model search filters pushed to `main`
+@ `d8fdae0`. Uses default `API_BASE_URL` (`https://dev.drivebay.me/api/v1`) — needs
+matching drivebay API `d0c6571` deployed. Prior: moderation mode merge `8d655f2`.
 
-Prior: **EN/SR translation audit** on `main` @ `7a85f48`; **KAN-101** moderation
-tools v2 on `feature/kan-100-moderation-mode`.
+## Current state
 
-## Social login (2026-08-03, uncommitted on `feature/social-login`)
-
-- Packages: `google_sign_in` ^7.2.0, `flutter_facebook_auth` ^7.1.5,
-  `sign_in_with_apple` ^8.1.0.
-- `SocialAuthService` (`lib/core/auth/social_auth_service.dart`) obtains native
-  tokens; `SocialAuthTokens.toRequestBody` builds the API payload.
-- `AuthRepository.loginWithSocial` → `POST /auth/social/{provider}`; stores
-  Sanctum token like password login.
-- `AuthNotifier.loginWithSocial` → `_completeSignIn` (favorites, locale, FCM,
-  experiments/platform config).
-- UI: branded `SocialLoginButtons` on `LoginScreen` (above email) and register step 0;
-  Apple always on iOS, else `SignInWithApple.isAvailable()`. Icons in
-  `lib/features/auth/widgets/social_brand_icons.dart`.
-- Optional `--dart-define=GOOGLE_SERVER_CLIENT_ID` for Google `id_token`.
-- Platform stubs (placeholders only): Android Facebook strings/manifest; iOS
-  Info.plist URL schemes + Facebook keys; Sign in with Apple entitlement.
-  Setup notes: `docs/social-login.md`.
-- EN+SR arb keys: `continueWithGoogle|Facebook|Apple`, `orContinueWithEmail`,
-  `socialLoginFailed`.
-- Verified: `flutter gen-l10n`, `flutter analyze` on touched auth/config paths
-  (2 pre-existing infos only), `flutter test test/social_auth_tokens_test.dart`
-  (4/4). NOT verified: live Google/Facebook/Apple consoles or real token exchange.
+- **KAN-104 (shipped `d8fdae0`)**:
+  - `SearchFilters.makeIds` / `modelIds`; query `make_ids` / `model_ids`
+  - `AppSearchableMultiSelectField` (Save confirms; selection commits on dismiss)
+  - Dio `ListFormat.multiCompatible` → `make_ids[]=…` for Laravel
+  - Models = union across selected makes; orphan model ids pruned
+- **KAN-100/101** moderation mode on `main` via `8d655f2`.
+- Translation audit @ `7a85f48` (needs API KAN-103 for warning title locale).
 
 ## Exact next action
 
-1. Fill real Facebook App ID / client token (Android strings + iOS Info.plist)
-   and Google Web client ID via dart-define; enable Apple capability on the App ID.
-2. QA against drivebay `feature/social-login` API with real provider tokens.
-3. Ask user to commit/push `apps/drivebay-flutter` when ready (do not auto-push).
+1. After API deploy of drivebay `d0c6571`, hot-restart / rebuild phone on normal URL
+   and QA multi make → Apply filters.
+2. Move KAN-104 to In Review / Done after QA.
 
 ## Decisions made
 
-- Prefer Google `id_token`; fall back to access token via `authorizeScopes` if
-  no server client ID.
-- User cancel of native sheets is silent (`SocialAuthCancelledException`).
-- No new Jira ticket found specifically for mobile social login (search hit only
-  unrelated KAN-86 dealer social links).
+- Default API URL unchanged; no LAN override required once API is deployed.
+- Picker button is Save (not Apply filters) to avoid confusing with the outer sheet.
 
 ## Verification
 
-- Unit: `social_auth_tokens_test.dart` green.
-- Analyze: no new issues on touched files.
-- Runtime social SDKs: not exercised in this session.
+- `flutter analyze` on touched search/api files: only pre-existing `http_parser` info.

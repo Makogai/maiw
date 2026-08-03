@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "4c4d8df",
-  "status": "partial",
+  "sourceCommit": "d0c6571",
+  "status": "synced",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-03T07:00:00.000Z",
-  "note": "feature/social-login uncommitted on top of main 4c4d8df; social login + oauth_identities in working tree"
+  "lastSynchronizedAt": "2026-08-03T10:20:00.000Z",
+  "note": "KAN-104 multi make/model on main d0c6571; migration auto on deploy"
 }

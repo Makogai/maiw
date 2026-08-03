@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "7a85f48",
-  "status": "partial",
+  "sourceCommit": "d8fdae0",
+  "status": "synced",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-03T07:15:00.000Z",
-  "note": "feature/social-login working tree uncommitted on top of main 7a85f48; social login client flow + stubs"
+  "lastSynchronizedAt": "2026-08-03T10:20:00.000Z",
+  "note": "KAN-104 multi make/model on main d8fdae0; Dio multiCompatible + default API URL"
 }
