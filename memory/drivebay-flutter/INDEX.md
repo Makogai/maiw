@@ -6,7 +6,7 @@ only the Flutter-specific layer (state/nav/API-client wiring, mobile UX flows).
 
 | Need | Read | Freshness |
 |---|---|---|
-| Resume current work | `NOW.md` | current session handoff (2026-07-31, KAN-101 uncommitted on feature/kan-100-moderation-mode) |
+| Resume current work | `NOW.md` | current session handoff (2026-08-03, social login uncommitted on feature/social-login @ 7a85f48) |
 | Architecture/boundaries | `topics/architecture.md` | partial (breadth only) |
 | Business behavior | `topics/domain.md`, then `memory/drivebay/topics/domain.md` | partial |
 | Local coding/testing patterns | `topics/conventions.md` | partial |

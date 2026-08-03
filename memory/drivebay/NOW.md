@@ -2,95 +2,56 @@
 
 ## Goal
 
-Latest (2026-08-01): **KAN-103** API locale fix — pushed to `main` @ `4c4d8df`.
-Prior slice: **KAN-101** moderation backend on
-`feature/kan-100-moderation-api` (KAN-100 = `44f2fd9`, KAN-101 = `ef4a464`, QA = `f81243c`).
+Latest (2026-08-03): **Social login** (Google / Facebook / Apple) implemented on
+branch `feature/social-login` (based on `main` @ `4c4d8df`). **Uncommitted** in
+`apps/drivebay` — do not treat as shipped until committed/pushed.
+
+Prior on `main`: **KAN-103** API locale fix @ `4c4d8df`.
 
 ## Current state
 
-- **KAN-103 (In Review, `4c4d8df` on `main`)**: `api` middleware group had NO locale
-  middleware — `SetLocale` is web-only and skips `api/*`, so ALL localized API strings
-  (moderation warning titles/severity labels via `UserWarningStatusService`, validation
-  messages) always rendered `en` regardless of the Flutter app's `Accept-Language`.
-  Fix: new `app/Http/Middleware/SetApiLocale.php` appended via
-  `$middleware->api(append: ...)` in `bootstrap/app.php` (normalizes header through
-  `LocaleUrl::normalize`, only sets supported locales). New test
-  `tests/Feature/Api/V1/ApiLocaleHeaderTest.php` (3 green). Also added missing SR key
-  `marketplace.listing.report_user` = `Prijavi korisnika` (only EN/SR parity gap found
-  across all `lang/{en,sr}/*.php`).
-
-- Branch `feature/kan-100-moderation-api` @ `f81243c` (pushed).
-- **QA follow-up (`f81243c`):** moderator `note` is now REQUIRED
-  (`required|string|min:3|max:5000`, mirroring web `ApplyListingModerationRequest`) on
-  `POST .../approve`, `POST .../unpublish`, and `PATCH /moderation/listings/{publicId}`;
-  reject unchanged (`reason` required, `note` optional). Files: `ModerationApiController`
-  (approve/unpublish inline validation), `UpdateModerationListingApiRequest`,
-  `ApiModerationTest` (22 tests now), `docs/api/modules/moderation.md`,
-  `docs/flutter/mobile-api-changelog.md` (breaking-change section), regenerated
-  `docs/api/v1/openapi.json`. Note flows into AdminAction `reason` / audit / moderation
-  case exactly as before (tests assert it).
-- Three new staff endpoints in `routes/api/v1/moderation.php` (same
-  `auth:sanctum, verified, staff` + `authorize('moderate', $listing)` gate):
-  - `GET /moderation/listings/{publicId}` — full detail, **any status**; returns the same
-    `ListingDetailResource` as public `GET /listings/{publicId}` so mobile reuses its
-    ListingDetail model. `ListingDetailResource` changed so staff (canModerate) get the
-    owner-view media set (unapproved photos visible) — affects public detail for staff too.
-  - `PATCH /moderation/listings/{publicId}` — partial edit, body subset of `price`
-    (→ `price_amount`), `title` (max 255), `description` + required `note`; empty body 422.
-    New `UpdateModerationListingApiRequest`. Delegates to new
-    `ListingModerationService::quickEdit` which reuses `ListingService::update`
-    (listing_prices history row, slug regen, price-drop notify, search resync) and then
-    records `listing_staff_edit` admin action + audit log + seller notification.
-  - `POST /moderation/listings/{publicId}/unpublish` (required `note`) — delegates to the
-    **pre-existing** `ListingModerationService::unpublish` (same as web moderation):
-    status → `pending_review` (NOT `draft`), moderation_status → `pending`, search doc
-    unsearchable, `listing_unpublished` admin action, staff pending-review notification.
-  - All three return `{data: ListingCard}` (PATCH/unpublish) or `{data: ListingDetail}` (GET).
-- Files touched: `ModerationApiController` (+show/update/unpublish),
-  `ListingModerationService` (+quickEdit), `ListingDetailResource` (staff media),
-  `UpdateModerationListingApiRequest` (new), `routes/api/v1/moderation.php`,
-  `ApiModerationTest` (+9 tests), `docs/api/modules/moderation.md`,
-  `docs/flutter/mobile-api-changelog.md`, regenerated `docs/api/v1/openapi.json`.
-- Still dirty locally (do not commit): `package-lock.json`, `docs/og-preview-mock.html`.
+- Branch: `feature/social-login` @ working tree on top of `4c4d8df`.
+- Packages: `laravel/socialite`, `socialiteproviders/apple` (composer.lock updated).
+- Schema: `oauth_identities` table + nullable `users.password_hash` (DBML + migrations).
+- `SocialAuthService::loginWithProviderUser(SocialProviderUser)` — find identity →
+  auto-link verified email → create private verified user (`password_hash=null` +
+  profile). Blocks banned/suspended + pending deletion (mirrors login).
+- API: `POST /api/v1/auth/social/{provider}` (`google|facebook|apple`), throttle
+  `api-auth`. Body: `access_token` and/or `id_token`, optional `device_name` /
+  `full_name` (Apple).
+- Web: guest `GET auth/{provider}/redirect`, `GET|POST auth/{provider}/callback`
+  (Apple form_post; CSRF excepted). Buttons on `Login.vue` / `Register.vue`.
+- Password login returns `auth.login.social_only` when `password_hash` is null.
+- Docs: `docs/auth/social-login-setup.md`, `docs/api/modules/auth.md`,
+  `docs/flutter/mobile-api-changelog.md`, OpenAPI regenerated (includes
+  `/v1/auth/social/{provider}`).
+- Still dirty locally (ignore / do not commit with this work): `package-lock.json`,
+  `docs/og-preview-mock.html`.
 
 ## Exact next action
 
-1. **Deploy/restart the backend the mobile app points at** (KAN-103 is server-side; the
-   user's device still saw English because the API it hit didn't run the fix), then QA
-   the warning card in Serbian and mark KAN-103 Done.
-2. Open PR `feature/kan-100-moderation-api` → main covering KAN-100+101 once
-   on-device QA finishes.
-3. Flutter side (drivebay-flutter) consumes the new endpoints — see
-   `docs/flutter/mobile-api-changelog.md` 2026-07-31 KAN-101 entry for the contract.
-4. Deploy KAN-58 when releasing: `php artisan db:seed --class=RolesAndPermissionsSeeder`
-   then `php artisan staff:backfill-roles` (dry-run first).
+1. **Ask user** “Want me to commit and push `apps/drivebay`?” (feature/social-login).
+2. Fill OAuth console credentials (see `docs/auth/social-login-setup.md`) and migrate.
+3. Flutter: wire native Google/Facebook/Apple SDKs → `POST /auth/social/{provider}`.
+4. Prior backlog: deploy KAN-103 for mobile locale QA; PR moderation branch when ready.
 
 ## Decisions made
 
-- Unpublish maps to the existing service transition `pending_review` (what web/Filament
-  moderation uses), not `draft` — mobile queue default shows unpublished listings again.
-- PATCH price goes through `ListingService::update` (seller pipeline) via new
-  `ListingModerationService::quickEdit`, NOT `applyChanges`, so price history rows are
-  written; the older web quick-edit still uses `applyChanges` (no price history) — known
-  asymmetry, candidate follow-up ticket.
-- PATCH field is `price` (per KAN-101 spec), mapped to `price_amount` server-side.
-- Staff now see unapproved photos in `ListingDetailResource` (gallery/media) on any detail
-  endpoint — needed so pending listings are reviewable from mobile.
-- Required `note` mirrors the web panel exactly (`min:3|max:5000`, same as
-  `ApplyListingModerationRequest`; Filament `EditListing::save()` also blocks empty
-  notes) — no web-side discrepancy found. Reject deliberately left with optional `note`
-  since `reason` is the mandatory field there (also matches web).
+- Do **not** store provider access/refresh tokens long-term — only identity rows.
+- Apple API uses SocialiteProviders `userByIdentityToken()` (JWKS verify); Google
+  API accepts `access_token` (Socialite `userFromToken`) or `id_token` (Google
+  tokeninfo); Facebook `access_token`.
+- New social users are `type=private`, `status=active`, `email_verified_at=now()`,
+  minimal `UserProfile` from provider name (no address/phone required).
+- Web social session login does **not** use `remember` (users table has no
+  `remember_token` column).
 
 ## Verification
 
-- `ApiModerationTest` 22 passed / 121 assertions (KAN-100 + KAN-101 + 3 new missing-note
-  422 tests; approve/unpublish/PATCH now assert the note persists on the AdminAction
-  `reason` column).
-- Regression green after the note change: ApiListingsTest, StaffRbacTest, StaffAccessTest,
-  ListingPolicyTest, ListingModerationPipelineTest (48 passed / 220 assertions total in
-  the combined run), ListingMediaPresenterTest (earlier run).
-- Pre-existing failure (NOT from this change): `ListingDetailPriceRatingConfigTest` fails
-  in `beforeEach` — taxonomy snapshot's first VehicleMake has no VehicleModel rows
-  (ModelNotFound at test line 28, before any request). Worth a separate look/ticket.
-- Pint clean; OpenAPI regenerated (new paths present). Not verified: manual end-to-end
-  against a real device/Meilisearch.
+- `ApiSocialAuthTest` + `WebSocialAuthTest` + `ApiAuthTest` +
+  `ApiAccountDeletionRestoreTest`: **20 passed / 84 assertions**.
+- Pint clean on dirty PHP.
+- OpenAPI exported with sqlite/`memory_limit=512M` (local Postgres was down;
+  `composer run api:docs` alone fails without DB).
+- Not verified: live OAuth consoles, real Apple JWKS against production keys,
+  Flutter SDK wiring.

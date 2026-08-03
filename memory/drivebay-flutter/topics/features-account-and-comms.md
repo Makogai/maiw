@@ -44,15 +44,20 @@ separate "forgot password" screen exists in this folder.
 |---|---|
 | State | `AuthNotifier` (`Notifier<AuthState>`), global `authNotifierProvider` — `lib/features/auth/auth_notifier.dart:43,199` |
 | `AuthState` fields | `status` (`unknown`/`guest`/`authenticated`), `user`, `warningStatus`, `sellingRestriction` — populated straight from the login/verify/bootstrap `SessionUser` response, not from a separate call — `auth_notifier.dart:16-41` |
-| Repository | `AuthRepository` — `login`, `register`, `verifyEmail`, `resendVerificationEmail`, `forgotPassword`, `resetPassword`, `restoreSession`, `logout` — `lib/repositories/auth_repository.dart` (**Jira: KAN-56**) |
+| Repository | `AuthRepository` — `login`, `loginWithSocial`, `register`, `verifyEmail`, `resendVerificationEmail`, `forgotPassword`, `resetPassword`, `restoreSession`, `logout` — `lib/repositories/auth_repository.dart` (**Jira: KAN-56**) |
 | Token storage | `TokenStorage` wraps `flutter_secure_storage`, single key `sanctum_token` — `lib/core/auth/token_storage.dart:3-17` |
+| Social SDKs | `SocialAuthService` + `SocialAuthTokens` — `lib/core/auth/social_auth_*.dart`; provider `socialAuthServiceProvider` |
 
 **Login flow**: `LoginScreen._submit` → `authNotifierProvider.login()` →
-`AuthRepository.login()` posts `/auth/login`, stores the Sanctum token, then the
-notifier invalidates `accountProvider`, loads favorites, syncs preferred language, and —
-only if `firebaseReady` — calls `pushNotificationServiceProvider.syncDeviceToken()`
-(`auth_notifier.dart:96-117`). **Device-token registration happens after** every
-successful login/verify/bootstrap, never before — there is no anonymous/pre-auth device
+`AuthRepository.login()` posts `/auth/login`, stores the Sanctum token, then
+`_completeSignIn` (favorites, preferred language, device token if `firebaseReady`,
+experiments/platform config). **Social login**: `SocialLoginButtons` →
+`SocialAuthService.obtainTokens` → `AuthNotifier.loginWithSocial` →
+`POST /auth/social/{google|facebook|apple}` with `id_token` / `access_token` /
+optional Apple `full_name` + `device_name`; same `_completeSignIn`. Setup:
+`docs/social-login.md`. Optional `--dart-define=GOOGLE_SERVER_CLIENT_ID`.
+**Device-token registration happens after** every successful
+login/verify/bootstrap/social, never before — there is no anonymous/pre-auth device
 token registration path. Login links to `/forgot-password`; forgot/reset screens live
 under `lib/features/auth/`; change password is `/account/change-password` via
 `AccountRepository.changePassword` → `PUT /account/password` (**Jira: KAN-56**). Deep
@@ -61,37 +66,36 @@ links: web `/reset-password` and `drivebay://reset-password`
 
 **Email verification requirement**: `AuthRepository.restoreSession()` clears the stored
 token and returns `null` if `emailVerifiedAt` is null/empty
-(`auth_repository.dart:107-111`) — an unverified account is treated identically to "no
+(`auth_repository.dart`) — an unverified account is treated identically to "no
 session" on app relaunch, even though the token itself is still valid server-side.
 Login redirects to `/verify-email?email=...` when the server throws
-`EmailVerificationRequiredException` (`login_screen.dart:60-66`).
+`EmailVerificationRequiredException`.
 
-**Gotcha — `restoreSession` swallows all errors as "log out"** (**Jira: KAN-18**). Any exception from
-`GET /auth/me` (network failure, 500, timeout — not just 401) clears the token and
-returns `null` (`auth_repository.dart:113-117`), so a transient network blip on cold
-start silently signs the user out client-side (server-side Sanctum token is untouched
-per `config/sanctum.php expiration => null`, so the *next* successful login re-attaches
-the same account, but the user is unexpectedly bounced to guest state on that launch).
+**Gotcha — `restoreSession` and transient errors** (**Jira: KAN-18**, mitigated):
+`restoreSession` only clears the token on 401/403; other failures rethrow so cold
+start can retry instead of forcing guest. Older notes claiming "any exception =
+logout" are stale relative to current `auth_repository.dart`.
 
 **Registration**: `RegisterScreen` is a 4-step wizard whose step list depends on
-`_accountType` (`'individual'` vs `'dealer'`) — `register_screen.dart:33,58-60`. Payload
+`_accountType` (`'individual'` vs `'dealer'`). Step 0 also shows `SocialLoginButtons`
+(same social path as login; success → `/search`). Payload
 sent to `POST /auth/register` includes `account_type`, and conditionally
 `first_name`/`last_name` (individual) or `dealer_name` (dealer)
-(`register_screen.dart:262-284`) — matches `UserRegistrationService::createDealerAccount()`
+— matches `UserRegistrationService::createDealerAccount()`
 gating on `account_type === 'dealer'` per `memory/drivebay/topics/domains-account.md`.
 Geography (`country_id`/`city_id`/`region_id`) is loaded via `geographyRepositoryProvider`
-before the address step (`register_screen.dart:162-163`). On success, navigates to
-`/verify-email?email=...&length=...` (`register_screen.dart:290-292`), never straight to
+before the address step. On success, navigates to
+`/verify-email?email=...&length=...`, never straight to
 an authenticated state — registration alone does not log the user in.
 
-**Verify-email**: 6-digit code UI (`VerifyEmailScreen`, `codeLength` param, default 6) —
-`verify_email_screen.dart:19`. Submitting calls the same `authNotifierProvider.verifyEmail`
+**Verify-email**: 6-digit code UI (`VerifyEmailScreen`, `codeLength` param, default 6).
+Submitting calls the same `authNotifierProvider.verifyEmail`
 plumbing as login (token storage, favorites, locale sync, device-token sync, experiments/
-platform-config reload) — `auth_notifier.dart:123-144`.
+platform-config reload).
 
 **Logout**: unregisters the FCM device token first (if `firebaseReady`), then calls
 `POST /auth/logout`, clears favorites and local state, and reloads experiments/platform
-config for the now-guest session — `auth_notifier.dart:183-192`.
+config for the now-guest session.
 
 ## profile/ (`lib/features/profile/`)
 

@@ -30,12 +30,13 @@ Envelope is `{data, meta}` per `docs/api/conventions.md` — confirmed matching 
 controller spot-checked; no deviations found beyond the two documented exceptions
 (action-only `{message}`, promotion checkout `{redirect_url, payment_id}`).
 
-**auth.php** (`routes/api/v1/auth.php`) — `AuthApiController`, `AccountApiController`:
+**auth.php** (`routes/api/v1/auth.php`) — `AuthApiController`, `SocialAuthApiController`, `AccountApiController`:
 
 | Method | Path | Controller@action | Auth/Middleware |
 |---|---|---|---|
 | POST | `/auth/register` | Auth@register | `throttle:api-auth` |
 | POST | `/auth/login` | Auth@login | `throttle:api-auth` |
+| POST | `/auth/social/{provider}` | SocialAuth@store | `throttle:api-auth`; `provider` ∈ google\|facebook\|apple |
 | POST | `/auth/verify-email` | Auth@verifyEmail | `throttle:api-auth` |
 | POST | `/auth/verification/resend` | Auth@resendVerification | `throttle:api-auth` |
 | POST | `/auth/forgot-password` | Auth@forgotPassword | `throttle:api-auth` (**Jira: KAN-56**) |
@@ -49,8 +50,12 @@ controller spot-checked; no deviations found beyond the two documented exception
 | PUT | `/account/password` | Account@updatePassword | `auth:sanctum, verified`; current password required (**Jira: KAN-56**) |
 | POST | `/account/warnings/{warning}/acknowledge` | Account@acknowledgeWarning | `auth:sanctum, verified` |
 
-Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest}`,
+Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRequest,VerifyEmailApiRequest,SocialLoginApiRequest}`,
 `Requests/Api/V1/Account/UpdateAccountLocaleRequest`.
+
+**Social login**: body `access_token` and/or `id_token`, optional `device_name` /
+`full_name`. Response same as login `{token,user}`. See `docs/api/modules/auth.md`
+and `docs/auth/social-login-setup.md`. Tests: `ApiSocialAuthTest`, `WebSocialAuthTest`.
 
 **API locale (KAN-103)**: `app/Http/Middleware/SetApiLocale.php` is appended to the `api`
 middleware group (`bootstrap/app.php`) and sets the app locale from `Accept-Language`

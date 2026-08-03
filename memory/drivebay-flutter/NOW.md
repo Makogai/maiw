@@ -2,111 +2,52 @@
 
 ## Goal
 
-Latest (2026-08-01): **EN/SR translation audit** — pushed to `main` @ `7a85f48`.
-Prior: **KAN-101** mobile moderation tools v2 on
-`feature/kan-100-moderation-mode` (`319ee90` + `98ed65e`), on-device QA in progress.
+Latest (2026-08-03): **Social login UI + client flow** on `feature/social-login`
+(uncommitted, based on `main` @ `7a85f48`). Matches drivebay
+`POST /api/v1/auth/social/{provider}` (`google`|`facebook`|`apple`).
 
-## Translation audit (2026-08-01, `7a85f48` on main)
+Prior: **EN/SR translation audit** on `main` @ `7a85f48`; **KAN-101** moderation
+tools v2 on `feature/kan-100-moderation-mode`.
 
-- Root cause of "warning dialog titles in English": server-side — API ignored
-  `Accept-Language`; fixed in drivebay **KAN-103** (`SetApiLocale` middleware). Client
-  already sends the header (`LocaleInterceptor`/`ApiLocale`, synced by `LocaleNotifier`).
-- Completed **KAN-53** (was Done in Jira but the screen fix never landed on main):
-  `registration_calculator_screen.dart` fully wired to l10n — new `regCalc*` keys
-  (EN+SR ijekavica) + reused `vehicleDetails`/`registration*` keys; line-item labels now
-  key-based via `_lineItemLabel()` (model labels in `RegistrationEstimate.lineItems()`
-  stay as English fallbacks only).
-- Other hardcoded strings localized: `phone_input_field.dart` search hint
-  (`phoneCountrySearchHint`), `seller_listing_card.dart` moderation badges
-  (`sellerPhotosPendingBadge`/`sellerPhotoRejectedBadge`), onboarding preview chips
-  (`fuelDiesel` + `onboardingChipAutomatic`).
-- SR arb fixes: `equipmentFeatureChildLock` -> `Brava za djecu`,
-  `equipmentFeatureCdChanger` -> `CD mjenjač`. Arb key parity EN/SR: 0 issues.
-- Locale race hardened: `LocaleNotifier.ensureRestored()` awaited in
-  `bootstrap_screen._bootstrap()` before `/auth/me`, so first authenticated calls carry
-  the saved `Accept-Language` (was: `ApiLocale` defaulted to `en` until async restore).
-- Verified: `flutter gen-l10n`, `flutter analyze` (no new issues), `flutter test`
-  (only pre-existing `media_url_test` fails, LAN dart-define).
-- User-reported "Friendly reminder"/"Low" still English on profile card after the fix:
-  expected — those strings come from `/api/v1/account`; the backend the app points at
-  must run drivebay `4c4d8df` (KAN-103) before they localize.
+## Social login (2026-08-03, uncommitted on `feature/social-login`)
 
-KAN-101 QA fixes in `98ed65e`:
-
-1. `ModerationRepository.getQueue` must NOT parse queue meta with `SearchMeta.fromJson` —
-   the moderation queue returns Laravel paginator meta (`current_page`/`last_page`), not
-   the search envelope's `page`; missing key threw and surfaced as "ApiException: null".
-   Keys now mapped manually with fallbacks.
-2. **Moderator note** (audit trail) added to every non-reject moderation
-   action — and made **REQUIRED** (backend returns 422 without it, matching the
-   admin panel): shared `showModerationConfirmNoteDialog`
-   (`widgets/moderation_confirm_note_dialog.dart`) replaces the plain confirm
-   dialogs for approve (detail sheet, queue swipe, review screen) and unpublish;
-   edit-field sheets gained a second required multiline note field (inline
-   "A note is required." on empty submit; 422 `note` field errors map onto it).
-   `ModerationNoteConfirmation.note` is non-null. Wire-through:
-   `ModerationRepository.approve`/`updateListing` take `note` (sent when
-   non-empty; `unpublish` already had it), `ModerationQueueNotifier.approve` passes
-   it, queue screen stashes it in `_pendingApproveNotes` (confirmDismiss ->
-   onDismissed, same pattern as reject reasons). Reject keeps its required reason,
-   unchanged. L10n keys `moderationNoteLabel`/`moderationNoteHint`/
-   `moderationNoteRequired` (EN+SR).
-3. **Moderation prompt now fires on EVERY staff login/session restore** —
-   `prompt_seen` persistence removed entirely (storage methods deleted from
-   `AppPreferencesStorage`; only ever consumed by the prompt host). Two variants in
-   `ModerationModePromptHost`, chosen by the *stored* per-user mode flag (read
-   directly — the provider restores async): mode OFF -> existing "Enable moderation
-   mode?" (Enable / Not now); mode ON -> awareness dialog "Moderation mode is
-   active." (Keep on = default/dismiss, Turn off -> `setEnabled(false)`).
-   Double-show guard: `_promptedUserId` set before showing (initState post-frame +
-   auth listener can both fire on cold start), reset on any transition to
-   unauthenticated so the next login prompts again. Root-navigator context kept.
-   New l10n `moderationActiveTitle/Body/KeepOn/TurnOff` (EN+SR).
-
-## Current state
-
-- KAN-100 (`2b981ba`): capabilities, mode prompt, queue, review bar, stats badge,
-  settings toggle. Gotcha fixed in `319ee90`: hosts in `MaterialApp.builder` sit above
-  the router's Navigator — dialogs there MUST use `rootAppNavigatorKey.currentContext`
-  (prompt host + `ModerationHost` both fixed; was silently swallowing the error).
-- KAN-101 (`319ee90`) extends that so staff can moderate **any** listing
-  while moderation mode is on:
-  - Shield icon on listing detail scroll header -> action sheet (Approve / Reject /
-    Unpublish / Edit price|title|description).
-  - `ModerationRepository` gains `getDetail`, `unpublish`, `updateListing` (PATCH partial).
-  - `listingDetailProvider` retries via `GET /moderation/listings/{id}` on public 404 when
-    mode is on (pending/draft open from queue review).
-  - After actions: invalidate detail + pending-count, reload queue; success snackbar.
-  - EN+SR strings regenerated.
-- Gotcha (fixed in `98ed65e`): `moderation_mode_prompt_host.dart` + `moderation_host.dart`
-  must use `rootAppNavigatorKey.currentContext` for dialogs (hosts sit above the router
-  Navigator).
+- Packages: `google_sign_in` ^7.2.0, `flutter_facebook_auth` ^7.1.5,
+  `sign_in_with_apple` ^8.1.0.
+- `SocialAuthService` (`lib/core/auth/social_auth_service.dart`) obtains native
+  tokens; `SocialAuthTokens.toRequestBody` builds the API payload.
+- `AuthRepository.loginWithSocial` → `POST /auth/social/{provider}`; stores
+  Sanctum token like password login.
+- `AuthNotifier.loginWithSocial` → `_completeSignIn` (favorites, locale, FCM,
+  experiments/platform config).
+- UI: `SocialLoginButtons` on `LoginScreen` (above email) and register step 0;
+  Apple always on iOS, else `SignInWithApple.isAvailable()`.
+- Optional `--dart-define=GOOGLE_SERVER_CLIENT_ID` for Google `id_token`.
+- Platform stubs (placeholders only): Android Facebook strings/manifest; iOS
+  Info.plist URL schemes + Facebook keys; Sign in with Apple entitlement.
+  Setup notes: `docs/social-login.md`.
+- EN+SR arb keys: `continueWithGoogle|Facebook|Apple`, `orContinueWithEmail`,
+  `socialLoginFailed`.
+- Verified: `flutter gen-l10n`, `flutter analyze` on touched auth/config paths
+  (2 pre-existing infos only), `flutter test test/social_auth_tokens_test.dart`
+  (4/4). NOT verified: live Google/Facebook/Apple consoles or real token exchange.
 
 ## Exact next action
 
-1. Rebuild the app against a backend running drivebay `4c4d8df`+ and QA the warning
-   card / dialog in Serbian (KAN-103).
-2. QA against Laravel `feature/kan-100-moderation-mode` (or same-named branch) once
-   backend KAN-101 endpoints exist: detail / unpublish / PATCH.
-3. PR covering KAN-100 + KAN-101 when both sides ready; move tickets to In Review.
+1. Fill real Facebook App ID / client token (Android strings + iOS Info.plist)
+   and Google Web client ID via dart-define; enable Apple capability on the App ID.
+2. QA against drivebay `feature/social-login` API with real provider tokens.
+3. Ask user to commit/push `apps/drivebay-flutter` when ready (do not auto-push).
 
 ## Decisions made
 
-- Detail-screen Approve/Reject reuse `moderationQueueProvider` (optimistic queue sync);
-  Unpublish/PATCH call the repository directly then refresh.
-- Edit sheets submit **only** the changed field; 422 `ValidationException` field errors
-  show inline in the sheet.
-- Public detail is tried first; staff endpoint is a 404 fallback when mode is on (not
-  preferred always) — matches the KAN-101 contract wording.
-- Host-level dialogs keep the root-navigator pattern; sheets from screens use local
-  context.
+- Prefer Google `id_token`; fall back to access token via `authorizeScopes` if
+  no server client ID.
+- User cancel of native sheets is silent (`SocialAuthCancelledException`).
+- No new Jira ticket found specifically for mobile social login (search hit only
+  unrelated KAN-86 dealer social links).
 
 ## Verification
 
-- `flutter analyze` on touched files (re-run after the required-note + prompt pass):
-  only 2 pre-existing infos/warnings in `listing_detail_screen.dart`
-  (`_openReportListing` unused, unnecessary underscores). No new issues.
-- `flutter test`: `user_capabilities_test`, `listing_detail_test`, `listing_card_test`,
-  `listing_contact_channels_test`, `user_profile_test` — all green (11).
-  Pre-existing `media_url_test` failures (LAN `API_BASE_URL` dart-define) unchanged.
-- NOT verified: runtime against real backend KAN-101 endpoints.
+- Unit: `social_auth_tokens_test.dart` green.
+- Analyze: no new issues on touched files.
+- Runtime social SDKs: not exercised in this session.

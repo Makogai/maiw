@@ -291,6 +291,9 @@ in the interceptor chain, not in application code.
     bypass, see API client section.
   - `deepLinkScheme` / `DEEP_LINK_SCHEME`, default `'drivebay'` — used by
     `notification_navigation.dart` and `listing_url.dart` to recognize custom-scheme URIs.
+  - `googleServerClientId` / `GOOGLE_SERVER_CLIENT_ID` (default `''`) — Web OAuth
+    client ID so `google_sign_in` can return an `id_token` for
+    `POST /auth/social/google`. See `docs/social-login.md`.
 - `lib/config/seed_geography.dart` — hardcoded placeholder country/city list (Croatia;
   Zagreb/Split) tied to a specific `composer run docker:fresh` seed, explicitly marked
   `TODO: replace when geography API ships` (`:1-3`). Treat any ID from here as

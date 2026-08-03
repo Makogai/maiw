@@ -183,11 +183,17 @@ profile/locale, plus the Spatie-Permission roles that gate staff/admin access.
 | `UserProfileService` | Updates `UserProfile` fields + phone (via `PhoneNumberNormalizer`) + preferred language — `Domains/User/Services/UserProfileService.php:32` |
 | `UserLocaleService` | Persists `preferred_language_code`, resolves effective locale for a (possibly null) user — `Domains/User/Services/UserLocaleService.php:12,23` |
 | `AccountDeletionService` | Soft-delete with 7-day grace (`requestDeletion` / `restore` / `purgeExpired`); helpers `isRestorable` / `graceEndsAt` / `daysUntilPurge` (**Jira: KAN-36**, **KAN-41**) — `Domains/User/Services/AccountDeletionService.php` |
+| `SocialAuthService` | Google/Facebook/Apple login for web + API — `loginWithProviderUser(SocialProviderUser)`, `resolveFromWebCallback`, `resolveFromApiTokens`; links `oauth_identities`, auto-links verified email, creates social-only users (`password_hash` null). Apple API: `userByIdentityToken`. Blocks banned/pending-deletion like password login — `Domains/User/Services/SocialAuthService.php` |
 
 **Account restore API (**Jira: KAN-41**)**: login uses `User::withTrashed()`; restorable
 self-deletes get `403` + `meta.reason=account_pending_deletion` + `days_remaining`.
 `POST /api/v1/auth/account/restore` restores + returns `authPayload`. Listings archived
 at deletion stay archived.
+
+**Social login (`feature/social-login`, uncommitted on top of `4c4d8df`)**:
+`POST /api/v1/auth/social/{provider}` + web `auth/{provider}/redirect|callback`.
+Model `OauthIdentity`; packages `laravel/socialite` + `socialiteproviders/apple`.
+Setup checklist: `docs/auth/social-login-setup.md`.
 
 **Models**: `User` (`Models/Domains/User/Models/User.php`) uses `Spatie\Permission\Traits\
 HasRoles` (`:32,39`) and `Laravel\Sanctum\HasApiTokens` (`:29,37`) — API tokens and roles live
