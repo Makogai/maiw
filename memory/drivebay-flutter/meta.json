@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
   "sourceCommit": "45afec2",
-  "status": "synced",
+  "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-03T12:28:00.000Z",
-  "note": "KAN-106 Your viewing + shimmer skeleton on main 45afec2"
+  "lastSynchronizedAt": "2026-08-03T13:25:00.000Z",
+  "note": "KAN-107 complete-profile uncommitted; base memory synced at 45afec2"
 }

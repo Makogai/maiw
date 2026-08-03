@@ -2,21 +2,31 @@
 
 ## Goal
 
-Latest (2026-08-03): **KAN-106** Your viewing on any listing open + shimmer
-listing skeleton shipped (`45afec2`).
+Latest (2026-08-03): **KAN-107** finish-profile after social signup —
+**uncommitted** on `main`. Needs drivebay API `profile_completion_required`
++ `POST /account/complete-profile`.
+
+Prior shipped: **KAN-106** Your viewing + shimmer @ `45afec2`.
+
+Ticket: https://drivebayme.atlassian.net/browse/KAN-107
 
 ## Current state
 
-- Prefer `meta.viewing.myAppointment`; fallback `buyerViewingsProvider` while API rolls out
-- Listing open: shimmering skeleton (gallery / specs / sections / CTAs)
-- Android plugin JVM targets aligned to 17 (`android/build.gradle.kts`)
-- Paired API: drivebay `6351ad1`
+### KAN-107 (uncommitted)
+- `User.profileCompletionRequired` from auth payload
+- `CompleteProfileScreen` + `/complete-profile` route
+- Gates: login/register/verify/bootstrap + GoRouter redirect
+- `AccountRepository.completeProfile`
+- EN/SR: `finishProfile*` strings
+
+### Prior
+- KAN-106 Your viewing on listing open + shimmer skeleton (`45afec2`)
 
 ## Exact next action
 
-- QA on device against API with `my_appointment`; no open coding slice
+1. Pull `origin/main` if behind, then ask user to commit/push with matching API.
+2. Hot-restart; QA social signup → phone required once.
 
-## Decisions made
+## Verification
 
-- Inbox fallback until `my_appointment` is live everywhere
-- Listing loading UX = shimmer skeleton, not spinner
+- build_runner + gen-l10n + analyze on touched files (implementer).
