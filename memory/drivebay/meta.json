@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "bbbf42d",
+  "sourceCommit": "3e600fc",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T23:15:00.000Z",
-  "note": "IG carousel + caption format uncommitted on bbbf42d (KAN-113)"
+  "lastSynchronizedAt": "2026-08-04T23:20:00.000Z",
+  "note": "3e600fc IG carousel + sectioned captions (KAN-113) on origin/main"
 }
