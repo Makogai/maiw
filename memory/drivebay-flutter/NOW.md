@@ -2,23 +2,20 @@
 
 ## Goal
 
-Latest (2026-08-04): **Featured badges + seller Featured filter + owner
-indicator** (**local, uncommitted**). Prior: KAN-112 `8ca0152`.
+Latest (2026-08-05): Featured badges + seller filter + owner end-date
+shipped (`9a340d4`).
 
 ## Current state
 
-- `PromotionBadges`: short Featured label, star icon, stronger pill; collapse
-  featured_* package codes
-- My listings: `MyListingFilter.featured` chip (client-side on promotion_badges)
-- Seller cards: badge overlay on image
-- Owner listing banner: wired `meta.promotionBadges` + featured copy
-- l10n: `filterFeatured`, `ownerListingFeatured` EN/SR
+- Short Featured pills (no shadow); seller Featured filter; badges on seller cards
+- Owner banner: promotion remaining time / until date (not marketing copy)
+- No Featured flag on listing gallery (owner banner is enough)
+- Paired web: drivebay `b697b66`
 
 ## Exact next action
 
-1. Ask user to commit/push with drivebay web badge pair
-2. Hot-restart; QA Featured filter + owner banner + card badges
+- Hot-restart QA; no open coding slice
 
 ## Verification
 
-- `dart analyze` clean on touched files (pre-existing unused warning only)
+- Pushed `9a340d4`

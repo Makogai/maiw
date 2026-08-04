@@ -2,21 +2,19 @@
 
 ## Goal
 
-Latest (2026-08-04): **Featured badge clarity** on web listing cards
-(**local, uncommitted**). Prior: KAN-112 `2e4248e`.
+Latest (2026-08-05): Featured badge clarity on web cards shipped (`b697b66`).
 
 ## Current state
 
-- `PromotionBadges.vue`: short **Featured** / **Istaknuto** label, collapse
-  featured_* codes, star icon + stronger pill (ring/shadow)
-- `ListingCard.vue` row variant: badges on image overlay (parity with grid)
-- Lang: `promotions.featured_badge` EN/SR
+- `PromotionBadges.vue`: short Featured/Istaknuto, collapse featured_*, icon + pill
+- Row cards: badges on image overlay
+- Lang: `promotions.featured_badge`
+- Paired Flutter: `9a340d4`
 
 ## Exact next action
 
-1. Ask user to commit/push `apps/drivebay` with Flutter pair
-2. Deploy Vite assets with API/web
+- Deploy Vite assets; no open coding slice
 
 ## Verification
 
-- Visual QA on web search grid + row + listing detail badges
+- Pushed `b697b66`

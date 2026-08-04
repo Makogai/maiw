@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "8ca0152",
-  "status": "dirty",
+  "sourceCommit": "9a340d4",
+  "status": "synced",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T21:30:00.000Z",
-  "note": "Featured badges/filter/owner indicator local uncommitted; HEAD still 8ca0152"
+  "lastSynchronizedAt": "2026-08-04T22:25:00.000Z",
+  "note": "Featured badges/filter/owner end-date on main 9a340d4"
 }
