@@ -2,23 +2,20 @@
 
 ## Goal
 
-Latest (local): Instagram live token + polish (KAN-112 still on `b697b66`
-plus uncommitted IG work).
+Latest (2026-08-05): Instagram live token polish `bbbf42d` on `origin/main`.
 
 ## Current state
 
+- Filament Instagram account: platform fixed to Instagram (no blank dropdown)
+- Token expiry in `isReady`; daily warn job; Filament token health badge
 - Runbook: `docs/operations/instagram-publishing.md`
-- Token in Filament only; driver options `fake`|`meta`; expiry in `isReady`
-- Daily `WarnExpiringInstagramTokenJob`; Filament token health badge
-- Seller IG status shows source + fail hint; promote success social note
-- `instagram:verify-token` redacts token in logs/console
+- Driver options `fake`|`meta`
 
 ## Exact next action
 
-1. Paste long-lived Page token in Filament → Marketing → Instagram account
-2. Set `INSTAGRAM_PUBLISH_DRIVER=meta`, verify with artisan commands in runbook
-3. Commit + push when ready; deploy + Vite if seller Vue changed
+1. Deploy **dev**: pull `bbbf42d`, clear caches, paste Meta token in Filament
+2. `php artisan instagram:verify-token` / `test-post` per runbook
 
 ## Verification
 
-- `php artisan test --compact tests/Feature/InstagramTokenHealthTest.php tests/Feature/InstagramPublishingTest.php` — 11 passed
+- `InstagramTokenHealthTest` + publishing suite green before push
