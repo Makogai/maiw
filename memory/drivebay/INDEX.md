@@ -40,6 +40,8 @@ verified against code or wasn't already written down.
   Messaging, User, Geography, and Experiment domains (key services/models, cross-domain
   connections, Stripe/Spatie-Permission/Pennant wiring, gotchas). Read this before
   touching any of those seven domains instead of re-exploring `app/Domains/`.
+  Includes the KAN-109 admin trash/force-delete + oauth-identity cleanup fix
+  (uncommitted as of 2026-08-04 — see `NOW.md`).
 - `topics/infra.md` — deep reference for Docker (multi-stage build, aarch64/QEMU fix),
   CI (`tests.yml`, `php-base-image.yml`), Horizon/queue config (with a found gotcha:
   `ImportAutodilerListingsJob`'s 900s timeout exceeds the 90s redis `retry_after`),
@@ -60,7 +62,8 @@ verified against code or wasn't already written down.
   phases, schema-evolution history). OpenAPI regenerated (**Jira: KAN-13** `cd53e3e`); 8
   API controllers still intentionally reuse `Requests/Web/*` Form Requests. Includes the
   KAN-107 finish-profile gate (`profile_completed_at`, `/account/complete-profile`,
-  uncommitted as of 2026-08-03 — see `NOW.md`). Read this before adding/changing an API
+  committed `6a5c809`) plus the KAN-110 individual/dealer account-type choice on that
+  same endpoint (uncommitted as of 2026-08-04 — see `NOW.md`). Read this before adding/changing an API
   endpoint or touching migrations instead of re-deriving the route/schema map from scratch.
 - `topics/seo.md` — deep reference for the SEO epic (**Jira: KAN-62**, sub-tasks KAN-63/64/65
   done): `SeoData::forPage()`/`forPrivatePage()`, which controllers are `noindex`, the dynamic

@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
   "sourceCommit": "fd6e518",
-  "status": "ready",
+  "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T06:55:00.000Z",
-  "note": "KAN-107 finish-profile + Google Sign-In hardening pushed @ fd6e518"
+  "lastSynchronizedAt": "2026-08-04T09:44:00.000Z",
+  "note": "KAN-110 finish-profile individual/dealer choice uncommitted atop fd6e518 (KAN-107, already pushed)"
 }

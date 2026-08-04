@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "6a5c809",
+  "sourceCommit": "83c7a5d",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T07:40:00.000Z",
-  "note": "KAN-109 admin trash/force-delete oauth cleanup uncommitted atop 6a5c809"
+  "lastSynchronizedAt": "2026-08-04T09:44:00.000Z",
+  "note": "KAN-110 finish-profile individual/dealer choice uncommitted atop 83c7a5d (KAN-109, now committed)"
 }

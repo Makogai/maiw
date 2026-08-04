@@ -47,7 +47,7 @@ controller spot-checked; no deviations found beyond the two documented exception
 | POST/DELETE | `/auth/device-tokens` | Auth@storeDeviceToken\|destroyDeviceToken | `auth:sanctum, verified` |
 | GET | `/account` | Account@show | `auth:sanctum, verified` |
 | PATCH | `/account/profile` | Account@updateProfile | `auth:sanctum, verified`; `UpdateAccountProfileRequest` (**Web** namespace, reused — see finding below) |
-| POST | `/account/complete-profile` | Account@completeProfile | `auth:sanctum, verified`; `CompleteProfileRequest` (**Web** namespace); phone required, idempotent (**Jira: KAN-107**) |
+| POST | `/account/complete-profile` | Account@completeProfile | `auth:sanctum, verified`; `CompleteProfileRequest` (**Web** namespace); phone + `account_type` required, idempotent (**Jira: KAN-107**, `account_type` choice **KAN-110**) |
 | PUT | `/account/password` | Account@updatePassword | `auth:sanctum, verified`; current password required (**Jira: KAN-56**) |
 | POST | `/account/warnings/{warning}/acknowledge` | Account@acknowledgeWarning | `auth:sanctum, verified` |
 
@@ -58,24 +58,43 @@ Form requests: `Requests/Api/V1/Auth/{RegisterApiRequest,ResendVerificationApiRe
 `full_name`. Response same as login `{token,user}`. See `docs/api/modules/auth.md`
 and `docs/auth/social-login-setup.md`. Tests: `ApiSocialAuthTest`, `WebSocialAuthTest`.
 
-**Finish-profile gate (KAN-107)**: `users.profile_completed_at` nullable timestamp,
-backfilled to `created_at` for pre-existing users by migration
+**Finish-profile gate (KAN-107, account-type choice KAN-110)**:
+`users.profile_completed_at` nullable timestamp, backfilled to `created_at` for
+pre-existing users by migration
 `2026_08_03_100200_add_profile_completed_at_to_users_table`. `UserRegistrationService`
 sets it to `now()` on password registration; `SocialAuthService::createUserFromProvider`
 leaves it `null` (auto-link to an existing account never touches it). `UserResource`
-exposes `profile_completion_required` (`profile_completed_at === null`). New endpoint
-`POST /account/complete-profile` (`AccountApiController::completeProfile`) takes
-`phone` (required), optional `phone_country`/`first_name`/`last_name`/`display_name`,
-saves via `UserProfileService`, sets `profile_completed_at = now()` if still null, and
-returns the same shape as `GET /account`; safe to call again once already complete
-(idempotent). Web: `CompleteProfileController` + Inertia page
-`resources/js/Pages/Account/CompleteProfile.vue` at `/complete-profile`;
+exposes `profile_completion_required` (`profile_completed_at === null`). Endpoint
+`POST /account/complete-profile` (`AccountApiController::completeProfile`,
+`CompleteProfileRequest`) now takes `account_type` (required, `individual`|`dealer`),
+`phone` (required), `dealer_name` (required only if `account_type=dealer`, max:255),
+optional `phone_country`/`first_name`/`last_name`/`display_name`, and — dealer only —
+optional address fields mirroring `RegisterRequest` (`legal_name`, `tagline`,
+`description`, `website_url`, `tax_number`, `registration_number`, `country_id`,
+`region_id`, `city_id`, `city_district_id`, `postal_code`, `address_line_1`,
+`address_line_2`). All processed by `UserProfileService::completeProfile()`
+(`Domains/User/Services/UserProfileService.php`), which: always saves phone/names via
+the existing `updateAccount()`; for `individual` sets `type=private` if still
+private/unset; for `dealer` sets `type=dealer_employee`, sets profile `display_name` to
+`dealer_name`, and — **only if the user has no primary dealer yet**
+(`DealerAccessService::primaryDealerFor()`, idempotency check) — calls
+`UserRegistrationService::createDealerAccount()` (now **public**, reused as-is from
+registration) to create the `DealerAccount` + owner `DealerMember`. `dealer_accounts.
+country_id` is NOT NULL — when the dealer payload omits `country_id`,
+`completeProfile()` fills it via `GeographyService::defaultCountryId()` before calling
+`createDealerAccount()`. Sets `profile_completed_at = now()` if still null; returns the
+same shape as `GET /account`; safe to call again once already complete (idempotent, and
+re-submitting `dealer` for an existing dealer never creates a second `DealerAccount`).
+Web: `CompleteProfileController` + Inertia page
+`resources/js/Pages/Account/CompleteProfile.vue` at `/complete-profile` (account-type
+cards mirroring `Register.vue`, conditional `dealer_name` field);
 `SocialAuthController` redirects there post-callback when incomplete; global
 `profile.complete` middleware (`EnsureProfileIsComplete`, `bootstrap/app.php`) redirects
 any authenticated incomplete user hitting other pages, excluding `complete-profile*`
 and `logout` routes. `UserFactory` defaults to a completed profile — use
 `->unfinishedProfile()` to opt into the gate in tests. Tests: `ApiSocialAuthTest`,
-`WebSocialAuthTest`, `RegistrationTest`.
+`WebSocialAuthTest`, `RegistrationTest` (28 passing as of KAN-110, incl. individual vs
+dealer completion, missing `account_type` → 422, dealer without `dealer_name` → 422).
 
 **API locale (KAN-103)**: `app/Http/Middleware/SetApiLocale.php` is appended to the `api`
 middleware group (`bootstrap/app.php`) and sets the app locale from `Accept-Language`

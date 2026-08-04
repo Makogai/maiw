@@ -41,7 +41,12 @@ middleware — if host is a marketplace host, pass through in `MODE_MARKETPLACE`
   the only caller of `grantAccess()` in the codebase.
 - **Dealer → User**: `UserRegistrationService::createDealerAccount()` creates the
   `DealerAccount` + first `DealerMember` (role `owner`) at signup when `account_type ===
-  'dealer'` — `Domains/User/Services/UserRegistrationService.php:88-130`.
+  'dealer'` — `Domains/User/Services/UserRegistrationService.php:88-130`. Made **public**
+  (**KAN-110**) so `UserProfileService::completeProfile()` reuses it verbatim for the
+  finish-profile "become a dealer" path; it now reads `email`/`phone` straight off the
+  `User` argument instead of requiring them in `$data`, and `city_id`/`postal_code`/
+  `address_line_1`/`address_line_2` are explicitly nullable (finish-profile dealers only
+  guarantee `dealer_name` + phone, no full address).
 - **Dealer → Messaging/Billing/Invoice**: `Listing.dealer_account_id`, `MessageThread.
   dealer_account_id`, `Invoice.dealer_account_id`, `InvoiceItem.dealer_account_id`, `Payment.
   payer_dealer_account_id` all carry dealer context through unrelated domains.
@@ -180,7 +185,7 @@ profile/locale, plus the Spatie-Permission roles that gate staff/admin access.
 |---|---|
 | `UserRegistrationService` | `register()` — creates `User`+`UserProfile` in a transaction; if `account_type === 'dealer'`, also creates the `DealerAccount` and owner `DealerMember` — `Domains/User/Services/UserRegistrationService.php:24,88` |
 | `EmailVerificationService` | Issues/verifies 6-digit hashed codes (`EmailVerificationCode`), rate-limited resend, phone normalization helper — `Domains/User/Services/EmailVerificationService.php:14,34,94,113` |
-| `UserProfileService` | Updates `UserProfile` fields + phone (via `PhoneNumberNormalizer`) + preferred language — `Domains/User/Services/UserProfileService.php:32` |
+| `UserProfileService` | Updates `UserProfile` fields + phone (via `PhoneNumberNormalizer`) + preferred language; `completeProfile()` (**KAN-110**) drives the finish-profile individual/dealer choice, creating a `DealerAccount` via `UserRegistrationService::createDealerAccount()` only if the user has no primary dealer yet — `Domains/User/Services/UserProfileService.php:32` |
 | `UserLocaleService` | Persists `preferred_language_code`, resolves effective locale for a (possibly null) user — `Domains/User/Services/UserLocaleService.php:12,23` |
 | `AccountDeletionService` | Soft-delete with 7-day grace (`requestDeletion` / `restore` / `purgeExpired`); helpers `isRestorable` / `graceEndsAt` / `daysUntilPurge` (**Jira: KAN-36**, **KAN-41**) — `Domains/User/Services/AccountDeletionService.php` |
 | `SocialAuthService` | Google/Facebook/Apple login for web + API — `loginWithProviderUser(SocialProviderUser)`, `resolveFromWebCallback`, `resolveFromApiTokens`; links `oauth_identities`, auto-links verified email, creates social-only users (`password_hash` null). Apple API: `userByIdentityToken`. Blocks banned/pending-deletion like password login — `Domains/User/Services/SocialAuthService.php` |
@@ -194,6 +199,26 @@ at deletion stay archived.
 `POST /api/v1/auth/social/{provider}` + web `auth/{provider}/redirect|callback`.
 Model `OauthIdentity`; packages `laravel/socialite` + `socialiteproviders/apple`.
 Setup checklist: `docs/auth/social-login-setup.md`.
+
+**Admin trash/force-delete + oauth trap (**Jira: KAN-109**, uncommitted atop
+`6a5c809`)**: admin soft-deleting a social user used to leave `oauth_identities`
+pointed at the trashed row, so the next Google/Facebook/Apple login threw the
+generic `auth.social.login_failed` instead of saying the account was
+deactivated; bare force-delete never cleaned `oauth_identities` either.
+`UserResource::getEloquentQuery()` now also strips `SoftDeletingScope` (List
+table + `TrashedFilter` need this, not just route-model binding, which was
+already overridden). `AdminUserAccountService::adminForceDelete()` is the new
+path `EditUser`/`ViewUser`'s `ForceDeleteAction` and `UsersTable`'s
+`ForceDeleteBulkAction` route through — deletes `oauth_identities` rows +
+revokes tokens/devices/sessions inside a transaction before `forceDelete()`
+(oauth cleanup is intentional belt-and-suspenders: the FK already has
+`cascadeOnDelete()`, migration `2026_08_03_100000_create_oauth_identities_table.php:13`).
+`SocialAuthService::loginWithProviderUser()`: an identity with no matching
+user now self-heals (deletes the stale row, falls through to create/link)
+instead of failing; a trashed user `AccountDeletionService::isRestorable()`
+says no to now throws `SocialAuthBlockedException('account_deactivated')`
+instead of a generic `ValidationException`. Tests:
+`tests/Feature/AdminForceDeleteOauthTest.php`.
 
 **Models**: `User` (`Models/Domains/User/Models/User.php`) uses `Spatie\Permission\Traits\
 HasRoles` (`:32,39`) and `Laravel\Sanctum\HasApiTokens` (`:29,37`) — API tokens and roles live
