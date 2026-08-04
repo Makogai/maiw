@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
   "sourceCommit": "2e4248e",
-  "status": "partial",
+  "status": "dirty",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T20:40:00.000Z",
-  "note": "KAN-112 2e4248e expiry/block/notify/post-pay; deploy migrate + vite"
+  "lastSynchronizedAt": "2026-08-04T21:30:00.000Z",
+  "note": "Featured badge clarity local uncommitted; HEAD still 2e4248e"
 }

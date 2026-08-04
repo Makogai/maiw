@@ -2,24 +2,21 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-112** `2e4248e` — promotion expiry, block
-re-promote, notify/email, post-pay UX.
-
-Ticket: https://drivebayme.atlassian.net/browse/KAN-112
+Latest (2026-08-04): **Featured badge clarity** on web listing cards
+(**local, uncommitted**). Prior: KAN-112 `2e4248e`.
 
 ## Current state
 
-- On `origin/main` as `2e4248e`.
-- Block re-promote; `can_promote` + `active_promotion` on seller cards.
-- Hourly `ExpireListingPromotionsJob`; nullable `ends_at` for admin permanent.
-- `listing.promoted` in-app + email; Paddle overlay close + `?mobile=1` copy.
-- Taxonomy SVGs for featured_home / featured_social.
+- `PromotionBadges.vue`: short **Featured** / **Istaknuto** label, collapse
+  featured_* codes, star icon + stronger pill (ring/shadow)
+- `ListingCard.vue` row variant: badges on image overlay (parity with grid)
+- Lang: `promotions.featured_badge` EN/SR
 
 ## Exact next action
 
-1. Deploy **dev**: migrate `make_listing_promotions_ends_at_nullable` + Vite build.
-2. Pair with Flutter `8ca0152`; QA remaining-time + no double-promote + overlay.
+1. Ask user to commit/push `apps/drivebay` with Flutter pair
+2. Deploy Vite assets with API/web
 
 ## Verification
 
-- Pest `tests/Feature/Promotion/` green before push.
+- Visual QA on web search grid + row + listing detail badges
