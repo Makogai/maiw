@@ -149,6 +149,8 @@ Key classes:
 
 **Gotcha**: platform_config Instagram driver must be `meta` (not `graph`); legacy `graph` still maps to Meta publisher for BC.
 
+**Caption format (2026-08-05)**: `InstagramCaptionBuilder` builds sectioned captions (emoji blocks + `➖` dividers) — headline, price/`price_type`, specs+description, optional financing (`monthly_payment_amount`), equipment/features, warranty, `contact_phone`, seller `@mention`, brand footer, listing URL + hashtags. Caps at 2200 chars. Lang keys `marketplace.instagram.caption_*` (en/sr). Tests: `tests/Feature/InstagramCaptionBuilderTest.php`.
+
 ## Advertising
 
 **Purpose**: manual (staff-managed) banner ad delivery by placement/slot — matches `docs/advertising/advertising.md`'s "manual campaigns today" framing, with two real doc discrepancies noted below.
