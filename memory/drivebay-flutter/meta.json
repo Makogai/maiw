@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "c5ec8dc",
+  "sourceCommit": "8ca0152",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
   "lastSynchronizedAt": "2026-08-04T20:40:00.000Z",
-  "note": "KAN-112 remaining-time UX local uncommitted on c5ec8dc; needs API can_promote/active_promotion"
+  "note": "KAN-112 8ca0152 remaining-time UX; needs drivebay 2e4248e"
 }

@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "188a3f6",
+  "sourceCommit": "2e4248e",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
   "lastSynchronizedAt": "2026-08-04T20:40:00.000Z",
-  "note": "KAN-112 promo UX local uncommitted on 188a3f6; expire job + block re-promote + notify"
+  "note": "KAN-112 2e4248e expiry/block/notify/post-pay; deploy migrate + vite"
 }
