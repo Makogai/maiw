@@ -81,7 +81,7 @@ swappable payment gateway.
 | `InvoiceService` | Builds `Invoice`+`InvoiceItem` rows for any billable (polymorphic `billable_type`/`billable_id`) — `Domains/Billing/Services/InvoiceService.php:17` |
 | `PaymentCheckoutService` | Read-only presenter for a payment session (mock vs redirect mode) used by the payment confirmation page — `Domains/Billing/Services/PaymentCheckoutService.php:9,29` |
 | `StripePaymentGateway` (implements `PaymentGatewayInterface`) | Stripe Checkout session creation, `confirmPayment()`, `handleWebhook()` for `checkout.session.completed` — `Domains/Billing/Gateways/StripePaymentGateway.php:11,25,71,87` |
-| `PaddlePaymentGateway` | Paddle Billing transaction checkout + `transaction.completed` webhook (**Jira: KAN-111**) — `Domains/Billing/Gateways/PaddlePaymentGateway.php` |
+| `PaddlePaymentGateway` | Paddle Billing transaction checkout; webhooks `transaction.completed`/`transaction.paid`; client sync `syncPaidTransaction` via POST `/billing/paddle-checkout/complete` (**Jira: KAN-111**) — `Domains/Billing/Gateways/PaddlePaymentGateway.php` |
 | `FakePaymentGateway` | Dev/mock gateway (no external calls); used when gateway isn't stripe/paddle with secrets — `Domains/Billing/Gateways/FakePaymentGateway.php` |
 
 **Gateway wiring**: `AppServiceProvider` binds `PaymentGatewayInterface` — `paddle` if

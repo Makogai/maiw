@@ -6,6 +6,6 @@
   "sourceCommit": "a7f05a0",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T17:55:00.000Z",
-  "note": "KAN-111 a7f05a0 paddle-checkout page; set default payment link + PADDLE_CLIENT_TOKEN on dev"
+  "lastSynchronizedAt": "2026-08-04T18:05:00.000Z",
+  "note": "KAN-111 post-pay sync fulfill local (uncommitted); HEAD still a7f05a0 until push"
 }
