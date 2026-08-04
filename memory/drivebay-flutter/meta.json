@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "557517f",
+  "sourceCommit": "c5ec8dc",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T19:50:00.000Z",
-  "note": "KAN-111 duration chips + success dialog local uncommitted atop 557517f"
+  "lastSynchronizedAt": "2026-08-04T19:56:00.000Z",
+  "note": "KAN-111 c5ec8dc duration chips + success dialog; needs drivebay 188a3f6"
 }

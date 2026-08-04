@@ -2,21 +2,21 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** promote 1/3/7 duration chips + success
-dialog — local (uncommitted) atop `557517f`.
+Latest (2026-08-04): **KAN-111** `c5ec8dc` — promote duration chips + success
+dialog.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- Promote sheet: package + duration chips from API `durations`.
-- After pay: dialog “You're featured / active for X days”.
-- Needs drivebay API with `duration_days` deployed.
+- Promote sheet: 1/3/7 chips from API `durations`.
+- Success dialog after pay with days.
+- Needs drivebay `188a3f6` on API (migrate + reseed).
 
 ## Exact next action
 
-1. Push with backend; hot-restart app; QA promote durations.
+1. After API deploy, hot-restart / reinstall app; QA durations on phone.
 
 ## Verification
 
-- `flutter analyze` on touched seller files → clean.
+- Analyze clean on touched seller files before push.
