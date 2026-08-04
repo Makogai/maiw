@@ -6,6 +6,6 @@
   "sourceCommit": "188a3f6",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T19:56:00.000Z",
-  "note": "KAN-111 188a3f6 promote 1/3/7 + success dialog; deploy migrate + reseed + vite"
+  "lastSynchronizedAt": "2026-08-04T20:40:00.000Z",
+  "note": "KAN-112 promo UX local uncommitted on 188a3f6; expire job + block re-promote + notify"
 }

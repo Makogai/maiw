@@ -2,21 +2,23 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** `c5ec8dc` — promote duration chips + success
-dialog.
+Latest (2026-08-04): **KAN-112** promotion remaining-time UX (local,
+uncommitted) on top of KAN-111 `c5ec8dc`.
 
-Ticket: https://drivebayme.atlassian.net/browse/KAN-111
+Ticket: https://drivebayme.atlassian.net/browse/KAN-112
 
 ## Current state
 
-- Promote sheet: 1/3/7 chips from API `durations`.
-- Success dialog after pay with days.
-- Needs drivebay `188a3f6` on API (migrate + reseed).
+- Seller cards use `can_promote` / `active_promotion`; hide Promote when live.
+- Paddle checkout URL appends `mobile=1` for close-tab message on web page.
+- l10n: remaining days / until / permanent badge.
 
 ## Exact next action
 
-1. After API deploy, hot-restart / reinstall app; QA durations on phone.
+1. Commit + push after API is deployed (or together).
+2. Hot-restart app; QA: cannot re-promote; see days left; close-tab after pay.
 
 ## Verification
 
-- Analyze clean on touched seller files before push.
+- `dart analyze` clean on touched seller listing files; gen-l10n + freezed
+  regenerated for `listing_card`.

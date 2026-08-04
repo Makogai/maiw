@@ -6,6 +6,6 @@
   "sourceCommit": "c5ec8dc",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T19:56:00.000Z",
-  "note": "KAN-111 c5ec8dc duration chips + success dialog; needs drivebay 188a3f6"
+  "lastSynchronizedAt": "2026-08-04T20:40:00.000Z",
+  "note": "KAN-112 remaining-time UX local uncommitted on c5ec8dc; needs API can_promote/active_promotion"
 }

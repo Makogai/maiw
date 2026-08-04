@@ -2,23 +2,28 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** `188a3f6` — promote 1/3/7 day durations +
-success dialog (web).
+Latest (2026-08-04): **KAN-112** promotion UX (local, uncommitted) on top of
+KAN-111 `188a3f6`.
 
-Ticket: https://drivebayme.atlassian.net/browse/KAN-111
+Ticket: https://drivebayme.atlassian.net/browse/KAN-112
 
 ## Current state
 
-- Catalog home €3/€5/€7, social €4/€6/€8; nested Paddle price IDs.
-- `duration_days` on invoice items; activate uses it.
-- On `origin/main` as `188a3f6`.
+- Block re-promote while active; seller cards expose `can_promote` +
+  `active_promotion` (remaining days / ends_at).
+- Hourly `ExpireListingPromotionsJob`; nullable `ends_at` = admin permanent.
+- In-app + email `listing.promoted` on activate.
+- Paddle overlay closed before redirect; `?mobile=1` close-tab copy.
+- Taxonomy SVGs for `featured_home` / `featured_social`.
 
 ## Exact next action
 
-1. Deploy + migrate + re-seed `PromotionTypesSeeder` on **dev**.
-2. Rebuild Vite assets; QA promote durations + success popup.
-3. Pair with Flutter `c5ec8dc`.
+1. Commit + push drivebay when ready; migrate
+   `make_listing_promotions_ends_at_nullable` on **dev**.
+2. Rebuild Vite; QA seller list remaining-time + no double-promote + overlay.
+3. Pair with Flutter KAN-112 changes.
 
 ## Verification
 
-- Pest promote/billing suites passed before push.
+- `php artisan test --compact tests/Feature/Promotion/` — lifecycle + dealer
+  suites green locally.

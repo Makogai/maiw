@@ -126,15 +126,16 @@ no writers — `app/Models/Domains/Analytics/Models/PageEvent.php`.
 **Purpose**: paid listing boosts/featured placement — sells a `PromotionType` (boost multiplier + optional Instagram/Facebook auto-publish), raises the listing's search `boost_score`, and surfaces a "featured" rail.
 
 Key classes:
-- `PromotionService::activate()` — creates an active `ListingPromotion` (duration from `PromotionType.max_duration_days`, default 14 days; multiplier from a hardcoded map — `featured_social` 3.0, `featured_home`/`featured` 2.5, `top_search` 2.0, `boost` 1.8, `urgent` 1.2, else 1.5 — **not** read from `PromotionType` itself), then syncs the boost score and schedules social publishing — `app/Domains/Promotion/Services/PromotionService.php:17-53`.
-- `PromotionService::featuredListings()` — pulls active promotions whose `PromotionType.code` is in `featured_home`/`featured_social`/`featured`, falls back to plain `boost_score` ordering if none exist — `:97-127`.
-- `PromotionEligibilityService` — `canPromoteListing()` requires `status === 'active'` and ownership; `isDealerSeller()` checks `user.type === 'dealer_employee'` plus a primary dealer via `DealerAccessService` — `app/Domains/Promotion/Services/PromotionEligibilityService.php:17-27`.
+- `PromotionService::activate()` — creates an active `ListingPromotion` with `ends_at` from duration days (invoice/catalog), idempotent per `payment_id`, notifies seller (`listing.promoted` in-app + email), syncs boost, schedules social — `app/Domains/Promotion/Services/PromotionService.php`.
+- `ExpireListingPromotionsJob` (hourly) — marks due rows `status=expired` when `ends_at` passed; null `ends_at` = admin permanent (**Jira: KAN-112**).
+- `PromotionService::featuredListings()` — active window promotions for `featured_home`/`featured_social`/`featured`, falls back to `boost_score`.
+- `PromotionEligibilityService` — `canPromoteListing()` requires active listing, ownership, and **no** current active promotion; assert returns 409 when already featured (**Jira: KAN-112**).
 
-Models: `ListingPromotion` (`belongsTo` Listing, PromotionType, Billing's `Payment`), `PromotionType` (defines pricing/duration/`includes_instagram_publish`/`includes_facebook_publish`/`affects_ranking` flags) — `app/Models/Domains/Promotion/Models/ListingPromotion.php:8-46`, `PromotionType.php:8-33`.
+Models: `ListingPromotion` (`ends_at` nullable for permanent admin), `PromotionType`.
 
-**Gotcha**: the boost multiplier actually applied is a hardcoded array in `PromotionService`, not the `boost_multiplier` a `ListingPromotion` row is created with being derived from `PromotionType` config columns — if a new `PromotionType.code` is added without also adding it to `$defaultMultipliers`, it silently gets the 1.5 fallback — `app/Domains/Promotion/Services/PromotionService.php:18-25,37`.
+**Gotcha**: boost multipliers are hardcoded in `PromotionService` (`$defaultMultipliers`), not read from `PromotionType` columns.
 
-**Connections**: → Search (`SyncListingSearchDocumentJob` on every boost-score change), → SocialPublishing (auto-schedules Instagram/Facebook post on activation), → Billing (`Payment` link), → Dealer (eligibility gating). See cross-domain map.
+**Connections**: → Search (`SyncListingSearchDocumentJob`), → SocialPublishing, → Billing (`Payment`), → Notifications.
 
 ## SocialPublishing
 
