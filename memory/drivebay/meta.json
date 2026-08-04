@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "94257f3",
+  "sourceCommit": "8c244cd",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T17:30:00.000Z",
-  "note": "KAN-111 Paddle featured promotions pushed as 94257f3; awaiting deploy + env/webhook on dev"
+  "lastSynchronizedAt": "2026-08-04T17:40:00.000Z",
+  "note": "KAN-111 Paddle on main (8c244cd); set PAYMENT_GATEWAY=paddle on dev to leave test mode"
 }
