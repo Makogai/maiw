@@ -2,26 +2,24 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** `66c4cf1` — fulfill featured promo after
-Paddle checkout completes (client API sync + webhook harden).
+Latest (2026-08-04): **KAN-111** mobile Paddle complete — Sanctum
+`POST /api/v1/billing/paddle/complete` + Vue `DriveBayNative` bridge (local,
+awaiting push). Previous: `66c4cf1` web post-pay sync.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- On `checkout.completed`, POST `/billing/paddle-checkout/complete` syncs the
-  txn from Paddle API and runs `fulfillPaidPayment()`.
-- Webhooks accept `transaction.completed` and `transaction.paid`.
-- On `origin/main` as `66c4cf1`.
+- Web fulfill: `/billing/paddle-checkout/complete` (session).
+- Mobile fulfill: WebView → JS channel → `POST /billing/paddle/complete` (Sanctum).
+- `PaddlePaymentGatewayTest` → 10 passed (incl. Sanctum complete).
 
 ## Exact next action
 
-1. Deploy `66c4cf1` + rebuild frontend assets on **dev**.
-2. Re-QA: promote → pay → listing featured (even without webhook).
-3. Still set notification destination
-   `https://dev.drivebay.me/webhooks/paddle` for `transaction.completed`
-   (+ ideally `transaction.paid`).
+1. Push drivebay + drivebay-flutter; deploy backend + rebuild Vite assets on **dev**.
+2. QA phone: My Listings → Promote → in-app WebView pay → listing featured.
+3. Keep webhook destination configured as primary path.
 
 ## Verification
 
-- `PaddlePaymentGatewayTest` → 9 passed before push.
+- Feature tests green for Sanctum complete endpoint.

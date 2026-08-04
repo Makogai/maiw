@@ -6,6 +6,6 @@
   "sourceCommit": "46baf3c",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T09:20:00.000Z",
-  "note": "KAN-110 finish-profile individual/dealer pushed as 46baf3c; QA blocked on drivebay b47a674 deploy to dev"
+  "lastSynchronizedAt": "2026-08-04T18:30:00.000Z",
+  "note": "KAN-111 in-app Paddle WebView checkout local (uncommitted atop 46baf3c); needs API POST /billing/paddle/complete"
 }

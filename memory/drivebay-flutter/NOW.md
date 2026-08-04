@@ -2,30 +2,24 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-110** finish-profile individual/dealer choice —
-pushed to `main` as `46baf3c` (atop `fd6e518` KAN-107). Points at
-`https://dev.drivebay.me/api/v1` by default — needs backend deploy for QA.
+Latest (2026-08-04): **KAN-111** in-app Paddle promote checkout (WebView +
+Sanctum sync) — local, awaiting push. Still depends on drivebay API
+`POST /billing/paddle/complete`.
 
-Ticket: https://drivebayme.atlassian.net/browse/KAN-110
+Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- `CompleteProfileScreen`: `AccountTypeCard` individual vs dealer; dealer name
-  field when dealer; submits `account_type` + optional `dealer_name` with phone.
-- Reuses existing arb keys from register flow (no new l10n).
-- `AccountRepository.completeProfile()` already accepts a map payload; docblock
-  updated for the new required fields.
-- GoRouter gate still keyed on `profileCompletionRequired`.
+- Redirect/Paddle promote opens `PaddleCheckoutScreen` (WebView), not external browser.
+- On `DriveBayNative` `paddle_completed` (or “I've paid”), calls
+  `BillingRepository.completePaddleCheckout`.
+- Added `webview_flutter`. Fake in-app confirm path unchanged.
 
 ## Exact next action
 
-1. After drivebay `b47a674` is on **dev**, QA on-device: fresh Google/Facebook
-   signup → finish-profile shows both cards → dealer requires name → submit
-   clears the gate.
-2. Move KAN-110 to Done after QA.
+1. Push after drivebay API is on **dev**; rebuild/install app.
+2. QA: Promote featured → pay in WebView → listings refresh with promo active.
 
 ## Verification
 
-- `flutter analyze` on `complete_profile_screen.dart` +
-  `account_repository.dart` → no issues.
-- No widget tests for this screen; contract covered by backend Feature tests.
+- `flutter analyze` on touched seller/billing files → only pre-existing infos.
