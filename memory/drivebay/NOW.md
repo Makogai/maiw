@@ -2,25 +2,27 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** Paddle — `501f48a` fixes null
-`payments.provider_id` when `payment_providers.paddle` was never seeded.
+Latest (2026-08-04): **KAN-111** Paddle checkout overlay page —
+`a7f05a0` on `main`.
 
-Ticket: https://drivebayme.atlassian.net/browse/KAN-111 (In Review)
+Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- `CheckoutService::paymentProviderId()` `updateOrCreate`s fake/stripe/paddle.
-- Still need on **dev**: `PAYMENT_GATEWAY=paddle` + keys, default payment link
-  in Paddle dashboard, webhook destination, re-seed prices (€5/€7 — DB may
-  still show €2).
+- Paddle `checkout.url` is `/?_ptxn=` on your **default payment link**. Without
+  Paddle.js on that page, users land on the site with no pay UI.
+- Fix: `/billing/paddle-checkout` loads Paddle.js + opens overlay; transactions
+  pass that URL as checkout base.
+- Set Paddle dashboard **Default payment link** to
+  `https://dev.drivebay.me/billing/paddle-checkout`.
+- Require `PADDLE_CLIENT_TOKEN` on the server.
 
 ## Exact next action
 
-1. Deploy `501f48a`; set Paddle env; set **default payment link** in Paddle
-   (otherwise transaction create fails).
-2. Webhook → `/webhooks/paddle`; re-seed promotion types; QA promote.
+1. Deploy `a7f05a0` + frontend assets build; set `PADDLE_CLIENT_TOKEN`.
+2. Update sandbox default payment link to `/billing/paddle-checkout`.
+3. QA promote → overlay pay screen.
 
 ## Verification
 
-- PaddlePaymentGatewayTest + DealerPromotionCheckoutTest → 12 passed.
-- Pushed `501f48a` on `origin/main`.
+- PaddlePaymentGatewayTest → 7 passed including landing-page inertia test.
