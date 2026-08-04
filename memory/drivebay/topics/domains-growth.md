@@ -151,6 +151,8 @@ Key classes:
 
 **Caption format (2026-08-05)**: `InstagramCaptionBuilder` builds sectioned captions (emoji blocks + `➖` dividers) — headline, price/`price_type`, specs+description, optional financing (`monthly_payment_amount`), equipment/features, warranty, `contact_phone`, seller `@mention`, brand footer, listing URL + hashtags. Caps at 2200 chars. Lang keys `marketplace.instagram.caption_*` (en/sr). Tests: `tests/Feature/InstagramCaptionBuilderTest.php`.
 
+**Carousel (2026-08-05)**: publish uses all listing photos (cover first, then `sort_order`), capped at Meta’s 10 (`config('drivebay.instagram.carousel_max_images')`). `MetaInstagramPublisher` creates child `is_carousel_item` containers + parent `media_type=CAROUSEL`; one photo keeps the single-image path. Persists `listing_social_posts.image_urls` JSON. Admin custom image URL remains a single-image override. Dev fallback collapses many local URLs to one placeholder.
+
 ## Advertising
 
 **Purpose**: manual (staff-managed) banner ad delivery by placement/slot — matches `docs/advertising/advertising.md`'s "manual campaigns today" framing, with two real doc discrepancies noted below.
