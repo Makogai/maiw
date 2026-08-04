@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
   "sourceCommit": "6a5c809",
-  "status": "ready",
+  "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T06:55:00.000Z",
-  "note": "KAN-107 finish-profile pushed @ 6a5c809; deploy + migrate on dev next"
+  "lastSynchronizedAt": "2026-08-04T07:40:00.000Z",
+  "note": "KAN-109 admin trash/force-delete oauth cleanup uncommitted atop 6a5c809"
 }
