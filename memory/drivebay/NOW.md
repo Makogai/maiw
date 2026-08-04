@@ -2,21 +2,24 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** `03f3bbc` — docs for mobile in-app browser
-complete; API Sanctum complete is `3ec3fef`.
+Latest (2026-08-04): **KAN-111** promote duration 1/3/7 + success dialog —
+local (uncommitted) atop `03f3bbc`.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- Web + webhook + Sanctum mobile complete paths live on `main`.
-- Flutter phone QA passed with Custom Tabs flow (`557517f`).
+- Catalog: home €3/€5/€7, social €4/€6/€8; nested Paddle price IDs.
+- `duration_days` on `invoice_items`; activate uses it.
+- Promote API requires `duration_days`; types expose `durations[]`.
+- Web: duration chips + `PromotionSuccessDialog` from flash.
+- Pest: Paddle + DealerPromotionCheckout → 17 passed.
 
 ## Exact next action
 
-1. Optional: close KAN-111 after final acceptance.
-2. Keep `https://dev.drivebay.me/webhooks/paddle` subscribed.
+1. Commit/push drivebay + flutter; deploy + migrate + re-seed promotion types.
+2. QA web + phone: pick 1/3/7 → pay → success popup with days.
 
 ## Verification
 
-- Mobile + web featured promote QA green on sandbox.
+- Feature tests green locally.

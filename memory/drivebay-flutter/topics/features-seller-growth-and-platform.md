@@ -19,7 +19,8 @@ the working tree as of 2026-07-15.
 | `seller_listing_card.dart` (402) | The list-row widget for `my_listings_screen.dart` (status/moderation badges, per-card action menu) |
 | `promote_listing_sheet.dart` (330) | Bottom sheet to pick a `PromotionType` and start checkout for a listing |
 | `promotion_checkout_screen.dart` (277) | Fake/mock in-app confirm after `PromotionRepository.startCheckout()` when `checkout_mode=in_app` |
-| `paddle_checkout_screen.dart` | In-app browser (Custom Tabs) for Paddle `redirect_url`; resume / “I've paid” → `POST /billing/paddle/complete` (**Jira: KAN-111**) |
+| `paddle_checkout_screen.dart` | In-app browser (Custom Tabs) for Paddle `redirect_url`; resume / “I've paid” → `POST /billing/paddle/complete`; pops `PromoteSuccessResult` (**Jira: KAN-111**) |
+| Duration promote UX | `promote_listing_sheet.dart` 1/3/7 chips; `PromotionType.durations`; success dialog on my listings (**Jira: KAN-111**) |
 | `update_price_dialog.dart` (112) | Simple price-change dialog used from `my_listings_screen.dart` |
 | `dealer_listing_card.dart` (4) | Just a `typedef DealerListingCard = SellerListingCard` re-export — no separate dealer card widget exists |
 | `widgets/listing_photo_uploader.dart` (683) | Multi-photo picker/reorder/delete grid for the create/edit wizard — uses `image_picker` **gallery only** (`ImageSource.gallery`, `listing_photo_uploader.dart:61`), no camera capture path |

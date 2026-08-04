@@ -6,6 +6,6 @@
   "sourceCommit": "557517f",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T18:50:00.000Z",
-  "note": "KAN-111 557517f in-app browser Paddle checkout; needs API complete endpoint"
+  "lastSynchronizedAt": "2026-08-04T19:50:00.000Z",
+  "note": "KAN-111 duration chips + success dialog local uncommitted atop 557517f"
 }
