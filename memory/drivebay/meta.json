@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "a7f05a0",
+  "sourceCommit": "66c4cf1",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T18:05:00.000Z",
-  "note": "KAN-111 post-pay sync fulfill local (uncommitted); HEAD still a7f05a0 until push"
+  "lastSynchronizedAt": "2026-08-04T18:07:00.000Z",
+  "note": "KAN-111 66c4cf1 post-pay sync fulfill on main; deploy + asset build on dev"
 }

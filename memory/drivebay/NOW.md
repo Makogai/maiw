@@ -2,27 +2,26 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** post-pay fulfill fix — pay succeeded but listing
-stayed unfeatured because activation was webhook-only.
+Latest (2026-08-04): **KAN-111** `66c4cf1` — fulfill featured promo after
+Paddle checkout completes (client API sync + webhook harden).
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- Pay overlay works; redirect alone does **not** activate promotions.
-- Local fix (uncommitted until push): on Paddle.js `checkout.completed`, POST
-  `/billing/paddle-checkout/complete` → API sync → `fulfillPaidPayment()`.
-- Webhooks also handle `transaction.paid` (+ 300s signature skew).
-- `PaddlePaymentGatewayTest` → 9 passed.
+- On `checkout.completed`, POST `/billing/paddle-checkout/complete` syncs the
+  txn from Paddle API and runs `fulfillPaidPayment()`.
+- Webhooks accept `transaction.completed` and `transaction.paid`.
+- On `origin/main` as `66c4cf1`.
 
 ## Exact next action
 
-1. Commit + push `apps/drivebay` main; deploy + rebuild frontend assets on dev.
-2. Re-QA: promote → pay → listing shows featured (even without webhook).
-3. Still set Paddle notification destination
+1. Deploy `66c4cf1` + rebuild frontend assets on **dev**.
+2. Re-QA: promote → pay → listing featured (even without webhook).
+3. Still set notification destination
    `https://dev.drivebay.me/webhooks/paddle` for `transaction.completed`
    (+ ideally `transaction.paid`).
 
 ## Verification
 
-- Feature tests green locally; production verify with sandbox card after deploy.
+- `PaddlePaymentGatewayTest` → 9 passed before push.
