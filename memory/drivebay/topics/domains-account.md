@@ -81,28 +81,28 @@ swappable payment gateway.
 | `InvoiceService` | Builds `Invoice`+`InvoiceItem` rows for any billable (polymorphic `billable_type`/`billable_id`) — `Domains/Billing/Services/InvoiceService.php:17` |
 | `PaymentCheckoutService` | Read-only presenter for a payment session (mock vs redirect mode) used by the payment confirmation page — `Domains/Billing/Services/PaymentCheckoutService.php:9,29` |
 | `StripePaymentGateway` (implements `PaymentGatewayInterface`) | Stripe Checkout session creation, `confirmPayment()`, `handleWebhook()` for `checkout.session.completed` — `Domains/Billing/Gateways/StripePaymentGateway.php:11,25,71,87` |
-| `FakePaymentGateway` | Dev/mock gateway (no external calls); used when `billing.gateway` config isn't `stripe` — `Domains/Billing/Gateways/FakePaymentGateway.php` |
+| `PaddlePaymentGateway` | Paddle Billing transaction checkout + `transaction.completed` webhook (**Jira: KAN-111**) — `Domains/Billing/Gateways/PaddlePaymentGateway.php` |
+| `FakePaymentGateway` | Dev/mock gateway (no external calls); used when gateway isn't stripe/paddle with secrets — `Domains/Billing/Gateways/FakePaymentGateway.php` |
 
-**Gateway wiring**: `AppServiceProvider` binds `PaymentGatewayInterface` — uses
-`StripePaymentGateway` only if `platform_config('billing.gateway') === 'stripe'` AND the
-Stripe class exists AND `drivebay.billing.stripe_secret` is set, else falls back to
-`FakePaymentGateway` — `app/Providers/AppServiceProvider.php:44-51`. Webhook route:
-`POST /webhooks/stripe` → `StripeWebhookController` — `routes/web.php:181`,
-`Http/Controllers/Web/Billing/StripeWebhookController.php:12`. Config keys (no secret
-values here): `config/drivebay.php` `billing.stripe_key`/`stripe_secret`/
-`stripe_webhook_secret` (`config/drivebay.php:76-80`).
+**Gateway wiring**: `AppServiceProvider` binds `PaymentGatewayInterface` — `paddle` if
+`platform_config('billing.gateway') === 'paddle'` and `paddle_api_key` set; else
+`stripe` if secret present; else `FakePaymentGateway` —
+`app/Providers/AppServiceProvider.php`. Webhooks: `POST /webhooks/stripe`,
+`POST /webhooks/paddle` (CSRF exempt) — `routes/web.php`. Config:
+`config/drivebay.php` `billing.paddle_*` + `paddle_price_ids` for
+`featured_home` / `featured_social`. Seeder prices €5 / €7; `urgent` has no
+Paddle price (422 under paddle).
 
-(**Jira: KAN-15** fixed `e7b9d36`): `apps/drivebay/CLAUDE.md` and
-`docs/architecture/system-overview.md` now document **Stripe + in-app `fake` gateway**
-only. Code still has only `StripePaymentGateway` and `FakePaymentGateway` implementing
-`PaymentGatewayInterface` — no PayPal integration exists.
+(**Jira: KAN-111**): official `paddlehq/paddle-php-sdk`; custom_data carries
+`payment_uuid` into webhook fulfillment via existing `fulfillPaidPayment()`.
+Sandbox price IDs must be recreated in Live before production.
 
 **Models**: `Invoice` morphTo `billable` (Listing or DealerAccount today), hasMany `items`
 (`InvoiceItem`) and `payments` (`Payment`) — `Models/Domains/Billing/Models/Invoice.php:53,83,88`.
 `Payment` belongsTo `invoice`, `provider` (`PaymentProvider`), optional `paymentMethod`;
 hasMany `refunds` — `Models/Domains/Billing/Models/Payment.php:45-70`. `PaymentProvider.code`
-(`'stripe'`/`'fake'`) resolved via `CheckoutService::paymentProviderId()` —
-`Domains/Billing/Services/CheckoutService.php:162-167`.
+(`'stripe'`/`'fake'`/`'paddle'`) resolved via `CheckoutService::paymentProviderId()` —
+`Domains/Billing/Services/CheckoutService.php`.
 
 **Cross-domain connections**: Billing → Promotion (`PromotionService::activate()` on paid
 promotion items), Billing → Dealer (entitlement grant, above). No Filament admin resource
@@ -326,8 +326,8 @@ switches (`app/Features/`) vs. the custom Experiment A/B system — before writi
 
 ## Doc-accuracy notes for this pass
 
-1. **Billing gateways** (**Jira: KAN-15** fixed): docs and code align on Stripe + `fake` only;
-   PayPal is not implemented and no longer claimed in top-level docs.
+1. **Billing gateways** (**Jira: KAN-111**): Fake + Stripe + Paddle; Paddle maps
+   `featured_home`/`featured_social` to sandbox price IDs; Live needs new prices.
 2. **Pennant and Experiment are unrelated systems** despite both being "feature-flag-shaped"
    — see Experiment section above. Not previously called out anywhere in existing docs.
 3. Billing (Invoice/Payment/Refund) and Messaging/Viewing have **no Filament admin

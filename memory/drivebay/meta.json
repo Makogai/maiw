@@ -6,6 +6,6 @@
   "sourceCommit": "b47a674",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T09:20:00.000Z",
-  "note": "KAN-110 finish-profile individual/dealer pushed as b47a674; awaiting deploy + QA on dev"
+  "lastSynchronizedAt": "2026-08-04T16:36:00.000Z",
+  "note": "KAN-111 Paddle featured promotions uncommitted atop b47a674; In Review"
 }
