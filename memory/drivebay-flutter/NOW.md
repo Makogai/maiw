@@ -2,23 +2,22 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** `7b84999` — in-app Paddle WebView promote
-checkout + Sanctum sync.
+Latest (2026-08-04): **KAN-111** `557517f` — Paddle promote via in-app
+browser + resume / “I've paid” Sanctum sync (WebView removed).
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- Promote → `PaddleCheckoutScreen` WebView (not external browser).
-- Completes via `POST /billing/paddle/complete` after `DriveBayNative` or
-  “I've paid”.
-- Needs drivebay `3ec3fef` deployed on the API the app points at.
+- Promote opens Custom Tabs / SFSafariViewController to checkout URL.
+- Completes via `POST /billing/paddle/complete` on resume or “I've paid”.
+- QA confirmed working on phone.
 
 ## Exact next action
 
-1. After API deploy, hot-restart / reinstall app on device.
-2. QA: My Listings → Promote → pay in WebView → listing featured.
+1. Optional: mark KAN-111 Done after web + mobile acceptance checklist.
+2. Keep webhook destination configured on Paddle.
 
 ## Verification
 
-- Analyze clean on touched files before push.
+- Device QA: promote → pay → listing featured.

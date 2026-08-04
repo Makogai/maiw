@@ -3,9 +3,9 @@
   "app": "drivebay-flutter",
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
-  "sourceCommit": "7b84999",
+  "sourceCommit": "557517f",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-04T18:32:00.000Z",
-  "note": "KAN-111 7b84999 in-app Paddle WebView; needs drivebay 3ec3fef on API"
+  "lastSynchronizedAt": "2026-08-04T18:50:00.000Z",
+  "note": "KAN-111 557517f in-app browser Paddle checkout; needs API complete endpoint"
 }
