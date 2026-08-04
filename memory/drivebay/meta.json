@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "8c244cd",
+  "sourceCommit": "501f48a",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T17:40:00.000Z",
-  "note": "KAN-111 Paddle on main (8c244cd); set PAYMENT_GATEWAY=paddle on dev to leave test mode"
+  "lastSynchronizedAt": "2026-08-04T17:50:00.000Z",
+  "note": "KAN-111 provider_id fix 501f48a; need default payment link in Paddle dashboard for checkout"
 }
