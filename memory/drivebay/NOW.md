@@ -2,24 +2,23 @@
 
 ## Goal
 
-Latest (2026-08-04): **KAN-111** mobile Paddle complete — Sanctum
-`POST /api/v1/billing/paddle/complete` + Vue `DriveBayNative` bridge (local,
-awaiting push). Previous: `66c4cf1` web post-pay sync.
+Latest (2026-08-04): **KAN-111** `3ec3fef` — Sanctum
+`POST /api/v1/billing/paddle/complete` + Vue `DriveBayNative` bridge for mobile.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-111
 
 ## Current state
 
-- Web fulfill: `/billing/paddle-checkout/complete` (session).
-- Mobile fulfill: WebView → JS channel → `POST /billing/paddle/complete` (Sanctum).
-- `PaddlePaymentGatewayTest` → 10 passed (incl. Sanctum complete).
+- Web: `/billing/paddle-checkout/complete` (session).
+- Mobile: WebView → `DriveBayNative` → Sanctum complete.
+- On `origin/main` as `3ec3fef` (atop web sync `66c4cf1`).
 
 ## Exact next action
 
-1. Push drivebay + drivebay-flutter; deploy backend + rebuild Vite assets on **dev**.
-2. QA phone: My Listings → Promote → in-app WebView pay → listing featured.
-3. Keep webhook destination configured as primary path.
+1. Deploy `3ec3fef` + rebuild Vite assets on **dev**.
+2. Pair with Flutter `7b84999` for phone QA.
+3. Keep webhook destination configured.
 
 ## Verification
 
-- Feature tests green for Sanctum complete endpoint.
+- `PaddlePaymentGatewayTest` → 10 passed before push.
