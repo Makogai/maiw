@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
   "sourceCommit": "b697b66",
-  "status": "synced",
+  "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T22:25:00.000Z",
-  "note": "Featured badge clarity on main b697b66"
+  "lastSynchronizedAt": "2026-08-04T22:50:00.000Z",
+  "note": "IG live token polish local uncommitted on b697b66; runbook + expiry job"
 }

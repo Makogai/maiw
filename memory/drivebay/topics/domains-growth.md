@@ -142,21 +142,12 @@ Models: `ListingPromotion` (`ends_at` nullable for permanent admin), `PromotionT
 **Purpose**: Instagram (and a stubbed Facebook path) auto-posting for listings — triggered by a paid promotion, a seller's manual "domain publish" quota, or an admin manually queuing a post from Filament.
 
 Key classes:
-- `SocialPublishService` — the domain facade; `schedule()` creates a `ListingSocialPost` and either dispatches `PublishListingToInstagramJob` immediately or leaves it `pending` if `platform_config('instagram.require_admin_approval')` is on (admin then calls `approveAndDispatch()`) — `app/Domains/SocialPublishing/Services/SocialPublishService.php:303-332,89-99`.
-  - `publish()` resolves the account, builds/reuses a caption, resolves a **publicly-fetchable** image URL (Instagram's Graph API requires a public URL, not localhost), and calls the configured publisher — `:165-239`.
-  - `publisher()` selects `MetaInstagramPublisher` when `platform_config('instagram.driver')` is `meta`/`live`, else `FakeInstagramPublisher` (dev/test) — `:521-527`.
-- `MetaInstagramPublisher` — real Meta Graph API integration: `POST {ig_user_id}/media` (create container) → `POST {ig_user_id}/media_publish` → `GET {media_id}?fields=permalink`; also `postComment()`/`deleteMedia()` — `app/Domains/SocialPublishing/Publishers/MetaInstagramPublisher.php:16-53`.
-- `MetaGraphApi` — thin Graph API HTTP client; graph version from `platform_config('meta.graph_version', 'v25.0')` — `app/Domains/SocialPublishing/Support/MetaGraphApi.php:13`.
-- `InstagramQuotaService` — dealer "domain publish" monthly quota (`instagram.domain_posts_per_month`, overridable per-dealer via storefront settings), counts `pending`/`processing`/`published` posts this calendar month — `app/Domains/SocialPublishing/Services/InstagramQuotaService.php:14-57`.
-- `InstagramPublishImageResolver` — falls back to a configured dev placeholder image when the resolved image isn't publicly fetchable (local/dev environments) — `app/Domains/SocialPublishing/Services/InstagramPublishImageResolver.php:6-13`.
+- `SocialPublishService` — facade; `schedule()` / `publish()`; driver `fake` vs `meta`/`live`/`graph` → Meta publisher — `app/Domains/SocialPublishing/Services/SocialPublishService.php`.
+- `PlatformSocialAccount::isReady()` — requires active + account_id + token; **rejects expired** `token_expires_at` when driver is live. Token lives in Filament DB (encrypted), not `.env`.
+- `WarnExpiringInstagramTokenJob` (daily 09:00) — Filament staff notify ~7 days before expiry.
+- Ops runbook: `docs/operations/instagram-publishing.md`.
 
-Models: `ListingSocialPost` (status machine: `pending`→`processing`→`published`/`failed`/`cancelled`; `source` is `promotion`/`domain`/`manual`), `PlatformSocialAccount` (`access_token` uses Laravel's `encrypted` cast; `isReady()` short-circuits true when driver is `fake`) — `app/Models/Domains/SocialPublishing/Models/ListingSocialPost.php:13-31`, `PlatformSocialAccount.php:24-47`.
-
-**Non-obvious rule**: `updateSoldCaptions()` posts a "SOLD" **comment** on the existing Instagram media (doesn't edit the caption itself — Instagram's API has no caption-edit endpoint) and is gated by both `instagram.update_caption_on_sold` and a per-post `sold_caption_updated_at` guard to avoid double-posting — `app/Domains/SocialPublishing/Services/SocialPublishService.php:403-479`.
-
-**External integration**: Meta Graph API (Instagram Business + Facebook Page). All driver/behavior config is **admin-editable at runtime**, not `.env`-only — routed through `platform_config()` → `App\Support\Settings\PlatformConfigService`, backed by `config/platform_config.php` key definitions (`drivebay.instagram.enabled`, `.driver`, `.username`, `.domain_posts_per_month`, `.require_admin_approval`, `.dev_fallback_enabled`, `.dev_fallback_image_url`, `.update_caption_on_sold`, `drivebay.meta.graph_version`) each also wired to a Pennant feature flag (`instagram-publish`, `instagram-require-approval`, `instagram-dev-fallback`, `instagram-update-sold-caption`) — `config/platform_config.php:136-186,260-263`. Jobs live under `app/Jobs/Domains/SocialPublishing/` (outside `app/Domains/SocialPublishing/Jobs/` — there is no `Jobs/` subfolder in this domain, unlike the convention table in `CLAUDE.md`).
-
-**Connections**: triggered by Promotion (auto), Dealer (quota/entitlement/storefront-username), consumed by Filament `ListingSocialPosts`/`PlatformSocialAccounts` resources and `Console/` diagnostic commands (`instagram:discover`, `instagram:verify-token`, `instagram:test-publish`).
+**Gotcha**: platform_config Instagram driver must be `meta` (not `graph`); legacy `graph` still maps to Meta publisher for BC.
 
 ## Advertising
 
