@@ -2,33 +2,29 @@
 
 ## Goal
 
-Latest (2026-08-03): **KAN-107** social signup finish-profile (required phone,
-first time only) — **uncommitted** on `main` atop `fff8056`.
+Latest (2026-08-04): **KAN-107** social signup finish-profile (required phone)
+pushed @ `6a5c809`.
 
-Prior shipped: **KAN-108** day-before viewing reminders @ `fff8056`.
+Prior: **KAN-108** morning viewing reminders @ `fff8056`.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-107
 
 ## Current state
 
-### KAN-107 (uncommitted)
 - `users.profile_completed_at` (+ backfill existing → `created_at`)
 - New social users leave it null; password registration sets `now()`
 - `UserResource.profile_completion_required`
-- `POST /api/v1/account/complete-profile` (phone required, optional names)
-- Web: `/complete-profile` Inertia + `EnsureProfileIsComplete` middleware
-- Social callback redirects incomplete users to finish-profile
-
-### KAN-108 (shipped `fff8056`)
-- Morning local-hour gate for day-before viewing reminders (`config/viewing.php`)
+- `POST /api/v1/account/complete-profile`
+- Web `/complete-profile` + `EnsureProfileIsComplete`
+- Flutter counterpart @ `fd6e518` (after push)
 
 ## Exact next action
 
-1. Ask user to commit/push `apps/drivebay` (+ flutter).
-2. `php artisan migrate` on deploy.
-3. QA: new social signup → forced phone screen once.
+1. Deploy `6a5c809` + `php artisan migrate` on `dev.drivebay.me`.
+2. Rebuild Flutter against that API; QA new Google signup → finish-profile once.
+3. Move KAN-107 to Done after QA.
 
 ## Verification
 
-- Pest: ApiSocialAuthTest / WebSocialAuthTest / RegistrationTest green.
-- Do not commit `docs/og-preview-mock.html` with this work.
+- Pest social/web/registration suites green before push.
+- Attribution clean on `6a5c809`.

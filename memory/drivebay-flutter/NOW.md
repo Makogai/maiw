@@ -2,31 +2,25 @@
 
 ## Goal
 
-Latest (2026-08-03): **KAN-107** finish-profile after social signup —
-**uncommitted** on `main`. Needs drivebay API `profile_completion_required`
-+ `POST /account/complete-profile`.
-
-Prior shipped: **KAN-106** Your viewing + shimmer @ `45afec2`.
+Latest (2026-08-04): **KAN-107** finish-profile after social signup pushed
+(await SHA after push). Needs deployed drivebay `6a5c809` + migrate.
 
 Ticket: https://drivebayme.atlassian.net/browse/KAN-107
 
 ## Current state
 
-### KAN-107 (uncommitted)
-- `User.profileCompletionRequired` from auth payload
-- `CompleteProfileScreen` + `/complete-profile` route
+- `User.profileCompletionRequired` + `/complete-profile` screen
 - Gates: login/register/verify/bootstrap + GoRouter redirect
-- `AccountRepository.completeProfile`
-- EN/SR: `finishProfile*` strings
-
-### Prior
-- KAN-106 Your viewing on listing open + shimmer skeleton (`45afec2`)
+- Google Sign-In: no hanging authorizeScopes; surface fake-cancel as config error
+- Docs: Android SHA-1 / Web client ID troubleshooting in `docs/social-login.md`
+- `Env.googleServerClientId` default = Web OAuth client ID (not Android client)
 
 ## Exact next action
 
-1. Pull `origin/main` if behind, then ask user to commit/push with matching API.
-2. Hot-restart; QA social signup → phone required once.
+1. Confirm drivebay deploy + migrate on the API the app hits.
+2. Rebuild app; QA brand-new Google account → finish-profile with required phone.
+3. Move KAN-107 to Done after QA.
 
 ## Verification
 
-- build_runner + gen-l10n + analyze on touched files (implementer).
+- Built/analyzed locally during implementation; Attribution clean on commit.
