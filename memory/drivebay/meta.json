@@ -6,6 +6,6 @@
   "sourceCommit": "3e600fc",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-04T23:20:00.000Z",
-  "note": "3e600fc IG carousel + sectioned captions (KAN-113) on origin/main"
+  "lastSynchronizedAt": "2026-08-05T10:35:00.000Z",
+  "note": "KAN-114 Facebook mock-publish fixes uncommitted on 3e600fc"
 }

@@ -2,19 +2,23 @@
 
 ## Goal
 
-Latest (2026-08-05): Instagram carousel + sectioned captions on `origin/main` at `3e600fc` (**KAN-113**).
+Latest (2026-08-05): Facebook mock-publish fixes (**KAN-114**) — **uncommitted** on top of `3e600fc`.
 
 ## Current state
 
-- Captions: sectioned emoji/`➖` layout (`InstagramCaptionBuilder`)
-- Publish: all listing photos → Meta carousel (max 10); `image_urls` on `listing_social_posts`
-- Token/health polish still included from `bbbf42d`
+- Facebook publishing gated by `facebook-publish` Pennant (`FACEBOOK_PUBLISH_ENABLED`, default off) — no more duplicate post per promotion
+- `publish()` no longer auto-creates a Facebook `platform_social_accounts` row
+- Delete/comment are platform-aware; mock `mock_fb_*` posts are cancelled locally, never sent to Graph
+- Filament posts table has platform badge + filter; Instagram-only actions hidden elsewhere
+- Shipped earlier: `3e600fc` IG carousel + sectioned captions (**KAN-113**)
 
 ## Exact next action
 
-1. Deploy **dev**: pull `3e600fc`, migrate, clear caches
-2. Spot-check live Meta carousel with ≥2 public CDN photos + SR caption locale
+1. Commit + push drivebay when ready
+2. On dev: delete the auto-created Facebook account row + cancel leftover `mock_fb_*` posts
+3. Product call: `featured_social` copy still promises Facebook (seeder keeps `includes_facebook_publish = true`)
 
 ## Verification
 
-- Caption + carousel Pest suites green before push
+- `php artisan test --compact tests/Feature/InstagramPublishingTest.php tests/Feature/MetaInstagramPublisherTest.php tests/Unit/InstagramPublishImageResolverTest.php tests/Feature/InstagramCaptionBuilderTest.php tests/Feature/InstagramTokenHealthTest.php` — 31 passed
+- `php artisan test --compact --filter=Promotion` — 16 passed
