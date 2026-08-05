@@ -6,6 +6,6 @@
   "sourceCommit": "07b31c3",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T10:58:00.000Z",
-  "note": "07b31c3 Facebook mock-publish fixes (KAN-114) on origin/main"
+  "lastSynchronizedAt": "2026-08-05T11:20:00.000Z",
+  "note": "07b31c3 on origin/main + local uncommitted web featured-badge/section UX changes"
 }
