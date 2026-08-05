@@ -2,10 +2,28 @@
 
 ## Goal
 
-Latest (2026-08-05): seller promote CTA moved into the owner sidebar — shipped on `origin/main`
-at `3890a7f`, on top of the `/instagram` gallery (**KAN-115**, `2191d99`).
+Latest (2026-08-05): web is being re-skinned toward the Flutter app's look. Listing card + equipment
+section are done but **uncommitted** on top of `3890a7f`; mobile app-shell parity is unscoped.
 
 ## Current state
+
+Mobile-app parity pass (uncommitted):
+
+- `ListingCard.vue` grid variant now mirrors the app tile: flat (`shadow-none`, hover too), 14px
+  radius, hairline border, no make/model eyebrow, title 14/bold, city moved onto the image
+  bottom-left as white text with a shadow, price + relative date share the footer row with no
+  divider, padding 12 (compact 10)
+- `ListingCardSpecs.vue` default flipped from `chips` to `spread` (`year · mileage · fuel`) — the
+  chips branch stays available via `ui.listingCardSpecsStyle` / the `specs-style` prop
+- `PriceTag.vue`: `cardStyle` renders the current price in `text-accent` (app parity). Only
+  `ListingCard` passes `card-style`, so detail/sidebar prices are unchanged
+- Equipment on `Pages/Listings/Show.vue` + `Pages/Storefront/ListingShow.vue`: chips replaced by
+  the app's 2-column accent check-circle list (`Icon name="checkCircle"`, new in `Icon.vue`)
+- The `row` variant (search list view only) was deliberately left alone — the app's list tile is a
+  stacked full-width card, which would wreck the desktop search layout
+- Not done: mobile web app-shell (app has a 5-slot bottom nav Search/Tools/+/Messages/Profile,
+  flat logo+title app bar, filters in a 92%-height sheet, sticky Contact bar on detail; web has a
+  hamburger drawer and no bottom nav)
 
 Promote CTA (`3890a7f`):
 
@@ -34,7 +52,9 @@ Featured badge/section work (`61504e2`, `8e8b587`):
 
 ## Exact next action
 
-1. Deploy **dev**: pull `3890a7f`, migrate (`image_urls`), clear caches, rebuild assets
+1. Scope + build the mobile web app-shell (waiting on the user: bottom nav vs. lighter polish),
+   then commit the card/equipment pass
+2. Deploy **dev**: pull `3890a7f`, migrate (`image_urls`), clear caches, rebuild assets
 2. Open `/instagram` (tiles + caption line) and an owned listing (promote CTA)
 3. Confirm the production host really is `dap.drivebay.me` — the caption uses
    `LocaleUrl::route('instagram')`, i.e. `APP_URL`
