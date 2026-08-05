@@ -2,7 +2,7 @@
 
 ## Goal
 
-Latest (2026-08-05): Facebook mock-publish fixes (**KAN-114**) — **uncommitted** on top of `3e600fc`.
+Latest (2026-08-05): Facebook mock-publish fixes on `origin/main` at `07b31c3` (**KAN-114**).
 
 ## Current state
 
@@ -14,11 +14,10 @@ Latest (2026-08-05): Facebook mock-publish fixes (**KAN-114**) — **uncommitted
 
 ## Exact next action
 
-1. Commit + push drivebay when ready
+1. Deploy **dev**: pull `07b31c3`, migrate (`image_urls`), clear caches
 2. On dev: delete the auto-created Facebook account row + cancel leftover `mock_fb_*` posts
 3. Product call: `featured_social` copy still promises Facebook (seeder keeps `includes_facebook_publish = true`)
 
 ## Verification
 
-- `php artisan test --compact tests/Feature/InstagramPublishingTest.php tests/Feature/MetaInstagramPublisherTest.php tests/Unit/InstagramPublishImageResolverTest.php tests/Feature/InstagramCaptionBuilderTest.php tests/Feature/InstagramTokenHealthTest.php` — 31 passed
-- `php artisan test --compact --filter=Promotion` — 16 passed
+- Instagram suites 31 passed; `--filter=Promotion` 16 passed before push
