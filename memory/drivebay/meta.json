@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "d6fc2cf",
-  "status": "partial",
+  "sourceCommit": "15d3a22",
+  "status": "synced",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T13:15:00.000Z",
-  "note": "KAN-116 placeholders uncommitted on local 2191d99; origin at d6fc2cf (card restyle) + 3890a7f promote + KAN-115"
+  "lastSynchronizedAt": "2026-08-05T15:25:00.000Z",
+  "note": "15d3a22 listing cover placeholders (KAN-116) on origin/main atop d6fc2cf card restyle"
 }
