@@ -106,6 +106,11 @@ pages. Search also sets `cacheExtent: 600` and stable `ValueKey(publicId)` on ti
 in addition to keepAlive; pull-to-refresh clears those SWR keys. Live `/search` still
 cache-busts with `_ts`.
 
+**Cover placeholders (**Jira: KAN-116**)**: `ListingCoverImage` (`lib/widgets/listing_cover_image.dart`)
+wraps network covers; null URL or load failure → type-aware WebP from the marketplace
+(`listing_placeholder.dart`, same paths as web `public/images/placeholders/listings/`).
+Cards/featured/seller/detail gallery use it — no local duplicate art in the app binary.
+
 **Sort options** (**Jira: KAN-32**, subsumes **KAN-25**): client sends one of
 `freshness | recommendation | popularity | price_asc | price_desc | year_desc | year_asc`
 (`search_sort_control.dart`; default `'freshness'`, `search_repository.dart`). Matches

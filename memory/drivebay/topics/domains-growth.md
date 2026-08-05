@@ -157,7 +157,7 @@ Key classes:
 
 **Carousel (2026-08-05)**: publish uses all listing photos (cover first, then `sort_order`), capped at Meta’s 10 (`config('drivebay.instagram.carousel_max_images')`). `MetaInstagramPublisher` creates child `is_carousel_item` containers + parent `media_type=CAROUSEL`; one photo keeps the single-image path. Persists `listing_social_posts.image_urls` JSON. Admin custom image URL remains a single-image override. Dev fallback collapses many local URLs to one placeholder.
 
-**Public gallery (2026-08-05, KAN-115, `2191d99`)**: `GET /instagram` (`InstagramGalleryController` → `Instagram/Index.vue`) lists published Instagram posts for **active** listings, one tile per listing (newest `id` wins), cover from `listing_social_posts.image_url`. Tile → listing URL; optional IG permalink badge. Captions add scheme-less gallery line via `InstagramCaptionBuilder::galleryLine()` / `marketplace.instagram.caption_gallery`. Also in sitemap + footer. Tests: `InstagramGalleryPageTest`.
+**Public gallery (2026-08-05, KAN-115, `2191d99`)**: `GET /instagram` (`InstagramGalleryController` → `Instagram/Index.vue`) lists published Instagram posts for **active** listings, one tile per listing (newest `id` wins), cover from `listing_social_posts.image_url`. Tile → listing URL; optional IG permalink badge. Captions add scheme-less gallery line via `InstagramCaptionBuilder::galleryLine()` / `marketplace.instagram.caption_gallery`. Also in sitemap + footer. Tests: `InstagramGalleryPageTest`. Listing blob includes `placeholder_url` / `vehicle_type_code` for broken/missing covers (**KAN-116**).
 
 ## Advertising
 

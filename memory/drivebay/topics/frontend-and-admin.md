@@ -122,6 +122,7 @@ All layouts take a `seo` prop rendered via `SeoHead` — consistent per-page SEO
 | `useEngagementContent.js` | Formats/sanitizes engagement-campaign popup body/image/href content |
 | `useFormat.js` | Price/mileage/power/displacement number formatting (`formatPrice`, `formatMileage`, `formatPower`, `formatDisplacement`) |
 | `useListingAnalytics.js:107` | Impression/click tracking for listing cards (`queueListingImpression`, `recordListingClick`, `useListingEngagement`) — used in `Pages/Listings/Show.vue:4` |
+| `useListingPlaceholder.js` | Type-aware cover fallback from `placeholder_url` / `vehicle_type_code` (**Jira: KAN-116**); used by `ListingCardImageArea`, `InstagramPostTile`, galleries |
 | `useListingPrice.js:7` | Derives display price/price-type badge logic for a listing |
 | `useListingSpecs.js` | Builds spec-row and highlight lists for a vehicle (`vehicleSpecRows`, `vehicleHighlights`) |
 | `useListingWizard.js` | Multi-step create/edit listing wizard; `LISTING_WIZARD_FIELDS_BY_STEP` + `focusFirstValidationError` (step jump → `nextTick` → `[data-field]` / `aria-invalid` scroll+focus). Shared by `Create.vue` / `Edit.vue`. (**Jira: KAN-57**) |
@@ -157,6 +158,15 @@ most complex page in the app), `useListingAnalytics`.
   `2026_07_30_084500_backfill_motorcycle_body_style_vehicle_types`) or they leak into car.
 - `TaxonomyIcon`: truthy `svgUrl` used; explicit `null` = server-missing → placeholder
   (no path invent); omitted/`undefined` still invents for legacy; load `@error` → placeholder.
+
+### Listing cover placeholders (**Jira: KAN-116**)
+
+- Art lives only under `public/images/placeholders/listings/{car,motorcycle,van,truck,bus,trailer,specialty,default}.webp`
+  (Flutter loads the same HTTPS URLs — no app-binary duplicates). Docs:
+  `docs/frontend/listing-placeholders.md`.
+- Backend: `ListingPlaceholder` + `config/drivebay.php` `listing_placeholders`; cards/details
+  expose `placeholder_url` + `vehicle.vehicle_type_code`. Missing and broken covers both
+  swap to the placeholder (`@error` / empty gallery).
 
 ### Conventions confirmed against real code
 

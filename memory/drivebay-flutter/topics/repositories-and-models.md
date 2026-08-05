@@ -89,7 +89,7 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
 | `fuel_consumption_calculator.dart` | `FuelConsumptionCalculatorOptions`, `FuelConsumptionEstimate`, `FuelConsumptionAiEstimate`, `FuelConsumptionCalculateInput`, `FuelConsumptionAiEstimateInput`, `VehicleMakeOption`/`VehicleModelOption`/`FuelPriceMeta`/`FuelConsumptionReference`/`FuelConsumptionComparison` | fuel-consumption calculator options/estimate (incl. AI-estimate) | `tools_repository` |
 | `fuel_price_alerts.dart` | `FuelPriceAlertPreferences` | push-alert subscription prefs per fuel type | `fuel_price_repository` |
 | `fuel_prices.dart` | `FuelPricesResponse`, `FuelPriceFuel` | fuel price history/latest snapshot | `fuel_price_repository` |
-| `listing_card.dart` (+freezed/g) | `ListingCard` | denormalized listing summary for grids/carousels | `search_repository`, `favorite_repository`, `promotion_repository`, `listing_repository` (similar), `seller_listing_repository` (my listings), `seller_profile_repository` (dealer/seller listings list) |
+| `listing_card.dart` (+freezed/g) | `ListingCard` | denormalized listing summary for grids/carousels; includes `placeholderUrl` (**KAN-116**) | `search_repository`, `favorite_repository`, `promotion_repository`, `listing_repository` (similar), `seller_listing_repository` (my listings), `seller_profile_repository` (dealer/seller listings list) |
 | `listing_contact_channels.dart` | `ListingContactChannels` (+ `phones[]` / `emails[]`) | seller contact methods on listing detail; sheet lists all (**Jira: KAN-90**) | `listing_detail.dart` |
 | `listing_detail.dart` (+freezed/g) | `ListingDetail` | full listing detail payload | `listing_repository`, `seller_listing_repository` |
 | `listing_detail_meta.dart` | `ListingDetailMeta`, `ListingViewingInfo`, `ListingCapabilities`, `ListingDetailBundle` | side-channel meta accompanying listing detail (viewing availability, permission flags) | `listing_repository` |
@@ -100,7 +100,7 @@ Compact grouping (file → main class(es) → purpose → consumer). Excludes ge
 | `dealer_storefront.dart` | `DealerStorefrontSettings` (+theme/content/social/pages) | parsed from dealer `publicPayload.storefront` (**KAN-83**) | `seller_profile_repository` `DealerProfile` |
 | `listing_staff.dart` | `ListingStaffNote` | moderation/admin action note on a listing | `listing_detail_meta.dart` |
 | `listing_vehicle_detail.dart` (+freezed/g) | `ListingVehicleDetail` | full vehicle spec block on listing detail | `listing_detail.dart` |
-| `listing_vehicle_summary.dart` (+freezed/g) | `ListingVehicleSummary` | condensed make/model/year/mileage for `ListingCard` | `listing_card.dart` |
+| `listing_vehicle_summary.dart` (+freezed/g) | `ListingVehicleSummary` | condensed make/model/year/mileage + `vehicleTypeCode` (**KAN-116**) for `ListingCard` | `listing_card.dart` |
 | `message_attachment.dart` | `MessageAttachment` | media attached to a chat message | `app_message.dart` |
 | `message_thread.dart` (+freezed/g) | `MessageThread` | thread summary (participants, last message, mute state) | `message_repository` |
 | `message_thread_detail.dart` | `MessageThreadDetail` | thread + counterpart-typing flag | `message_repository` |

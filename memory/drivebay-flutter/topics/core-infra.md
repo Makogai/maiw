@@ -129,7 +129,8 @@ in the interceptor chain, not in application code.
   after the last listener leaves for `duration`.
 - `swr_cache.dart` — in-memory stale-while-revalidate for hub rails only (not live
   search). Docs: `apps/drivebay-flutter/docs/development/performance.md`.
-- Images: `DrivebayNetworkImage` / `DrivebayNetworkImageFill` wrap
+- Images: `ListingCoverImage` (**KAN-116**) for listing covers (missing/broken → marketplace
+  placeholder WebP); `DrivebayNetworkImage` / `DrivebayNetworkImageFill` wrap
   `cached_network_image` + `imageCacheWidth` decode downsampling.
 
 ## lib/core/experiments/ — client side of server-driven A/B variants
