@@ -3,7 +3,7 @@
 ## Goal
 
 Latest (2026-08-05): web featured-listing UX cleanup — one badge on listing detail, featured
-section split in seller "My listings". Local, uncommitted on top of `07b31c3`.
+section split in seller "My listings". Shipped on `origin/main` at `8e8b587`.
 
 ## Current state
 
@@ -20,8 +20,8 @@ section split in seller "My listings". Local, uncommitted on top of `07b31c3`.
 
 ## Exact next action
 
-1. Commit + push the four modified web files (awaiting user go-ahead)
-2. Deploy **dev**: pull, migrate (`image_urls`), clear caches
+1. Deploy **dev**: pull `8e8b587`, migrate (`image_urls`), clear caches, rebuild assets
+2. Eyeball seller "My listings" with a mix of promoted/unpromoted ads
 3. Product call: `featured_social` copy still promises Facebook (seeder keeps `includes_facebook_publish = true`)
 
 ## Verification
