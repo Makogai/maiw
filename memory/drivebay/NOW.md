@@ -11,9 +11,11 @@ section split in seller "My listings". Shipped on `origin/main` at `8e8b587`.
   image; the badge row next to the price (`PromotionBadges size="sm"`) is now the only one
 - `Pages/Seller/Listings/Index.vue`: listings split into `sections` (featured first, then the
   rest) via `isFeatured()` on `active_promotion.code` / `promotion_badges`
-  (`featured`, `featured_home`, `featured_social`). Featured block is an amber card with star
-  header + count pill; headers only render when both groups exist
-- New lang keys `seller.featured_section_title|featured_section_subtitle|standard_section_title|standard_section_subtitle|section_count` (EN + SR)
+  (`featured`, `featured_home`, `featured_social`). Headers only render when both groups exist
+- Section header style: accent star + uppercase label + count + hairline rule, theme tokens
+  only. The first pass used an amber tinted card — user rejected it as off-theme, do not
+  reintroduce colored section backgrounds here
+- New lang keys `seller.featured_section_title` / `seller.standard_section_title` (EN + SR)
 - Storefront `Pages/Storefront/ListingShow.vue` keeps its image overlay badge — it is the only
   badge on that page
 - Shipped earlier: `07b31c3` Facebook mock-publish fixes (**KAN-114**), `3e600fc` IG carousel (**KAN-113**)

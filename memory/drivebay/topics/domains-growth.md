@@ -135,7 +135,7 @@ Models: `ListingPromotion` (`ends_at` nullable for permanent admin), `PromotionT
 
 **Gotcha**: boost multipliers are hardcoded in `PromotionService` (`$defaultMultipliers`), not read from `PromotionType` columns.
 
-**Web badge UX (2026-08-05)**: `Components/PromotionBadges.vue` collapses `featured`/`featured_home`/`featured_social` into a single amber "Featured" chip (`promotions.featured_badge`). Show exactly **one** badge per surface: `Pages/Listings/Show.vue` keeps only the row beside the price (image overlay removed), `Pages/Storefront/ListingShow.vue` keeps only the image overlay. Seller "My listings" (`Pages/Seller/Listings/Index.vue`) groups into featured-first sections using the same three codes off `active_promotion.code` / `promotion_badges`.
+**Web badge UX (2026-08-05)**: `Components/PromotionBadges.vue` collapses `featured`/`featured_home`/`featured_social` into a single amber "Featured" chip (`promotions.featured_badge`). Show exactly **one** badge per surface: `Pages/Listings/Show.vue` keeps only the row beside the price (image overlay removed), `Pages/Storefront/ListingShow.vue` keeps only the image overlay. Seller "My listings" (`Pages/Seller/Listings/Index.vue`) groups into featured-first sections using the same three codes off `active_promotion.code` / `promotion_badges`; section headers are a minimal star + uppercase label + count + hairline rule using theme tokens only (`accent`/`ink`/`ink-faint`/`border`) — a tinted amber card was rejected as off-theme.
 
 **Connections**: → Search (`SyncListingSearchDocumentJob`), → SocialPublishing, → Billing (`Payment`), → Notifications.
 
