@@ -48,7 +48,7 @@ Billing: `Billing/CheckoutController`.
   own domain, its `public/robots.txt` needs its own sitemap line** — this wasn't parameterized
   because `robots.txt` is a static asset, not a route).
 - `SitemapGenerator::entries()` composes, in order: `staticPages()` (home, search, key tool
-  pages), `legalPages()`, `dealerPages()`, `listingPages()`.
+  pages, advertise, **instagram gallery** — KAN-115), `legalPages()`, `dealerPages()`, `listingPages()`.
 - URLs built via `LocaleUrl::route(...)` (absolute, `en` default) with
   `LocaleUrl::hreflangAlternates(...)` for `sr` alternates where the route pattern supports it.
 - `dealerPages()`: dealers with `status = 'active'` only. **Gotcha avoided:** does NOT call

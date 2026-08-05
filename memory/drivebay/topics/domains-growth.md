@@ -151,11 +151,13 @@ Key classes:
 
 **Gotcha**: platform_config Instagram driver must be `meta` (not `graph`); legacy `graph` still maps to Meta publisher for BC.
 
-**Caption format (2026-08-05)**: `InstagramCaptionBuilder` builds sectioned captions (emoji blocks + `➖` dividers) — headline, price/`price_type`, specs+description, optional financing (`monthly_payment_amount`), equipment/features, warranty, `contact_phone`, seller `@mention`, brand footer, listing URL + hashtags. Caps at 2200 chars. Lang keys `marketplace.instagram.caption_*` (en/sr). Tests: `tests/Feature/InstagramCaptionBuilderTest.php`.
+**Caption format (2026-08-05)**: `InstagramCaptionBuilder` builds sectioned captions (emoji blocks + `➖` dividers) — headline, price/`price_type`, specs+description, optional financing (`monthly_payment_amount`), equipment/features, warranty, `contact_phone`, seller `@mention`, brand footer, listing URL + **gallery URL** (`caption_gallery`) + hashtags. Caps at 2200 chars. Lang keys `marketplace.instagram.caption_*` (en/sr). Tests: `tests/Feature/InstagramCaptionBuilderTest.php`.
 
 **Facebook is mock-only and gated (2026-08-05, KAN-114)**: no live Facebook publisher exists — `FakeFacebookPublisher` fabricates `mock_fb_*` IDs and dead permalinks. Scheduling is gated by the `facebook-publish` Pennant (`config('drivebay.facebook.enabled')`, default **false**), so `featured_social` (which still has `includes_facebook_publish = true` in the seeder) creates an Instagram post only. `publish()` no longer `firstOrCreate`s a Facebook `platform_social_accounts` row — a missing account fails the post. `deleteFromInstagram()` / `postInstagramComment()` check `$post->platform`: non-Instagram posts are cancelled locally and never sent to the Graph API (previously a `mock_fb_*` ID was sent to the IG account, yielding "Unsupported delete request").
 
 **Carousel (2026-08-05)**: publish uses all listing photos (cover first, then `sort_order`), capped at Meta’s 10 (`config('drivebay.instagram.carousel_max_images')`). `MetaInstagramPublisher` creates child `is_carousel_item` containers + parent `media_type=CAROUSEL`; one photo keeps the single-image path. Persists `listing_social_posts.image_urls` JSON. Admin custom image URL remains a single-image override. Dev fallback collapses many local URLs to one placeholder.
+
+**Public gallery (2026-08-05, KAN-115, uncommitted)**: `GET /instagram` (`InstagramGalleryController` → `Instagram/Index.vue`) lists published Instagram posts for **active** listings, one tile per listing (newest `id` wins), cover from `listing_social_posts.image_url`. Tile → listing URL; optional IG permalink badge. Captions add scheme-less gallery line via `InstagramCaptionBuilder::galleryLine()` / `marketplace.instagram.caption_gallery`. Also in sitemap + footer. Tests: `InstagramGalleryPageTest`.
 
 ## Advertising
 
