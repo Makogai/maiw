@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "8e8b587",
+  "sourceCommit": "61504e2",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T11:50:00.000Z",
-  "note": "8e8b587 web featured-badge dedupe + seller featured sections on origin/main"
+  "lastSynchronizedAt": "2026-08-05T12:05:00.000Z",
+  "note": "61504e2 seller featured sections restyled to theme tokens on origin/main"
 }
