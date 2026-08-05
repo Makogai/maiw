@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "2191d99",
+  "sourceCommit": "3890a7f",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T12:25:00.000Z",
-  "note": "2191d99 public /instagram gallery (KAN-115) on origin/main"
+  "lastSynchronizedAt": "2026-08-05T12:30:00.000Z",
+  "note": "3890a7f owner sidebar promote CTA on origin/main, atop 2191d99 /instagram gallery (KAN-115)"
 }

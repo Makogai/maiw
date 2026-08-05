@@ -2,28 +2,28 @@
 
 ## Goal
 
-Latest (2026-08-05): public Instagram gallery at `/instagram` (**KAN-115**) shipped on `origin/main`
-at `2191d99`. A parallel session's seller promote-CTA slice was recorded as uncommitted but is
-**not present in the working tree** at `2191d99` — re-check before trusting it.
+Latest (2026-08-05): seller promote CTA moved into the owner sidebar — shipped on `origin/main`
+at `3890a7f`, on top of the `/instagram` gallery (**KAN-115**, `2191d99`).
 
 ## Current state
 
-Instagram gallery (KAN-115, `2191d99`):
+Promote CTA (`3890a7f`):
+
+- `ListingOwnerSidebarPanel.vue`: "Promote listing" is the single hero CTA at the top of the
+  sidebar action stack (full width, accent, star icon, soft accent shadow,
+  `promotions.promote_sidebar_hint` under it). Quick price drops to `outline` while the CTA
+  shows and returns to `primary` once the listing is already promoted
+- Edit / Mark sold stay a paired outline row; either spans both columns when alone
+- The duplicate promote button in the owner banner at the top of `Pages/Listings/Show.vue` was removed
+
+Instagram gallery (**KAN-115**, `2191d99`):
 
 - `GET /instagram` (+ `/sr/instagram`) lists published Instagram posts for active listings
 - One tile per listing (newest publish), cover from `listing_social_posts.image_url`, click → listing
 - Captions include scheme-less gallery URL (`marketplace.instagram.caption_gallery`)
 - Sitemap + footer link; tests in `InstagramGalleryPageTest`
 
-Promote CTA move (claimed uncommitted, **not found in tree** — no `promote_sidebar_hint` key, no
-stash, clean `git status`):
-
-- Intended: `ListingOwnerSidebarPanel.vue` gets "Promote listing" as the single hero CTA at the top
-  of the sidebar action stack (full width, accent, star icon, `promotions.promote_sidebar_hint`
-  under it); quick price drops to `outline`; the duplicate promote button in the owner banner of
-  `Pages/Listings/Show.vue` is removed
-
-Shipped on `origin/main` at `61504e2`:
+Featured badge/section work (`61504e2`, `8e8b587`):
 
 - Seller "My listings" featured/standard sections — accent star + uppercase label + count +
   hairline rule, theme tokens only. An amber tinted card was rejected as off-theme; do not
@@ -34,13 +34,21 @@ Shipped on `origin/main` at `61504e2`:
 
 ## Exact next action
 
-1. Deploy **dev**: pull `2191d99`, clear caches, rebuild assets; open `/instagram` and confirm tiles + caption line
-2. Confirm the production host really is `dap.drivebay.me` (caption uses `LocaleUrl::route('instagram')`, i.e. `APP_URL`)
-3. Re-do or recover the promote-CTA slice if it is still wanted — it is not in the tree
-4. Still open from KAN-114: clean leftover Facebook account / `mock_fb_*` rows on dev; decide `featured_social` Facebook copy
+1. Deploy **dev**: pull `3890a7f`, migrate (`image_urls`), clear caches, rebuild assets
+2. Open `/instagram` (tiles + caption line) and an owned listing (promote CTA)
+3. Confirm the production host really is `dap.drivebay.me` — the caption uses
+   `LocaleUrl::route('instagram')`, i.e. `APP_URL`
+4. Still open from KAN-114: clean leftover Facebook account / `mock_fb_*` rows on dev; decide
+   `featured_social` Facebook copy
 
 ## Verification
 
-- `php artisan test --filter=InstagramGalleryPageTest` — 5 passed
-- `php artisan test --filter=Instagram` — 37 passed
-- `npm run build` — OK (new `Instagram/Index` chunk)
+- `npm run build` — OK after rebasing the promote CTA onto the gallery commit
+- `php artisan test --filter=InstagramGalleryPageTest` — 5 passed; `--filter=Instagram` — 37 passed
+
+## Gotcha
+
+Two agent sessions pushed to `drivebay` and the wrapper at once on 2026-08-05; every `git push`
+was rejected and needed `git pull --rebase origin main`. A parallel session also concluded this
+promote-CTA slice was "missing from the tree" while it was mid-flight in another session — check
+`HEAD..origin/main` and ask before declaring another session's work lost.
