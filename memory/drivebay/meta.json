@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "61504e2",
+  "sourceCommit": "2191d99",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T12:15:00.000Z",
-  "note": "KAN-115 /instagram gallery uncommitted atop 61504e2; seller featured sections on main"
+  "lastSynchronizedAt": "2026-08-05T12:25:00.000Z",
+  "note": "2191d99 public /instagram gallery (KAN-115) on origin/main"
 }

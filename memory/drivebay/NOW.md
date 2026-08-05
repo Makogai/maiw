@@ -2,24 +2,26 @@
 
 ## Goal
 
-Latest (2026-08-05): two **uncommitted** slices sit on top of `61504e2` in the same working tree —
-public Instagram gallery at `/instagram` (**KAN-115**) and the seller promote CTA move.
+Latest (2026-08-05): public Instagram gallery at `/instagram` (**KAN-115**) shipped on `origin/main`
+at `2191d99`. A parallel session's seller promote-CTA slice was recorded as uncommitted but is
+**not present in the working tree** at `2191d99` — re-check before trusting it.
 
 ## Current state
 
-Instagram gallery (KAN-115, uncommitted):
+Instagram gallery (KAN-115, `2191d99`):
 
 - `GET /instagram` (+ `/sr/instagram`) lists published Instagram posts for active listings
 - One tile per listing (newest publish), cover from `listing_social_posts.image_url`, click → listing
 - Captions include scheme-less gallery URL (`marketplace.instagram.caption_gallery`)
 - Sitemap + footer link; tests in `InstagramGalleryPageTest`
 
-Promote CTA move (uncommitted):
+Promote CTA move (claimed uncommitted, **not found in tree** — no `promote_sidebar_hint` key, no
+stash, clean `git status`):
 
-- `ListingOwnerSidebarPanel.vue`: "Promote listing" is now the single hero CTA at the top of the
-  sidebar action stack (full width, accent, star icon, soft accent shadow, `promotions.promote_sidebar_hint`
-  under it). Quick price drops to `outline` while the CTA shows. The duplicate promote button in
-  the owner banner at the top of `Pages/Listings/Show.vue` was removed
+- Intended: `ListingOwnerSidebarPanel.vue` gets "Promote listing" as the single hero CTA at the top
+  of the sidebar action stack (full width, accent, star icon, `promotions.promote_sidebar_hint`
+  under it); quick price drops to `outline`; the duplicate promote button in the owner banner of
+  `Pages/Listings/Show.vue` is removed
 
 Shipped on `origin/main` at `61504e2`:
 
@@ -32,13 +34,13 @@ Shipped on `origin/main` at `61504e2`:
 
 ## Exact next action
 
-1. Two independent slices are dirty in `apps/drivebay` — commit them **separately** (ask user first):
-   gallery files vs. `ListingOwnerSidebarPanel.vue` / `Pages/Listings/Show.vue` / promote lang keys
-2. Deploy / open `https://dap.drivebay.me/instagram` and confirm tiles + caption line
-3. Still open from KAN-114: clean leftover Facebook account / `mock_fb_*` rows on dev; decide `featured_social` Facebook copy
+1. Deploy **dev**: pull `2191d99`, clear caches, rebuild assets; open `/instagram` and confirm tiles + caption line
+2. Confirm the production host really is `dap.drivebay.me` (caption uses `LocaleUrl::route('instagram')`, i.e. `APP_URL`)
+3. Re-do or recover the promote-CTA slice if it is still wanted — it is not in the tree
+4. Still open from KAN-114: clean leftover Facebook account / `mock_fb_*` rows on dev; decide `featured_social` Facebook copy
 
 ## Verification
 
 - `php artisan test --filter=InstagramGalleryPageTest` — 5 passed
 - `php artisan test --filter=Instagram` — 37 passed
-- `npm run build` — OK (new `Instagram/Index` chunk; also OK after the promote CTA move)
+- `npm run build` — OK (new `Instagram/Index` chunk)
