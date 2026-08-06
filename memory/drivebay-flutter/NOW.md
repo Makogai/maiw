@@ -2,32 +2,32 @@
 
 ## Goal
 
-Latest (2026-08-06): **KAN-117** mobile polish — chat images-only, hide message alerts,
-listing iPhone safe-area, mark sold on detail. **Uncommitted** on top of `b5011b0`.
+Latest (2026-08-06): **KAN-117** polish + **KAN-118** mark-sold UI resilience.
+**Uncommitted** on top of `b5011b0`.
 
 ## Current state
 
-KAN-117 (local):
+**KAN-117** (local):
 
-- Chat picker: `pickMultiImage` (was `pickMultipleMedia`) — videos no longer selectable
-- Notifications inbox filters out `message.received` client-side; skips in-app banner for chat
-  (Messages tab unread + push stay). Paired API filter is in drivebay `Notification::forAlertsInbox`
-- Listing detail: sticky buyer bar is full-bleed elevated chrome into the home-indicator zone;
-  header uses `viewPadding.top` instead of nested SafeArea; list bottom pad = bar + inset
-- Owner banner: **Mark as sold** when `meta.capabilities.canMarkSold` (was My Listings only)
+- Chat picker: `pickMultiImage` (images only)
+- Alerts inbox filters `message.received`; skip in-app banner for chat
+- Listing detail iPhone safe-area / sticky buyer bar
+- Owner banner: Mark as sold when `canMarkSold`
 
-Shipped on `origin/main` at `b5011b0` (**KAN-116**):
+**KAN-118** (local, pairs with drivebay API fix):
 
-- `ListingCoverImage` + type-aware HTTPS placeholders from marketplace origin / API
-- Prior: Featured badges + seller filter + owner end-date (`9a340d4`)
+- Mark sold: always invalidate/refresh listings even when API errors (DB may already be sold)
+- Detail: pop after successful mark sold
+
+Shipped on `origin/main` at `b5011b0` (**KAN-116** placeholders).
 
 ## Exact next action
 
-1. Hot-restart QA on iPhone: listing top/bottom, chat attach, alerts empty of chat, mark sold
-2. Commit + push flutter + drivebay notification API (ask user)
-3. Transition **KAN-117** → In Review after push
+1. Hot-restart QA: mark sold with Meili down / after API deploy — no stuck listing, no hard fail
+2. Ask user to commit + push flutter + drivebay (**KAN-118** first, then KAN-117)
+3. Transition tickets to In Review after push
 
 ## Verification
 
 - `dart analyze` clean on touched Dart files (pre-existing unused `_openReportListing` warning)
-- Drivebay `ApiNotificationsTest` new case for excluding `message.received` passed
+- Drivebay `ListingMarkSoldTest` — 3 passed

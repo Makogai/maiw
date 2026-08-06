@@ -2,37 +2,42 @@
 
 ## Goal
 
-Latest (2026-08-06): **KAN-117** — exclude `message.received` from alerts inbox (API + web).
-Uncommitted PHP (+ leftover mobile app-shell Vue) on top of `origin/main` at `15d3a22`.
+Latest (2026-08-06): **KAN-118** — mark-as-sold must not fail when Meilisearch is unreachable.
+Local fix uncommitted; also still carrying **KAN-117** notification inbox filter + leftover
+mobile web shell Vue. Local branch behind `origin/main` (`d6fc2cf` vs `15d3a22`) — pull blocked
+by dirty `Show.vue`.
 
 ## Current state
 
-KAN-117 notification inbox (local, uncommitted):
+**KAN-118** (local, uncommitted — isolate from Vue shell):
 
-- `Notification::ALERTS_EXCLUDED_TYPES` + `scopeForAlertsInbox()` — drops `message.received`
-  from channel=`in_app` queries used by API index/unread/latest and web `NotificationController`
-- Rows are still **created** so `NotificationObserver` can queue push; Messages tab unread is separate
-- `ListingNotificationService::{recentUnreadFor,unreadCountFor}` use the same scope (web bell)
-- Test: `ApiNotificationsTest` asserts chat rows are excluded
-- Paired Flutter work is local on drivebay-flutter atop `b5011b0`
+- `ListingService::markAsSold` / `archive` → `SyncListingSearchDocumentJob::dispatch` (no inline
+  `unsearchable()`)
+- `syncSearchDocument` try/catch + `Log::warning` on Scout failures
+- Tests: `tests/Feature/ListingMarkSoldTest.php` (3 cases) — passed
 
-Also still dirty locally (separate 08-05 slice, do not mix into KAN-117 commit):
+**KAN-117** notification inbox (local, uncommitted):
+
+- `Notification::scopeForAlertsInbox()` excludes `message.received` from API/web alerts
+- Rows still created for push; paired Flutter work local on drivebay-flutter
+
+Also dirty (separate slice — do not mix):
 
 - Mobile web app-shell Vue (`MobileBottomNav.vue`, `AppLayout.vue`, sticky Contact on Show,
-  FloatingMessenger hidden on mobile)
+  FloatingMessenger)
 
-Shipped on `origin/main` at `15d3a22`:
+Shipped on `origin/main` at `15d3a22` (local HEAD still `d6fc2cf` until pull):
 
-- Listing cover placeholders (**KAN-116**) — WebP art under `public/images/placeholders/listings/`
-- Card/equipment restyle `d6fc2cf`, promote CTA `3890a7f`, `/instagram` gallery **KAN-115**
+- Listing cover placeholders (**KAN-116**), card/equipment restyle, promote CTA, Instagram gallery
 
 ## Exact next action
 
-1. Stash/isolate Vue shell files, pull to `15d3a22`, commit KAN-117 PHP only (ask user)
-2. Deploy **dev** after push; verify alerts inbox has no chat rows while push still fires
-3. Still open: mobile web app-shell parity; KAN-114 Facebook cleanup on dev
+1. Stash Vue shell → `git pull` to `15d3a22` → commit **KAN-118** (`ListingService` + test) and
+   optionally **KAN-117** PHP separately — ask user before commit/push
+2. Deploy so Meilisearch outages no longer 500 mark-sold
+3. Still open: mobile web shell; KAN-114 Facebook cleanup on dev
 
 ## Verification
 
-- `php artisan test --filter=ApiNotificationsTest` — new exclude-chat case passed (pre-existing
-  push assertion about `listing_public_id` still flaky/unrelated)
+- `php artisan test --filter=ListingMarkSoldTest` — 3 passed
+- `php artisan test --filter=ApiNotificationsTest` — KAN-117 exclude-chat case passed earlier

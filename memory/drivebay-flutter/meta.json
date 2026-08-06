@@ -6,6 +6,6 @@
   "sourceCommit": "b5011b0",
   "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-06T11:45:00.000Z",
-  "note": "KAN-117 uncommitted on b5011b0; KAN-116 ListingCoverImage placeholders already on main"
+  "lastSynchronizedAt": "2026-08-06T12:30:00.000Z",
+  "note": "KAN-117 + KAN-118 Flutter mark-sold refresh resilience uncommitted on b5011b0"
 }

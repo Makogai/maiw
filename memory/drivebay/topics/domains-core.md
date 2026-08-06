@@ -13,7 +13,7 @@ in sync with that lifecycle.
 **Key services**
 | Class | Role |
 |---|---|
-| `ListingService` | Core CRUD + lifecycle: `createDraft`, `update`, `publish`, `approve`, `markAsSold`, `reject`, `syncSearchDocument` (`app/Domains/Listing/Services/ListingService.php:17`). **KAN-73:** wires `allows_test_drive` / `allows_mechanic_visit` from CreateListingDTO/update; DB columns nullable for legacy backfill, Store/Update `required\|boolean`. |
+| `ListingService` | Core CRUD + lifecycle: `createDraft`, `update`, `publish`, `approve`, `markAsSold`, `reject`, `syncSearchDocument` (`app/Domains/Listing/Services/ListingService.php:17`). **KAN-73:** wires `allows_test_drive` / `allows_mechanic_visit` from CreateListingDTO/update; DB columns nullable for legacy backfill, Store/Update `required\|boolean`. (**Jira: KAN-118**) `markAsSold`/`archive` only persist status then `SyncListingSearchDocumentJob::dispatch` — never inline Scout `unsearchable()`. `syncSearchDocument` try/catches Meilisearch failures (`Log::warning`) so search outages never fail the seller HTTP path (incl. `QUEUE_CONNECTION=sync`). |
 | `ListingPublishCoordinator` | Auto-publishes a listing once all its queued media finishes processing (`app/Domains/Listing/Services/ListingPublishCoordinator.php:16-38`) |
 | `ListingModerationPipelineService` | Runs the auto-publish decision + auto-approves eligible Autodiler photos, notifies seller (`app/Domains/Listing/Services/ListingModerationPipelineService.php:19-51`) |
 | `ListingAutoPublishEvaluator` | Pure rule evaluator producing `AutoPublishDecision` (blocking reasons, min-photo count, flagged check) (`app/Domains/Listing/Services/ListingAutoPublishEvaluator.php:12-52`) |
@@ -49,7 +49,10 @@ in sync with that lifecycle.
 - Listing → Dealer: `publish()` auto-links an unlinked listing to the seller's dealer account via
   `DealerListingLinker` before changing status (`ListingService.php:180-187`).
 - Listing → SocialPublishing: `markAsSold()` dispatches
-  `UpdateInstagramSoldCaptionJob` (`ListingService.php:241`).
+  `UpdateInstagramSoldCaptionJob` after queueing search removal (`ListingService.php:229-247`).
+- (**Jira: KAN-118**) Never gate mark-sold / archive HTTP success on Meilisearch. Sellers saw
+  `cURL error 7` to `…sslip.io:7700/.../delete-batch` while the listing was already `sold` in
+  Postgres; UI stayed stale until refresh. Fix: async job + soft-fail sync.
 - Listing → Notification: price drops on `update()` trigger
   `PriceDropNotificationService::notifyFavoriters` (`ListingService.php:166`) — a Search-domain
   entity (favorites) reacting to a Listing-domain mutation.

@@ -3,9 +3,9 @@
   "app": "drivebay",
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
-  "sourceCommit": "15d3a22",
+  "sourceCommit": "d6fc2cf",
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-06T11:45:00.000Z",
-  "note": "15d3a22 on origin/main; KAN-117 alerts-inbox filter + leftover mobile shell Vue uncommitted"
+  "lastSynchronizedAt": "2026-08-06T12:30:00.000Z",
+  "note": "Local d6fc2cf behind origin 15d3a22; KAN-118 mark-sold Meili soft-fail + KAN-117 alerts filter + Vue shell uncommitted"
 }
