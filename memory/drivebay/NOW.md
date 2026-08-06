@@ -2,30 +2,29 @@
 
 ## Goal
 
-Shipped **KAN-118** (mark-sold Meilisearch soft-fail) + **KAN-117** alerts inbox filter +
-mobile web shell on `origin/main` at `ffc7d56`.
+Local (uncommitted): remove the solid background / top border from the mobile listing
+sticky Contact + Schedule bar — buttons stay fixed, no elevated bar panel.
+
+Shipped on `origin/main` at `ffc7d56`: KAN-118, KAN-117 alerts filter, mobile web shell.
 
 ## Current state
 
-Shipped in `ffc7d56` (after pull to `15d3a22`):
+Local change in `resources/js/Pages/Listings/Show.vue`: sticky buyer bar classes dropped
+`border-t border-border bg-elevated` (kept fixed position + padding).
 
-- **KAN-118:** `ListingService::markAsSold`/`archive` dispatch `SyncListingSearchDocumentJob`;
-  `syncSearchDocument` try/catches Scout failures. Tests in `ListingMarkSoldTest`
-- **KAN-117:** `Notification::scopeForAlertsInbox()` excludes `message.received` from API/web
-  alerts (push still created)
-- Mobile web shell: `MobileBottomNav.vue`, AppLayout wiring, sticky Contact on Show,
-  FloatingMessenger hidden on mobile
+Shipped in `ffc7d56`:
 
-Prior on main: listing placeholders (**KAN-116**) `15d3a22` / `99b4f1b`
+- **KAN-118:** mark-sold Meilisearch soft-fail
+- **KAN-117:** alerts inbox excludes `message.received`
+- Mobile web shell: `MobileBottomNav.vue`, AppLayout, sticky Contact on Show
 
 ## Exact next action
 
-1. Deploy **dev** so mark-sold no longer 500s when Meilisearch is down; verify alerts have no
-   chat rows; smoke mobile bottom nav
-2. Transition **KAN-118** / **KAN-117** → In Review after deploy QA
-3. Still open: Meilisearch host reachability on Coolify; KAN-114 Facebook cleanup
+1. Commit + push Show.vue background removal (ask user)
+2. Deploy **dev**; verify mark-sold + alerts + transparent sticky buttons
+3. Still open: Meilisearch host reachability; KAN-114 Facebook cleanup
 
 ## Verification
 
-- `php artisan test --filter=ListingMarkSoldTest` — 3 passed before push
-- `php artisan test --filter=ApiNotificationsTest` — exclude-chat case passed earlier
+- Visual: mobile listing detail — Contact / Schedule sit above bottom nav with no bar fill
+- Prior: `ListingMarkSoldTest` / `ApiNotificationsTest` passed before `ffc7d56`

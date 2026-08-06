@@ -7,5 +7,5 @@
   "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
   "lastSynchronizedAt": "2026-08-06T12:30:00.000Z",
-  "note": "ffc7d56 on origin/main: KAN-118 Meili soft-fail, KAN-117 alerts filter, mobile web shell"
+  "note": "ffc7d56 on origin/main; local uncommitted: remove sticky buyer bar bg on listing Show"
 }
