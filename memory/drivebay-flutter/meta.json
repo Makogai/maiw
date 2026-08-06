@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay-flutter",
   "remote": "git@github.com:Makogai/drivebay-flutter.git",
   "sourceCommit": "b5011b0",
-  "status": "synced",
+  "status": "partial",
   "registeredAt": "2026-07-15T12:13:09.063Z",
-  "lastSynchronizedAt": "2026-08-05T15:25:00.000Z",
-  "note": "b5011b0 ListingCoverImage placeholders (KAN-116) on origin/main; pairs with drivebay 15d3a22"
+  "lastSynchronizedAt": "2026-08-06T11:45:00.000Z",
+  "note": "KAN-117 uncommitted on b5011b0; KAN-116 ListingCoverImage placeholders already on main"
 }

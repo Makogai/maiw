@@ -4,8 +4,8 @@
   "appPath": "apps/drivebay",
   "remote": "git@github.com:Makogai/drivebay.git",
   "sourceCommit": "15d3a22",
-  "status": "synced",
+  "status": "partial",
   "registeredAt": "2026-07-15T11:44:59.370Z",
-  "lastSynchronizedAt": "2026-08-05T15:25:00.000Z",
-  "note": "15d3a22 listing cover placeholders (KAN-116) on origin/main atop d6fc2cf card restyle"
+  "lastSynchronizedAt": "2026-08-06T11:45:00.000Z",
+  "note": "15d3a22 on origin/main; KAN-117 alerts-inbox filter + leftover mobile shell Vue uncommitted"
 }

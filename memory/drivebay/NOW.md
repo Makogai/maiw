@@ -2,46 +2,37 @@
 
 ## Goal
 
-Latest (2026-08-05): type-aware listing cover placeholders (**KAN-116**) shipped on
-`origin/main` at `15d3a22`, rebased on top of `d6fc2cf` (card/equipment restyle).
+Latest (2026-08-06): **KAN-117** — exclude `message.received` from alerts inbox (API + web).
+Uncommitted PHP (+ leftover mobile app-shell Vue) on top of `origin/main` at `15d3a22`.
 
 ## Current state
 
-Listing placeholders (**KAN-116**, `99b4f1b` + cleanup `15d3a22`):
+KAN-117 notification inbox (local, uncommitted):
 
-- Real WebP art now committed at `public/images/placeholders/listings/{car,motorcycle,van,truck,bus,trailer,specialty,default}.webp`
-  (~31–37 KB each; `default.webp` currently duplicates the car art)
-- Helper: `App\Support\Media\ListingPlaceholder` + `config/drivebay.php` `listing_placeholders`
-- Payloads: Web/API `ListingCardResource` / `ListingDetailResource` + Instagram gallery listing
-  blob expose `placeholder_url` and `vehicle.vehicle_type_code`
-- Web: `useListingPlaceholder` + `@error` on `ListingCardImageArea`, `InstagramPostTile`,
-  `ListingGallery`; empty galleries on listing/storefront show render the placeholder `<img>`
-- `listing-accent-*` gradient + car-icon fallback removed from both show pages; the unused
-  `accentClass` computed went with it (`15d3a22`)
-- Docs: `docs/frontend/listing-placeholders.md`
-- Paired Flutter: drivebay-flutter `b5011b0`
+- `Notification::ALERTS_EXCLUDED_TYPES` + `scopeForAlertsInbox()` — drops `message.received`
+  from channel=`in_app` queries used by API index/unread/latest and web `NotificationController`
+- Rows are still **created** so `NotificationObserver` can queue push; Messages tab unread is separate
+- `ListingNotificationService::{recentUnreadFor,unreadCountFor}` use the same scope (web bell)
+- Test: `ApiNotificationsTest` asserts chat rows are excluded
+- Paired Flutter work is local on drivebay-flutter atop `b5011b0`
 
-Also on `origin/main`: `d6fc2cf` card/equipment restyle, `3890a7f` promote CTA,
-`2191d99` public `/instagram` gallery (**KAN-115**).
+Also still dirty locally (separate 08-05 slice, do not mix into KAN-117 commit):
+
+- Mobile web app-shell Vue (`MobileBottomNav.vue`, `AppLayout.vue`, sticky Contact on Show,
+  FloatingMessenger hidden on mobile)
+
+Shipped on `origin/main` at `15d3a22`:
+
+- Listing cover placeholders (**KAN-116**) — WebP art under `public/images/placeholders/listings/`
+- Card/equipment restyle `d6fc2cf`, promote CTA `3890a7f`, `/instagram` gallery **KAN-115**
 
 ## Exact next action
 
-1. Deploy **dev**: pull `15d3a22`, clear caches, rebuild assets
-2. Verify a listing with no photos and a card with a deliberately broken CDN URL both show the
-   matching vehicle placeholder (never a broken icon)
-3. Optional: replace `default.webp` with distinct generic art (it duplicates `car.webp` today)
-4. Still open: mobile web app-shell parity; KAN-114 Facebook cleanup on dev
+1. Stash/isolate Vue shell files, pull to `15d3a22`, commit KAN-117 PHP only (ask user)
+2. Deploy **dev** after push; verify alerts inbox has no chat rows while push still fires
+3. Still open: mobile web app-shell parity; KAN-114 Facebook cleanup on dev
 
 ## Verification
 
-- `php artisan test tests/Feature/ListingPlaceholderTest.php tests/Feature/InstagramGalleryPageTest.php`
-  — 22 passed (104 assertions), run after the rebase
-- `npm run build` **not** run in this session (no node on PATH in the agent shell) — build on deploy
-
-## Gotcha
-
-- Node/npm are not on PATH in the agent shell even though `node bin/*.js` worked earlier in the
-  session; do not assume `npm run build` is runnable here.
-- Two agent sessions pushed to `drivebay` and the wrapper at once on 2026-08-05; check
-  `HEAD..origin/main` and rebase before declaring another session's work lost.
-- `apps/drivebay/.nvmrc` (node 26) is still untracked and unrelated to this slice.
+- `php artisan test --filter=ApiNotificationsTest` — new exclude-chat case passed (pre-existing
+  push assertion about `listing_public_id` still flaky/unrelated)
